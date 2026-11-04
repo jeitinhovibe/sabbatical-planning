@@ -18,7 +18,7 @@ window.TODO_ITEMS = [
   // ── before you leave ──────────────────────────────────────────────
   { id: 'prep-1', ch: 'prep', place: null, cat: 'admin', title: 'Credit-card travel insurance (60-day cover)', note: 'Covers the first 60 days only — SafetyWing takes over before Nepal', due: '2026-06-01', done: true },
   { id: 'prep-2', ch: 'prep', place: null, cat: 'admin', title: 'Passports valid 6+ months past Jun 2027', note: 'BR passports; needed for every visa-on-arrival', due: '2026-06-01', done: true },
-  { id: 'prep-3', ch: 'prep', place: null, cat: 'car', title: 'International Driving Permit', note: 'Needed for Greece, Turkey + Malaysia rentals', due: '2026-08-15', done: true },
+  { id: 'prep-3', ch: 'prep', place: null, cat: 'car', title: 'International Driving Permit', note: 'Needed for the Greece + Turkey rentals (no car in Malaysia — ETS rail + coach)', due: '2026-08-15', done: true },
 
   // ── brasil (past) ─────────────────────────────────────────────────
   { id: 'brasil-1', ch: 'brasil', place: null, cat: 'transport', title: 'São Paulo→Toronto→Athens flights', note: '$1,700 for two, locked', due: '2026-05-01', done: true },
@@ -33,7 +33,7 @@ window.TODO_ITEMS = [
   { id: 'toronto-1', ch: 'toronto', place: null, cat: 'stay', title: "Friend's place", note: 'Lodging free; confirm arrival day', due: '2026-08-06', done: true },
 
   // ── athens (past) ─────────────────────────────────────────────────
-  { id: 'athens-1-athens', ch: 'athens', place: 'Athens', cat: 'stay', title: 'Athens stays Sep 1–5 + Oct 20–21', note: 'Booked', due: '2026-08-11', done: true },
+  { id: 'athens-1-athens', ch: 'athens', place: 'Athens', cat: 'stay', title: 'Athens stays Sep 1–5 + Sep 20–21', note: 'Booked — 4n opening + buffer night after the Milos ferry, before the Sep 21 flight to Cappadocia', due: '2026-08-11', done: true },
   { id: 'athens-1-chania', ch: 'athens', place: 'Chania', cat: 'stay', title: 'Chania stay Sep 5–9', note: 'Booked', due: '2026-08-15', done: true },
   { id: 'athens-1-rethymno', ch: 'athens', place: 'Rethymno', cat: 'stay', title: 'Rethymno stay Sep 9–12', note: 'Booked', due: '2026-08-19', done: true },
   { id: 'athens-1-santorini', ch: 'athens', place: 'Santorini', cat: 'stay', title: 'Santorini stay Sep 12–14', note: 'Booked', due: '2026-08-22', done: true },
@@ -46,7 +46,7 @@ window.TODO_ITEMS = [
   // ── turkey (current) ──────────────────────────────────────────────
   { id: 'turkey-1', ch: 'turkey', place: 'Göreme', cat: 'attraction', title: 'Hot-air balloon Sep 22/23 — cancelled (weather), refunded', note: 'Royal / Butterfly Balloons — full refund received', due: '2026-09-01', done: true },
   { id: 'turkey-2', ch: 'turkey', place: 'Göreme', cat: 'stay', title: 'Göreme stay Sep 21–24', note: 'Booked', due: '2026-08-31', done: true },
-  { id: 'turkey-3-alacati', ch: 'turkey', place: 'Alaçatı', cat: 'stay', title: 'Alaçatı stay Sep 24–26', note: 'Room from Sep 24 for the 1am arrival — booked', due: '2026-09-03', done: true },
+  { id: 'turkey-3-alacati', ch: 'turkey', place: 'Alaçatı', cat: 'stay', title: 'Alaçatı stay Sep 24–27 (3n)', note: 'Room from Sep 24 for the 1am Sep 25 arrival — booked; drives to Şirince on Sep 27', due: '2026-09-03', done: true },
   { id: 'turkey-3-sirince', ch: 'turkey', place: 'Şirince', cat: 'stay', title: 'Şirince stay Sep 27', note: 'Booked', due: '2026-09-06', done: true },
   { id: 'turkey-3-kas', ch: 'turkey', place: 'Kaş', cat: 'stay', title: 'Kaş stay Sep 28–30', note: 'Booked', due: '2026-09-07', done: true },
   { id: 'turkey-3-akyaka', ch: 'turkey', place: 'Akyaka', cat: 'stay', title: 'Akyaka stay Oct 1', note: 'Booked', due: '2026-09-10', done: true },
@@ -77,6 +77,7 @@ window.TODO_ITEMS = [
   { id: 'nepal-8', ch: 'nepal', place: 'Kathmandu', cat: 'admin', title: 'Buy trekking gear in Thamel', note: 'Layers + essentials for ABC; bag + down jacket loaned by DWT — 9kg pp porter limit', due: '2026-10-22', done: true },
 
   // ── china-e1 ──────────────────────────────────────────────────────
+  { id: 'china-e1-vpn', ch: 'china-e1', place: null, cat: 'admin', title: 'Buy + install VPN on both phones + laptop', note: 'Install BEFORE landing Nov 7 — Google, WhatsApp, Instagram and most VPN vendor sites are unreachable inside the mainland, so it cannot be bought there. Test on both phones; keep a second provider as fallback. Must cover E1 (Nov 7–24), E2 (Nov 28 – Dec 24) and spring China (May 30 – Jun 16). Check whether the plan allows 2 devices each', due: '2026-11-06', done: false },
   { id: 'china-e1-1-beijing', ch: 'china-e1', place: 'Beijing', cat: 'stay', title: 'Beijing stay (9n)', note: 'Nov 7–16 booked ✅ ($528), incl. 2 slow hutong days upfront (trek recovery)', due: '2026-10-17', done: true },
   { id: 'china-e1-1-huangshan', ch: 'china-e1', place: 'Huangshan', cat: 'stay', title: 'Huangshan stay (3n)', note: 'Nov 16–19, Tangkou base + summit night', due: '2026-10-26', done: false },
   { id: 'china-e1-1-hangzhou', ch: 'china-e1', place: 'Hangzhou', cat: 'stay', title: 'Hangzhou stay (2n)', note: 'Nov 19–21', due: '2026-10-29', done: false },

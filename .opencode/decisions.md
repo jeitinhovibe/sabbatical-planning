@@ -8,6 +8,27 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-04 — Todo ledger reconciled against `itinerary-data.js`
+
+Three stale labels from earlier merges, corrected in `todo-data.js`:
+
+- **Athens buffer night** read "Oct 20–21"; the Milos ferry lands Sep 20 and the
+  Cappadocia flight is Sep 21. Fixed to **Sep 20–21**.
+- **Alaçatı** read "Sep 24–26" for a 3-night allocation. The 1am Sep 25 arrival
+  plus Şirince on Sep 27 means the room must run **Sep 24–27**; otherwise the
+  Sep 26 night is unbooked.
+- **IDP note** claimed a Malaysia rental; the plan uses ETS rail + coach there.
+  Note now names Greece + Turkey only.
+
+Added: **VPN purchase before China** (`china-e1-vpn`, due Nov 6) — it cannot be
+bought inside the mainland, and it has to cover all three China entries.
+
+Flagged, not changed: `nepal-5` (SafetyWing) is still `done: false` though the
+trek has finished; the ADB→IST time conflicts between `todo-data.js` (19:45,
+"moved + bought") and the Izmir-car note in `itinerary-data.js` (16:45).
+
+---
+
 ## 2026-10-24 — Railay replaced by Bangkok for the Dec 26–29 peak
 
 Railay was sold out or priced at 2–3× for the three peakest days of the Thai
