@@ -23,9 +23,17 @@ Three stale labels from earlier merges, corrected in `todo-data.js`:
 Added: **VPN purchase before China** (`china-e1-vpn`, due Nov 6) — it cannot be
 bought inside the mainland, and it has to cover all three China entries.
 
-Flagged, not changed: `nepal-5` (SafetyWing) is still `done: false` though the
-trek has finished; the ADB→IST time conflicts between `todo-data.js` (19:45,
-"moved + bought") and the Izmir-car note in `itinerary-data.js` (16:45).
+Resolved after review, same day:
+
+- **SafetyWing** was in place — `nepal-5` now `done: true`.
+- **ADB→IST was 19:45** (the todo record was right); the Izmir-car calendar note
+  said 16:45 and has been corrected in `itinerary-data.js`.
+- **China spring entry needs its own visa gate** — added `china-spring-0`
+  (due 2027-03-15): verify the visa-free waiver renewed past Dec 31, 2026, else
+  file an L visa (~$300 for two) before ticketing BKK→XIY.
+- **Deleted the `bookings` array from `itinerary-data.js`.** It duplicated the
+  todo ledger, was unread by any view, and had drifted into claiming Türkiye was
+  still unbooked. Todos live in `todo-data.js` only.
 
 ---
 
