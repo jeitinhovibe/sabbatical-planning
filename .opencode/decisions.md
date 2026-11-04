@@ -46,7 +46,9 @@ Three stale labels from earlier merges, corrected in `todo-data.js`:
   Note now names Greece + Turkey only.
 
 Added: **VPN purchase before China** (`china-e1-vpn`, due Nov 6) — it cannot be
-bought inside the mainland, and it has to cover all three China entries.
+bought inside the mainland. Bought per trip, not as a standing subscription: one
+30-day plan spans Nov 7 – Dec 6 (HK is between E1 and E2), cancelled after, and a
+fresh one for spring China May 6 – Jun 2.
 
 Resolved after review, same day:
 
