@@ -25,7 +25,10 @@ bought inside the mainland, and it has to cover all three China entries.
 
 Resolved after review, same day:
 
-- **SafetyWing** was in place — `nepal-5` now `done: true`.
+- **SafetyWing** was in place — `nepal-5` now `done: true`. It **does not cover
+  helicopter evacuation**; the gap was a deliberate accepted risk, not an
+  oversight. Corrected the "heli-evac insurance (mandatory)" line in the trek
+  highlights to say so, so no future session re-assumes cover exists.
 - **ADB→IST was 19:45** (the todo record was right); the Izmir-car calendar note
   said 16:45 and has been corrected in `itinerary-data.js`.
 - **China spring entry needs its own visa gate** — added `china-spring-0`
