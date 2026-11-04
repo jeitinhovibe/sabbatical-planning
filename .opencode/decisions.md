@@ -17,7 +17,7 @@ Three stale labels from earlier merges, corrected in `todo-data.js`:
 - **Alaçatı** read "Sep 24–26" for a 3-night allocation. The 1am Sep 25 arrival
   plus Şirince on Sep 27 means the room must run **Sep 24–27**; otherwise the
   Sep 26 night is unbooked.
-- **IDP note** claimed a Malaysia rental; the plan uses ETS rail + coach there.
+- **IDP note** claimed a Malaysia rental; the peninsula leg is rail + coach.
   Note now names Greece + Turkey only.
 
 Added: **VPN purchase before China** (`china-e1-vpn`, due Nov 6) — it cannot be
@@ -31,9 +31,11 @@ Resolved after review, same day:
   highlights to say so, so no future session re-assumes cover exists.
 - **ADB→IST was 19:45** (the todo record was right); the Izmir-car calendar note
   said 16:45 and has been corrected in `itinerary-data.js`.
-- **China spring entry needs its own visa gate** — added `china-spring-0`
-  (due 2027-03-15): verify the visa-free waiver renewed past Dec 31, 2026, else
-  file an L visa (~$300 for two) before ticketing BKK→XIY.
+- **China spring entry needs its own visa gate** (due 2027-03-15): verify the
+  visa-free waiver renewed past Dec 31, 2026, else file an L visa (~$300 for
+  two) before ticketing the entry leg. On rebase onto the PR #50 reorder, main
+  already carried `china-spring-0-visa` for this; kept theirs and added the
+  filing lead time + the don't-ticket-yet rule to its note.
 - **Deleted the `bookings` array from `itinerary-data.js`.** It duplicated the
   todo ledger, was unread by any view, and had drifted into claiming Türkiye was
   still unbooked. Todos live in `todo-data.js` only.
