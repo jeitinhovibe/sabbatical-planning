@@ -8,6 +8,31 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-04 — Full todo↔itinerary audit after the PR #50 reorder
+
+Todo ledger re-derived from `itinerary-data.js` on the reordered plan. What the
+audit found beyond formatting:
+
+- **Korea ground legs were still on pre-reorder dates** in `transports`
+  (Jeju→Busan May 31, Busan→Gyeongju Jun 3, Gyeongju→Seoul Jun 5) — before the
+  Korea chapter even starts on Jun 2. Corrected to Jun 5 / Jun 8 / Jun 10 to
+  match the places and the todo.
+- **The HK chapter still said "there is no Taiwan visa errand this time."** That
+  line dates from when Taiwan was cut from the plan; Taiwan is back and the TECO
+  filing gates the whole chapter. Restored, and the visa item moved from the
+  Taiwan group (Dec 29) into the HK group (Nov 24) so it shows up when they are
+  actually in Hong Kong.
+- **Huangshan summit hotel** carried a Oct 27 due date while its own note said
+  "book ~3 days ahead"; it now reads Nov 13 and says explicitly it is the night
+  on the mountain, not the Tangkou base.
+- **Home flight dropped** (`korea-10`) at the travelers' request — the trip ends
+  in Seoul without a ticketed return yet. Deliberate, not an omission.
+
+Every stay, leg and visa now tiles its chapter with no gaps: nights sum to the
+chapter length in all 21 chapters. Cache versions bumped.
+
+---
+
 ## 2026-11-04 — Todo ledger reconciled against `itinerary-data.js`
 
 Three stale labels from earlier merges, corrected in `todo-data.js`:
