@@ -338,3 +338,10 @@ What that buys and what it deliberately ignores:
   survives until a run is actually clean.
 - A browser that has never synced shows nothing: the bare `Sync` label is already
   the prompt, and there is no baseline to compare against.
+
+Fifth pass: the **progress bar** joins the day counter in the mobile header. Below
+880px it is not a 220px inline bar — it becomes the header's bottom edge (full
+bleed, replacing the 1px rule), which is the only place a bar fits next to the
+brand, day count and nav. The separate progress row in the strip is gone; the strip
+is now just now/next. The 881–980 clamp that hid the bar is dropped too, so it stays
+inline on tablets now that the brand meta is off there.
