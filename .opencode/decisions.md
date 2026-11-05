@@ -8,6 +8,43 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-05 — Hongcun gets the arrival night; one mountain day, not two
+
+Hongcun was a day trip inside the Huangshan block. It should not be: its good
+hours are **06:00–08:00 and 17:00–19:00**, and a day visit lands in the
+09:30–15:00 coach window. So night 1 (Nov 15) moves into the village and the
+mountain nights follow at Zhaixi.
+
+- **Hongcun 1n (Nov 15) · Zhaixi/Tangkou 3n (Nov 16–19).** One 25-min move, no
+  day lost. The ¥94–104 ticket is 3-day re-entry, so sleeping there costs
+  nothing that the day trip would not have cost.
+- **The rule: sleep village-side on arrival, mountain-side before you climb.**
+  From Hongcun the 06:20 bus reaches Tangkou ~07:25 — after the cableway opens
+  and the canyon clock is running. That single fact kills every "Hongcun as a
+  mountain-morning base" variant.
+- **Rejected: all Tangkou.** Cheapest, but buys Hongcun only during coach peak.
+- **Rejected: 2n Hongcun.** Eats the second mountain day and adds a check-in.
+- **Rejected: Hongcun as the last night.** Same dawn, but 65–80 min to the
+  station on departure morning and only the 10:44 train works.
+
+**One mountain day is planned; the second is a decision at the gate.** A second
+entry **cannot be pre-booked** — it is re-reserved on the mini-programme after
+the first check-in, against a daily quota. So day 2 is taken only if Tiandu is
+open and the forecast is clear: worth ~60–70% of day 1 with Tiandu, ~30%
+without. Otherwise Nov 18 becomes Tachuan colour, Xidi or the hot springs.
+
+Facts that made this decidable, all verified: **Tiandu reopened 7 Apr 2026 and
+needs its own quota reservation; Lotus Peak is in five-year rotation rest** —
+and West Sea Canyon *and* Tiandu close for winter on **1 Dec**, so Nov 15–19 is
+the last full week. Also corrected: **¥308pp is one canyon day** (Yungu ¥80 +
+Yuping ¥90 + rail ¥100 + shuttle ¥19×2); the ¥396 figure quoted earlier was two
+days *without* the rail. And with no summit bed there is no dawn or dusk at all —
+sunrise 06:35 vs gates 07:00, sunset 17:09 vs last cable 17:10.
+
+Hongcun photo vendored from Wikimedia Commons (EditQ, CC BY-SA 4.0) and credited.
+
+---
+
 ## 2026-11-05 — China E1 reshaped: 8/4/4, no summit, Suzhou to spring
 
 New fixed edges: the travelers booked **HGH→HKG on Nov 23, 08:00–10:40 ($183)** and
