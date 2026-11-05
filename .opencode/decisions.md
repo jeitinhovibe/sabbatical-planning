@@ -282,3 +282,9 @@ view exactly as before.
 The rail follows: today's chapter is pinned to the top of the viewport with a
 `NOW` tag, exited chapters drop to 45% opacity, future ones stay at full contrast.
 A `?chapter=` deep link still wins the scroll so shared links land on their own row.
+
+Amended 2026-11-05: the header carries the same state in words — "Currently in
+<chapter> · N days left" and "Next up <chapter> · date", both jump-to buttons.
+Mobile gets a compact two-cell strip above the day counter (wraps rather than
+truncating long names). Before the trip the header shows only "Next up"; after
+it, "Trip complete".
