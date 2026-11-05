@@ -68,6 +68,14 @@ async function main() {
   const keywords = uniqueChapterPhotoKeywords(trip);
   const missing = keywords.filter((k) => !(k in photoIds));
 
+  // Local photos answer narrow viewports with a 480px WebP twin
+  // (scripts/make-reel-thumbs.py). A source without its twin 404s in the
+  // chapter reel, so a new photo must ship both files.
+  const thumbOf = (p) => path.join(ROOT, p.replace(/^extra-pictures\//, 'extra-pictures/thumbs/').replace(/\.[^.]+$/, '.webp'));
+  const missingThumbs = Object.values(photoIds)
+    .filter((value) => String(value).startsWith('extra-pictures/'))
+    .filter((value) => fs.existsSync(path.join(ROOT, value)) && !fs.existsSync(thumbOf(value)));
+
   const directUrls = Object.entries(photoIds).filter(([, value]) => String(value).startsWith('http'));
   const broken = [];
   const rateLimited = [];
@@ -88,12 +96,18 @@ async function main() {
   console.log(`Checked keywords: ${keywords.length}`);
   console.log(`Direct URLs: ${directUrls.length}`);
   console.log(`Missing keyword mappings: ${missing.length}`);
+  console.log(`Missing 480px thumbnails: ${missingThumbs.length}`);
   console.log(`Broken URLs: ${broken.length}`);
   console.log(`Rate-limited (skipped): ${rateLimited.length}`);
 
   if (missing.length) {
     console.log('\nMissing mappings:');
     for (const key of missing) console.log(`- ${key}`);
+  }
+
+  if (missingThumbs.length) {
+    console.log('\nMissing thumbnails (run: python3 scripts/make-reel-thumbs.py):');
+    for (const file of missingThumbs) console.log(`- ${file}`);
   }
 
   if (broken.length) {
@@ -111,7 +125,7 @@ async function main() {
     }
   }
 
-  if (missing.length || broken.length) process.exit(1);
+  if (missing.length || broken.length || missingThumbs.length) process.exit(1);
   if (rateLimited.length) console.log('\nPhoto validation passed with rate-limit warnings.');
   else console.log('\nPhoto validation passed.');
 }
