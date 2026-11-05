@@ -296,3 +296,13 @@ The 2D map opens capped at **z4 (continent level)** rather than fitted to the
 chapter's cities: zoomed to a region it read as "I can't see the trip", zoomed to
 the world it was a screensaver. The globe keeps its closer anchor framing — it is
 the postcard view; the 2D map is the geography view.
+
+Second amendment: the two lines name the **town**, not the chapter — "Currently in
+Kathmandu · 2 days left / Next up Beijing · Nov 7". Chapter names were too coarse to
+act on; the town is the unit you book, walk and wake up in. Place windows are derived
+from `chapter.start` + the cumulative `place.days` (the same math the detail panel
+uses), so a city change mid-chapter moves the label without touching the data. The
+countdown now runs to the **next town's arrival**, which on a chapter's last stop is
+its exit day — same number as before, but it now means what it says. On an exit day
+where the next flight is overnight (São Paulo → Toronto, Aug 26) it reads
+"leaving today" rather than "1 day left".
