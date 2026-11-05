@@ -71,8 +71,11 @@ audit found beyond formatting:
 - **Huangshan summit hotel** carried a Oct 27 due date while its own note said
   "book ~3 days ahead"; it now reads Nov 13 and says explicitly it is the night
   on the mountain, not the Tangkou base.
-- **Home flight dropped** (`korea-10`) at the travelers' request — the trip ends
-  in Seoul without a ticketed return yet. Deliberate, not an omission.
+- **Home flight `korea-10` dropped** at the travelers' request — the trip ends
+  in Seoul with no ticketed return yet. Deliberate, not an omission. The **cost
+  stays modelled** in `flights` (`Seoul → São Paulo`, $1,400): they still have to
+  fly home, so deleting it would understate the budget by $1,400. Only the
+  booking reminder went, not the money.
 
 Every stay, leg and visa now tiles its chapter with no gaps: nights sum to the
 chapter length in all 21 chapters. Cache versions bumped.
