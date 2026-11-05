@@ -21,21 +21,24 @@ WIDTH = 480
 QUALITY = 78
 
 
-def reel_photos():
-    """The header photo of every chapter, resolved through PHOTO_IDS."""
+def local_photos():
+    """Every vendored photo, resolved through PHOTO_IDS.
+
+    Not just the chapter headers the reel uses: Photo offers a srcSet for any
+    local file, so a photo without a 480px twin would answer a narrow viewport
+    with a 404. Cheap to generate, so generate them all.
+    """
     js = r"""
     const fs = require('fs');
     global.window = {};
     for (const f of ['itinerary-photos.js', 'itinerary-data.js', 'itinerary-geo.js']) {
       eval(fs.readFileSync(f, 'utf8'));
     }
-    const ids = global.window.PHOTO_IDS;
-    const out = [];
-    for (const c of global.window.TRIP.chapters) {
-      const k = (c.photos || [])[0];
-      if (k && ids[k]) out.push(ids[k]);
+    const out = new Set();
+    for (const path of Object.values(global.window.PHOTO_IDS)) {
+      if (typeof path === 'string' && path.startsWith('extra-pictures/')) out.add(path);
     }
-    console.log(out.join('\n'));
+    console.log([...out].join('\n'));
     """
     res = subprocess.run(['node', '-e', js], cwd=ROOT, capture_output=True, text=True, check=True)
     return [p for p in res.stdout.splitlines() if p.strip()]
@@ -43,7 +46,7 @@ def reel_photos():
 
 def main():
     total_in = total_out = 0
-    for rel in reel_photos():
+    for rel in local_photos():
         src = os.path.join(ROOT, rel)
         if not os.path.exists(src):
             print(f'  missing  {rel}')
