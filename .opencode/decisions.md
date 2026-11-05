@@ -16,12 +16,10 @@ that city.
 
 - **Chosen: date → city.** The spine's resolution is a day; collapsing it to
   "open this chapter" threw away the only information the control has.
-- **Chosen: today keeps the only cursor.** One 2px white playhead sits on
-  today; a picked day gets no second marker, because the day is already legible
-  from the tick it brightens and from the hover tooltip. A gold second cursor
-  was tried on 2026-11-05 and removed the same day — two playheads on a 360px
-  bar read as clutter, and a 1px hairline at a subpixel position renders as two
-  faint lines.
+- **Chosen: the clicked day is its own marker.** That tick grows and glows in
+  its chapter colour, which is the whole affordance — a second playhead beside
+  today's read as clutter and was removed the same day. Today keeps the only
+  vertical playhead, a 2px bar (a subpixel 1px hairline renders as two lines).
 - **Chosen: the click recentres, it does not open the card.** The stop popup
   (`open in Google Maps`) belongs to the map's own pin; a date click only moves
   the camera.
