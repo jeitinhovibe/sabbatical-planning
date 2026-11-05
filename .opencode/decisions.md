@@ -267,3 +267,62 @@ window of the year) both ran against P1. Korea moved to late spring; Sichuan mov
 to the pre-monsoon sweet spot; Guilin/Longji dropped for flood-season risk.
 Taiwan was dropped at this point for visa bureaucracy — later reconsidered as a
 southern-NYE variant.
+
+---
+
+## 2026-11-05 — The map opens on the current chapter, not the world
+
+The trip is live (Day 138), so a world view on load is a screensaver, not a
+starting point. Both map modes now open framed on the chapter today falls in
+(2D fit of its places, globe camera on its anchor, spin paused); the whole-route
+view stays one click away via "← Back to whole route". Once no chapter contains
+today — before the trip or after Jun 16 2027 — the home view reverts to the world
+view exactly as before.
+
+The rail follows: today's chapter is pinned to the top of the viewport with a
+`NOW` tag, exited chapters drop to 45% opacity, future ones stay at full contrast.
+A `?chapter=` deep link still wins the scroll so shared links land on their own row.
+
+Amended same day, after seeing it: the state belongs in the **rail head**, not the
+app header — it replaces "The Arc / N entries" (a count nobody acts on). Two
+jump-to lines: "Currently in <chapter> · N days left" and "Next up <chapter> · date".
+The countdown appears **once**, on the current chapter, because an exit day *is*
+the next chapter's arrival day — "2 days left" and "in 2 days" are always the same
+number. Mobile reuses the same component above the day counter, label inline, on
+the standard kicker/serif scale (10px mono / 14px serif), not the 7.5px micro-text
+of the first cut. Before the trip only "Next up" shows; after it, "Trip complete".
+
+The 2D map opens capped at **z4 (continent level)** rather than fitted to the
+chapter's cities: zoomed to a region it read as "I can't see the trip", zoomed to
+the world it was a screensaver. The globe keeps its closer anchor framing — it is
+the postcard view; the 2D map is the geography view.
+
+Second amendment: the two lines name the **town**, not the chapter — "Currently in
+Kathmandu · 2 days left / Next up Beijing · Nov 7". Chapter names were too coarse to
+act on; the town is the unit you book, walk and wake up in. Place windows are derived
+from `chapter.start` + the cumulative `place.days` (the same math the detail panel
+uses), so a city change mid-chapter moves the label without touching the data. The
+countdown now runs to the **next town's arrival**, which on a chapter's last stop is
+its exit day — same number as before, but it now means what it says. On an exit day
+where the next flight is overnight (São Paulo → Toronto, Aug 26) it reads
+"leaving today" rather than "1 day left".
+
+Third pass: the **country flag replaces the chapter-colour dot** — the dot carried no
+information, the flag says which passport you're on at a glance. And the second line
+is labelled **Next stop** when the next town sits in the chapter you're already in
+(same flag, same country); **Next up** is kept for a chapter change, so a border
+crossing never passes for a local hop.
+
+Fourth pass: the day counter moved into the mobile header (`Asia. · DAY 138 / 359`),
+in the same mono/10px/0.16em style as the desktop meta — it was floating in its own
+strip in the wrong font. The strip keeps the now/next block and a bare progress
+rule. And the next cell lost its date: during the trip the countdown on the line
+above already says when you move, so only the pre-trip state (no countdown) still
+shows an arrival date.
+
+Fifth pass: the **progress bar** joins the day counter in the mobile header. Below
+880px it is not a 220px inline bar — it becomes the header's bottom edge (full
+bleed, replacing the 1px rule), which is the only place a bar fits next to the
+brand, day count and nav. The separate progress row in the strip is gone; the strip
+is now just now/next. The 881–980 clamp that hid the bar is dropped too, so it stays
+inline on tablets now that the brand meta is off there.
