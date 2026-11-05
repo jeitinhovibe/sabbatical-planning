@@ -306,3 +306,9 @@ countdown now runs to the **next town's arrival**, which on a chapter's last sto
 its exit day — same number as before, but it now means what it says. On an exit day
 where the next flight is overnight (São Paulo → Toronto, Aug 26) it reads
 "leaving today" rather than "1 day left".
+
+Third pass: the **country flag replaces the chapter-colour dot** — the dot carried no
+information, the flag says which passport you're on at a glance. And the second line
+is labelled **Next stop** when the next town sits in the chapter you're already in
+(same flag, same country); **Next up** is kept for a chapter change, so a border
+crossing never passes for a local hop.
