@@ -346,3 +346,24 @@ What that buys and what it deliberately ignores:
 - A browser that has never synced shows nothing: the bare `Sync` label is already
   the prompt. One that synced *before* fingerprints existed shows the dot once —
   there is no baseline, so a push is due rather than a claim of "synced".
+
+## 2026-11-05 — A stop's `days` are nights, never calendar days
+
+Nepal's stops summed to 17 but split 4 / **11** / **2**. The trek was quoted by
+the operator as "Oct 25 – Nov 4" (11 inclusive days, **10 nights**), so the
+inclusive span got copied in and the post-trek Kathmandu block lost its Nov 4
+night. The chapter total was right, which is why nothing caught it: the error
+only moved a night from one stop to another.
+
+- **Rule: `places[].days` = nights.** The card renders `start … start+days-1`
+  and the chapter's exit day always falls outside the last window. So a tour
+  whose dates read "Oct 25 – Nov 4" is `days: 10`, and the return-leg day
+  belongs to the **next** stop, not the one you left.
+- **The tell for a future audit:** if a stop's highlights mention a date the
+  derived window doesn't cover, or a hotel booking names one more night than
+  the card claims, the split is wrong even when the chapter sum is not.
+- Nepal now reads 4 / 10 / 3 = 17, and Nov 7 carries the actual morning
+  (11:45 wheels-up, ~08:45 taxi, TIA by 09:00) rather than "early departure" —
+  which also settles that the Boudhanath farewell kora is Nov 6, not Nov 7.
+- **Not changed:** the flight, the Nov 7 chapter end, Beijing Nov 7–15. The
+  plan already matched the booking; only the split was wrong.
