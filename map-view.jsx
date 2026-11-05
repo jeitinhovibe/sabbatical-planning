@@ -324,6 +324,22 @@
         // A selected stop centres the map on that city. How tight that
         // framing is depends on how it was picked: a day on the spine wants
         // the country as context, a pin click wants the city itself.
+        //
+        // The move itself is a flight, not a new view: `flyTo` pans and zooms
+        // on one curve, and the duration grows with the distance so a hop
+        // across town is a nudge while Rio→Tokyo is a proper traversal. The
+        // old hard `setView(…, {animate:false})` made every card click a
+        // teleport. Reduced-motion users get the teleport, which is the one
+        // case where it is the polite answer.
+        const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const moveTo = (center, zoom) => {
+          if (reduced) { map.setView(center, zoom, { animate: false }); return; }
+          const km = map.getCenter().distanceTo(L.latLng(center)) / 1000;
+          map.flyTo(center, zoom, {
+            duration: Math.min(1.2, 0.6 + km / 9000),
+            easeLinearity: 0.24,
+          });
+        };
         const focused = selectedPlaceIdx != null ? ch.places[selectedPlaceIdx] : null;
         if (focused && focused.coords) {
           // Centre on the picked city, but keep the chapter's own framing so
@@ -336,19 +352,26 @@
               : 7;
             zoom = Math.max(5, Math.min(10, zoom));
           }
-          map.setView(focused.coords, zoom, { animate: false });
+          moveTo(focused.coords, zoom);
         } else if (placeCoords.length > 1) {
           // maxZoom 14 lets tightly-clustered places frame at
           // neighbourhood/street level instead of capping at region level.
-          map.fitBounds(placeCoords, { padding: [40, 40], maxZoom: 14, animate: false });
+          // fitBounds cannot animate a pan (it computes a zoom and jumps), so
+          // the same framing is derived twice: bounds → zoom, then flown to.
+          const bounds = L.latLngBounds(placeCoords);
+          const zoom = Math.min(14, map.getBoundsZoom(bounds, false, L.point(80, 80)));
+          moveTo(bounds.getCenter(), zoom);
         } else if (placeCoords.length === 1) {
-          map.setView(placeCoords[0], 12, { animate: false });
+          moveTo(placeCoords[0], 12);
         } else if (ch.anchor) {
-          map.setView(ch.anchor, 9, { animate: false });
+          moveTo(ch.anchor, 9);
         }
       };
-      setTimeout(doFit, 50);
-      setTimeout(doFit, 350);
+      // One move per selection. The spread is a fixed overlay — the map keeps
+      // its width behind it — so the second fit 350ms later only yanked the
+      // freshly framed view off its new centre: a cut, then a correction.
+      map.invalidateSize();
+      doFit();
     }, [selectedId, selectedPlaceIdx, chapters, placeZoom]);
 
     // External recentre trigger ("whole route"). The selection effect above
