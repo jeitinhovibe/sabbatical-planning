@@ -8,6 +8,45 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-05 — Tangkou takes the arrival night; Hongcun moves to last night
+
+Reverses the same-day call that gave Hongcun the arrival night. The block is
+still 4 nights, Beijing's 8 and Hangzhou's 4 are untouched — only the order
+inside the block changed: **Tangkou 3 (Nov 15–18) · Hongcun 1 (Nov 18–19)**.
+
+- **Why the reversal.** The old arrangement put the village night *inside* the
+  mountain window, so Nov 16 was a prep day and the mountain got two candidate
+  mornings (17, 18). Now the first full day is a mountain morning: three
+  candidates (16, 17, 18), the third only by sacrificing Hongcun. West Sea
+  Canyon and Tiandu shut on 1 Dec, so candidate mornings are the scarce good.
+- **The arrival leg is also easier.** Huangshan North → Tangkou is a station
+  shuttle every 20–30min, ¥30, 45–60min, 06:30–19:00. Hongcun needed a coach you
+  must catch. The 12:35-only framing was stale: since Jan 2026 there is a
+  customised station→Hongcun shuttle (~¥35, roughly hourly to mid-afternoon).
+- **Cost accepted: the base prep day.** The canyon day is now the morning after
+  a 5h17 train, with spikes rented on the arrival afternoon. Beijing's 8 slow
+  days already cover the recovery argument; the 13:45 arrival leaves 3–4h of light
+  for gear, food and an early night.
+- **Also corrected:** "Hongcun as the last night → only the 10:44 train works" was
+  wrong. Hongcun → Huangshan North is 65–80min, and 40+/day trains run to
+  Hangzhou East with the first Hangzhou night unbooked — the departure is loose.
+- **Rejected: keep Hongcun first (status quo).** Two mountain mornings, and the
+  village night sits between arrival and the climb for no gain.
+- **Rejected: swap but keep a prep day (climb Nov 17).** Same arrival, but one
+  sure mountain morning and the day-2 decision gets worse, not better.
+- **Rejected: all Tangkou, 4 nights.** Three mornings, cheapest — but Hongcun
+  then exists only in the 09:30–15:00 coach peak, or not at all.
+- **Rejected: Tangkou 2 + Hongcun 2.** Buys a second village dawn at the cost of
+  the second mountain day; the canyon is the reason for the block.
+
+Operational consequences: the mountain reservation targets **Nov 16** (due Nov
+10), the re-entry decision is made at the exit gate on **Nov 16**, and the
+Hongcun guesthouse (due Oct 26) now books Nov 18 — midweek, cheaper and quieter
+than the peak-colour Sunday it used to hold. Keep it cancellable: it is the
+thing that gets traded for a third mountain morning.
+
+---
+
 ## 2026-11-05 — The year spine is a date picker, not a chapter picker
 
 A tick on the 360-day spine is one day, so clicking it resolves to the city the
@@ -59,6 +98,10 @@ Hongcun was a day trip inside the Huangshan block. It should not be: its good
 hours are **06:00–08:00 and 17:00–19:00**, and a day visit lands in the
 09:30–15:00 coach window. So night 1 (Nov 15) moves into the village and the
 mountain nights follow at Zhaixi.
+
+> **Superseded later on 2026-11-05** — the order was flipped to Tangkou 3
+> (Nov 15–18) then Hongcun 1 (Nov 18–19). See the entry above. The facts below
+> still hold; the ordering does not.
 
 - **Hongcun 1n (Nov 15) · Zhaixi/Tangkou 3n (Nov 16–19).** One 25-min move, no
   day lost. The ¥94–104 ticket is 3-day re-entry, so sleeping there costs
