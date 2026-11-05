@@ -312,3 +312,10 @@ information, the flag says which passport you're on at a glance. And the second 
 is labelled **Next stop** when the next town sits in the chapter you're already in
 (same flag, same country); **Next up** is kept for a chapter change, so a border
 crossing never passes for a local hop.
+
+Fourth pass: the day counter moved into the mobile header (`Asia. · DAY 138 / 359`),
+in the same mono/10px/0.16em style as the desktop meta — it was floating in its own
+strip in the wrong font. The strip keeps the now/next block and a bare progress
+rule. And the next cell lost its date: during the trip the countdown on the line
+above already says when you move, so only the pre-trip state (no countdown) still
+shows an arrival date.
