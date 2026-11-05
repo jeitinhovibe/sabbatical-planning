@@ -8,6 +8,52 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-05 — China E1 reshaped: 8/4/4, no summit, Suzhou to spring
+
+New fixed edges: the travelers booked **HGH→HKG on Nov 23, 08:00–10:40 ($183)** and
+dropped Suzhou; Huangshan gets **no summit hotel**. Beijing's hotel is freely
+cancellable, so its nights were the only free variable across the 16 fixed nights.
+
+**Chosen: Beijing 8 (Nov 7–15) · Huangshan 4 Tangkou (Nov 15–19) · Hangzhou 4
+(Nov 19–23).** Cost-neutral: −1 Beijing night, +1 Tangkou, +2 Hangzhou, −2 Suzhou.
+
+- Beijing lost its 9th night because that night was **Monday Nov 16** — Forbidden
+  City and National Museum closed, first day of the municipal heating season, and
+  the darkest/coldest night of the chapter (9°/0°, sunset 16:58). It buys the 4th
+  Huangshan night, which lands on the mountain's best week: colour, cloud-sea
+  season, West Sea Canyon still open, no hard ice.
+- Hangzhou gained two nights because the chapter now ends at a **08:00 flight**,
+  so the last night cannot move and two nights could hold neither West Lake nor a
+  day trip.
+- **Rejected: keep Beijing 9.** Huangshan at 3 nights = travel day + one 9-hour
+  forced march; P3 breach.
+- **Rejected: Beijing 7 / Huangshan 5.** Defensible (weather buffer + 06:30
+  weekend cableway), but it strips the Wall's blue-sky spare and a third
+  recovery day. The 4-night block already yields two candidate mountain days
+  because the ¥190 ticket is **3-day re-enterable** — pick the clearest morning.
+- **Rejected: insert Nanjing.** Four 3-nighters, and it re-buys imperial-city
+  content Beijing already covers.
+- **Rejected: summit dorm night.** The ¥1,000–1,680 doubles were the actual price
+  objection, and dorm beds (¥250–300pp) are **sold out for these dates**. So the
+  chapter has no summit sunrise: cableway starts 07:00, ~30min after sunrise.
+  Accepted cost, recorded in the chapter text so no future session re-adds it.
+
+Operational consequences now in the ledger: **G87 06:56→12:13 is the only train
+landing before noon** (all others 13:46–21:11) and it is a single daily fast
+service — the chapter's one time-critical booking. The canyon day has a hard
+17:10 last cableway and a 16:00 canyon-rail close. Hangzhou→Hangzhou **East**,
+not West. HGH at 08:00 means a 04:45 wake; staying airport-side buys nothing.
+
+**Suzhou is not cut, it is re-homed**: a day trip from Shanghai in the spring
+chapter (21–30 min from Hongqiao, 240+ pairs/day), since the gardens are a May
+repeat of what spring already covers and the old Suzhou→Hongqiao→SHA chain was
+two connections for one morning.
+
+Nothing downstream moved: HK Nov 23, E2 Nov 28, chapter lengths and trip total
+all unchanged.
+
+---
+
 ## 2026-11-04 — Full todo↔itinerary audit after the PR #50 reorder
 
 Todo ledger re-derived from `itinerary-data.js` on the reordered plan. What the
@@ -25,8 +71,15 @@ audit found beyond formatting:
 - **Huangshan summit hotel** carried a Oct 27 due date while its own note said
   "book ~3 days ahead"; it now reads Nov 13 and says explicitly it is the night
   on the mountain, not the Tangkou base.
-- **Home flight dropped** (`korea-10`) at the travelers' request — the trip ends
-  in Seoul without a ticketed return yet. Deliberate, not an omission.
+- **Home flight `korea-10` dropped** at the travelers' request — the trip ends
+  in Seoul with no ticketed return yet. Deliberate, not an omission. The **cost
+  stays modelled** in `flights` (`Seoul → São Paulo`, $1,400): they still have to
+  fly home, so deleting it would understate the budget by $1,400. Only the
+  booking reminder went, not the money.
+  **Reversed 2026-11-05:** `korea-10` is back in the ledger (due 2027-03-15, ~3
+  months out). Removing the reminder while keeping the cost line is exactly how
+  `flights` and `todo-data.js` drift apart, and it made the return leg look stale
+  to the next audit. One row, and the two files stay legible against each other.
 
 Every stay, leg and visa now tiles its chapter with no gaps: nights sum to the
 chapter length in all 21 chapters. Cache versions bumped.
