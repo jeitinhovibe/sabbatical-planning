@@ -16,9 +16,15 @@ that city.
 
 - **Chosen: date → city.** The spine's resolution is a day; collapsing it to
   "open this chapter" threw away the only information the control has.
-- **Chosen: today keeps its own marker.** A click adds a second, gold cursor;
-  it never replaces the white "today" line. Losing today's position was the one
-  thing a movable cursor could have broken.
+- **Chosen: today keeps the only cursor.** One 2px white playhead sits on
+  today; a picked day gets no second marker, because the day is already legible
+  from the tick it brightens and from the hover tooltip. A gold second cursor
+  was tried on 2026-11-05 and removed the same day — two playheads on a 360px
+  bar read as clutter, and a 1px hairline at a subpixel position renders as two
+  faint lines.
+- **Chosen: the click recentres, it does not open the card.** The stop popup
+  (`open in Google Maps`) belongs to the map's own pin; a date click only moves
+  the camera.
 - **Rejected: chapter-level jumps.** Still available through the reel and the
   chapter grid; the spine did not need to duplicate them.
 
