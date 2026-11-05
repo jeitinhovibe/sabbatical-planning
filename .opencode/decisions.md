@@ -8,6 +8,31 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-05 — Site redesign: the night atlas
+
+The site now opens as a cinematic cover, then a full-bleed night atlas: the
+globe is the canvas, today's chapter is set in giant type over it, the 360-day
+year is a clickable spine under the header, and all 21 chapters live in a
+photo reel along the bottom edge. Chapters open as editorial spreads, the
+budget became a visual ledger, and the to-do list became the field kit.
+
+- **Chosen: night atlas.** It matches what the page actually is — a map of a
+  year, not a dashboard. The globe is the one asset that can carry a full-bleed
+  layout, and the satellite imagery already lived in a dark palette.
+- **Rejected: keep the cream left-rail binder.** Safe and readable, but it made
+  the map a panel beside a list; the journey was furniture.
+- **Rejected: a bright magazine skin.** Would have lost the globe's atmosphere
+  and the sense of moving through a year.
+- **Rejected: a KPI dashboard.** More widgets, less story; this is a personal
+  project for two independent travellers, not an operations console.
+- **Colour is derived, not authored.** Chapter colour is a 21-step ember→violet
+  spectrum applied at runtime in `shared.jsx` from chapter order. The plan in
+  `itinerary-data.js` is untouched.
+- **URLs are additive.** `?view=atlas|chapters|ledger|kit` is the new surface;
+  `map`, `budget`, and `todo` remain aliases so old shared links still land.
+
+---
+
 ## 2026-11-05 — Hongcun gets the arrival night; one mountain day, not two
 
 Hongcun was a day trip inside the Huangshan block. It should not be: its good
