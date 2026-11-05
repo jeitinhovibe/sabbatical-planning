@@ -8,6 +8,22 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-05 — The year spine is a date picker, not a chapter picker
+
+A tick on the 360-day spine is one day, so clicking it resolves to the city the
+plan has you in that day and flies the map there. Hovering names the date and
+that city.
+
+- **Chosen: date → city.** The spine's resolution is a day; collapsing it to
+  "open this chapter" threw away the only information the control has.
+- **Chosen: today keeps its own marker.** A click adds a second, gold cursor;
+  it never replaces the white "today" line. Losing today's position was the one
+  thing a movable cursor could have broken.
+- **Rejected: chapter-level jumps.** Still available through the reel and the
+  chapter grid; the spine did not need to duplicate them.
+
+---
+
 ## 2026-11-05 — Site redesign: the night atlas
 
 The site now opens as a cinematic cover, then a full-bleed night atlas: the
