@@ -347,6 +347,21 @@ What that buys and what it deliberately ignores:
   the prompt. One that synced *before* fingerprints existed shows the dot once —
   there is no baseline, so a push is due rather than a claim of "synced".
 
+## 2026-11-05 — The dot has two states: amber = behind, blue = working
+
+Below 880px the header sync button drops its label, so `Syncing…` never renders
+and a running push looked exactly like an idle one — the amber dot read as "still
+behind", not "in progress". The dot is now a two-state indicator and **busy
+overrides stale**:
+
+- **Blue, blinking (1s)** while a push is in flight — even when nothing was stale,
+  so a manual sync on a clean state isn't silent on mobile.
+- **Amber, static** when the payload has moved since the last clean push.
+- Busy wins on *both* breakpoints, deliberately: one meaning per state beats a
+  desktop that says `Syncing…` next to an amber "unsynced" dot.
+- `prefers-reduced-motion` drops the blink and keeps the colour — the state is
+  still legible without motion.
+
 ## 2026-11-05 — A stop's `days` are nights, never calendar days
 
 Nepal's stops summed to 17 but split 4 / **11** / **2**. The trek was quoted by
