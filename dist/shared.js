@@ -90,6 +90,37 @@ function openMaps(query) {
   window.open(window.TRIP.helpers.mapsUrl(query), '_blank', 'noopener,noreferrer');
 }
 
+// ── "Now" ───────────────────────────────────────────────────────────────
+// Which chapter today falls in, and how each chapter stands relative to it.
+// Chapter dates are plain YYYY-MM-DD strings (an `end` is the exit day,
+// inclusive), so string comparison is exact; today is UTC-normalised so the
+// day never flips with the viewer's clock.
+function todayISO() {
+  const n = new Date();
+  return new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate())).toISOString().slice(0, 10);
+}
+function currentChapter(chapters, today) {
+  const t = today || todayISO();
+  let cur = null;
+  (chapters || []).forEach(c => {
+    if (!c.start || !c.end || c.kind === 'transit') return;
+    // Exit days are shared with the next chapter's start, so the later
+    // start wins: on a move day you are already in the new chapter.
+    if (c.start <= t && t <= c.end) cur = c;
+  });
+  return cur;
+}
+
+// 'current' for today's chapter, 'past' for chapters already exited,
+// 'future' otherwise. With no current chapter (before the trip starts or
+// after it ends) nothing is greyed out — the whole arc reads the same.
+function chapterStatus(ch, current, today) {
+  const t = today || todayISO();
+  if (!current || !ch.end) return 'future';
+  if (ch.id === current.id) return 'current';
+  return ch.end <= t ? 'past' : 'future';
+}
+
 // Subscribe to the store and trigger re-render on any mutation.
 function useStore() {
   const [, force] = React.useReducer(x => x + 1, 0);
@@ -234,3 +265,8 @@ Object.assign(window, {
   useStore,
   ErrorBoundary
 });
+window.TRIP_NOW = {
+  todayISO,
+  currentChapter,
+  chapterStatus
+};

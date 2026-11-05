@@ -285,6 +285,29 @@ button {
 .chapter-row.is-active {
   background: var(--paper-2);
 }
+/* Where you are: accent bar + a NOW tag. Chapters already exited sit back
+   in grey so the current one reads first; selecting one restores contrast. */
+.chapter-row.is-past {
+  opacity: 0.45;
+}
+.chapter-row.is-past:hover,
+.chapter-row.is-past.is-active {
+  opacity: 0.75;
+}
+.chapter-row-now {
+  flex: none;
+  margin-left: 7px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--f-mono);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  vertical-align: 2px;
+}
 .chapter-row-marker {
   width: 3px;
   align-self: stretch;
@@ -303,15 +326,21 @@ button {
   gap: 3px;
 }
 .chapter-row-title {
+  display: flex;
+  align-items: center;
+  min-width: 0;
   font-family: var(--f-serif);
   font-size: 15.5px;
   font-weight: 500;
   letter-spacing: -0.2px;
   color: var(--ink);
   line-height: 1.15;
+}
+.chapter-row-title-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 .chapter-row.is-active .chapter-row-title {
   font-weight: 600;
@@ -767,7 +796,7 @@ button {
 /* "World" reset button */
 .map-reset {
   position: absolute;
-  bottom: 16px;
+  bottom: 34px; /* clears Leaflet's bottom-left attribution line */
   left: 16px;
   z-index: 500;
 }
@@ -1549,7 +1578,7 @@ button {
     padding: 6px 8px 7px;
   }
   .map-legend-title { font-size: 8.5px; }
-  .map-reset { bottom: 10px; left: 10px; }
+  .map-reset { bottom: 30px; left: 10px; }
   .map-reset button { font-size: 9px; padding: 6px 10px; }
 
   .binder-pane { padding: 20px 14px 60px; }

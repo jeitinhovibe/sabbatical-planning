@@ -51,6 +51,11 @@
     const [selectedPlaceIdx, setSelectedPlaceIdx] = React.useState(urlParams.placeIdx);
     const [focusKey, setFocusKey] = React.useState(0);
     const [mapRetry, setMapRetry] = React.useState(0);
+    // The map opens on today's chapter (see MapView/GlobeView). This flag
+    // tracks an explicit "show me the whole route" so the reset control
+    // only offers a way back that actually changes something.
+    const [worldView, setWorldView] = React.useState(false);
+    const currentChapter = window.TRIP_NOW ? window.TRIP_NOW.currentChapter(store.getChapters()) : null;
     const [mapMode, setMapMode] = React.useState(() => {
       if (urlParams.map) return urlParams.map;
       try { return localStorage.getItem('map-mode') || 'globe'; } catch { return 'globe'; }
@@ -83,6 +88,8 @@
     const onSelectChapter = (id) => {
       setSelectedId(id);
       setSelectedPlaceIdx(null);
+      setWorldView(false);
+      setFocusKey(0); // a pending "show world" pulse is spent; don't replay it on remount
       if (view !== 'map') setView('map');
     };
     const onSelectPlace = (idx) => setSelectedPlaceIdx(idx);
@@ -93,6 +100,7 @@
     const onReset = () => {
       setSelectedId(null);
       setSelectedPlaceIdx(null);
+      setWorldView(true);
       setFocusKey((k) => k + 1);
     };
 
@@ -215,7 +223,7 @@
                   }}>Globe</button>
               </div>
 
-              {selectedId && (
+              {(selectedId || (currentChapter && !worldView)) && (
                 <div className="map-reset">
                   <button onClick={onReset}>← Back to whole route</button>
                 </div>

@@ -267,3 +267,18 @@ window of the year) both ran against P1. Korea moved to late spring; Sichuan mov
 to the pre-monsoon sweet spot; Guilin/Longji dropped for flood-season risk.
 Taiwan was dropped at this point for visa bureaucracy — later reconsidered as a
 southern-NYE variant.
+
+---
+
+## 2026-11-05 — The map opens on the current chapter, not the world
+
+The trip is live (Day 138), so a world view on load is a screensaver, not a
+starting point. Both map modes now open framed on the chapter today falls in
+(2D fit of its places, globe camera on its anchor, spin paused); the whole-route
+view stays one click away via "← Back to whole route". Once no chapter contains
+today — before the trip or after Jun 16 2027 — the home view reverts to the world
+view exactly as before.
+
+The rail follows: today's chapter is pinned to the top of the viewport with a
+`NOW` tag, exited chapters drop to 45% opacity, future ones stay at full contrast.
+A `?chapter=` deep link still wins the scroll so shared links land on their own row.
