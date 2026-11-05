@@ -1483,31 +1483,6 @@ button:focus-visible, [role="button"]:focus-visible {
   background: linear-gradient(to top, rgba(9,13,19,.95) 0%, rgba(9,13,19,.1) 45%, rgba(9,13,19,.25) 100%);
   pointer-events: none;
 }
-.detail-hero-num {
-  position: absolute;
-  left: 18px;
-  bottom: -14px;
-  font-family: var(--f-disp);
-  font-size: 116px;
-  line-height: 1;
-  letter-spacing: -.07em;
-  text-shadow: 0 6px 30px rgba(0,0,0,.55);
-  pointer-events: none;
-}
-.detail-hero-tag {
-  position: absolute;
-  top: 14px; left: 16px;
-  font-family: var(--f-mono);
-  font-size: 8.5px;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--ink);
-  background: rgba(6,9,13,.62);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 4px 9px;
-  backdrop-filter: blur(8px);
-}
 .carousel-arrow {
   position: absolute;
   top: 50%;
@@ -1529,20 +1504,6 @@ button:focus-visible, [role="button"]:focus-visible {
 .carousel-arrow:hover { background: var(--ink); color: var(--void); border-color: var(--ink); }
 .carousel-arrow.is-left { left: 12px; }
 .carousel-arrow.is-right { right: 12px; }
-.carousel-count {
-  position: absolute;
-  top: 14px; right: 16px;
-  z-index: 3;
-  font-family: var(--f-mono);
-  font-size: 8.5px;
-  letter-spacing: .1em;
-  color: var(--ink);
-  background: rgba(6,9,13,.62);
-  border: 1px solid var(--line);
-  padding: 3px 8px;
-  border-radius: 999px;
-  backdrop-filter: blur(8px);
-}
 .carousel-dots {
   position: absolute;
   bottom: 12px;
@@ -2615,7 +2576,6 @@ button:focus-visible, [role="button"]:focus-visible {
   @keyframes sheetUp { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
   .detail-topbar { height: 54px; padding: 0 12px 0 16px; }
   .detail-hero { height: 260px; }
-  .detail-hero-num { font-size: 88px; bottom: -10px; }
   .detail-content { padding: 22px 18px 48px; }
   .detail-title { font-size: 50px; }
   .detail-theme { font-size: 16px; }
