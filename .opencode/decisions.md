@@ -76,6 +76,10 @@ audit found beyond formatting:
   stays modelled** in `flights` (`Seoul → São Paulo`, $1,400): they still have to
   fly home, so deleting it would understate the budget by $1,400. Only the
   booking reminder went, not the money.
+  **Reversed 2026-11-05:** `korea-10` is back in the ledger (due 2027-03-15, ~3
+  months out). Removing the reminder while keeping the cost line is exactly how
+  `flights` and `todo-data.js` drift apart, and it made the return leg look stale
+  to the next audit. One row, and the two files stay legible against each other.
 
 Every stay, leg and visa now tiles its chapter with no gaps: nights sum to the
 chapter length in all 21 chapters. Cache versions bumped.
