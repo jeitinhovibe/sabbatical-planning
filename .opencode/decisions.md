@@ -163,11 +163,12 @@ cancellable, so its nights were the only free variable across the 16 fixed night
   chapter has no summit sunrise: cableway starts 07:00, ~30min after sunrise.
   Accepted cost, recorded in the chapter text so no future session re-adds it.
 
-Operational consequences now in the ledger: **G87 06:56→12:13 is the only train
-landing before noon** (all others 13:46–21:11) and it is a single daily fast
-service — the chapter's one time-critical booking. The canyon day has a hard
-17:10 last cableway and a 16:00 canyon-rail close. Hangzhou→Hangzhou **East**,
-not West. HGH at 08:00 means a 04:45 wake; staying airport-side buys nothing.
+Operational consequences now in the ledger: **G87 06:56→12:13 is the day's
+earliest arrival** (all others 13:46–21:11) — the train to aim for, not the only
+one that works: an afternoon service still leaves an evening in Tangkou, and
+only the last (21:11) eats the arrival night. The canyon day has a hard 17:10
+last cableway and a 16:00 canyon-rail close. Hangzhou→Hangzhou **East**, not
+West. HGH at 08:00 means a 04:45 wake; staying airport-side buys nothing.
 
 **Suzhou is not cut, it is re-homed**: a day trip from Shanghai in the spring
 chapter (21–30 min from Hongqiao, 240+ pairs/day), since the gardens are a May
