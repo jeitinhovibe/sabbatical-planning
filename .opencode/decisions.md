@@ -51,8 +51,8 @@ New fixed edges: the travelers booked **HGH→HKG on Nov 23, 08:00–10:40 ($183
 dropped Suzhou; Huangshan gets **no summit hotel**. Beijing's hotel is freely
 cancellable, so its nights were the only free variable across the 16 fixed nights.
 
-**Chosen: Beijing 8 (Nov 7–15) · Huangshan 4 Tangkou (Nov 15–19) · Hangzhou 4
-(Nov 19–23).** Cost-neutral: −1 Beijing night, +1 Tangkou, +2 Hangzhou, −2 Suzhou.
+**Chosen: Beijing 8 (Nov 7–15) · Huangshan block 4 — Hongcun 1 + Tangkou 3
+(Nov 15–19) · Hangzhou 4 (Nov 19–23).** Cost-neutral: −1 Beijing night, +1 Tangkou, +2 Hangzhou, −2 Suzhou.
 
 - Beijing lost its 9th night because that night was **Monday Nov 16** — Forbidden
   City and National Museum closed, first day of the municipal heating season, and
