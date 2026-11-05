@@ -33,6 +33,9 @@
   --spine: 44px;
   --shadow-1: 0 2px 10px rgba(0,0,0,.35), 0 20px 60px rgba(0,0,0,.35);
   --shadow-2: 0 8px 30px rgba(0,0,0,.5), 0 40px 120px rgba(0,0,0,.55);
+
+  /* Satellite basemap treatment — the single dial for map tone. */
+  --map-tile-filter: saturate(.85) brightness(.88) contrast(1.18);
 }
 
 * { box-sizing: border-box; }
@@ -910,7 +913,12 @@ button:focus-visible, [role="button"]:focus-visible {
   outline: none;
 }
 .leaflet-tile, .leaflet-tile-loaded { opacity: 1 !important; }
-.leaflet-tile-pane { filter: saturate(.82) brightness(.78) contrast(1.08); }
+/* Dark-theme treatment for satellite imagery. Brightness alone just crushed
+   the picture (hence the soft, muddy look) — most of the detail loss came
+   from contrast, not from the dimming. Contrast carries it back while the
+   0.88 brightness keeps the map from glowing against the dark UI. One dial,
+   in :root, if it needs tuning. */
+.leaflet-tile-pane { filter: var(--map-tile-filter); }
 .leaflet-control-zoom {
   border: 1px solid var(--line) !important;
   border-radius: 10px !important;

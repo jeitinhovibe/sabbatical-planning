@@ -2,6 +2,16 @@
 
 Trip photos are vendored locally so the site has no hotlinked images.
 
+## Map textures (not trip photos)
+
+| File | Author | License |
+|---|---|---|
+| `earth/blue-marble-8192.webp` · `earth/blue-marble-4096.webp` | NASA/Goddard Space Flight Center — *Blue Marble: Land Surface, Shallow Water, and Shaded Topography* (Reto Stöckli; ocean colour and composite by Robert Simmon; 24000×12000 assembly by HighInBC) | Public domain |
+
+Sourced from Wikimedia Commons (`File:Whole world - land and oceans 12000.jpg`,
+itself from NASA Visible Earth), downscaled to 8192×4096 and 4096×2048, encoded
+WebP q85.
+
 ## Added Nov 2026 — China E1 (Hongcun night)
 
 | File | Author | License |
