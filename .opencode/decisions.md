@@ -344,4 +344,5 @@ What that buys and what it deliberately ignores:
 - A partial sync (any failed event/task) leaves the fingerprint unset, so the dot
   survives until a run is actually clean.
 - A browser that has never synced shows nothing: the bare `Sync` label is already
-  the prompt, and there is no baseline to compare against.
+  the prompt. One that synced *before* fingerprints existed shows the dot once —
+  there is no baseline, so a push is due rather than a claim of "synced".
