@@ -283,8 +283,16 @@ The rail follows: today's chapter is pinned to the top of the viewport with a
 `NOW` tag, exited chapters drop to 45% opacity, future ones stay at full contrast.
 A `?chapter=` deep link still wins the scroll so shared links land on their own row.
 
-Amended 2026-11-05: the header carries the same state in words — "Currently in
-<chapter> · N days left" and "Next up <chapter> · date", both jump-to buttons.
-Mobile gets a compact two-cell strip above the day counter (wraps rather than
-truncating long names). Before the trip the header shows only "Next up"; after
-it, "Trip complete".
+Amended same day, after seeing it: the state belongs in the **rail head**, not the
+app header — it replaces "The Arc / N entries" (a count nobody acts on). Two
+jump-to lines: "Currently in <chapter> · N days left" and "Next up <chapter> · date".
+The countdown appears **once**, on the current chapter, because an exit day *is*
+the next chapter's arrival day — "2 days left" and "in 2 days" are always the same
+number. Mobile reuses the same component above the day counter, label inline, on
+the standard kicker/serif scale (10px mono / 14px serif), not the 7.5px micro-text
+of the first cut. Before the trip only "Next up" shows; after it, "Trip complete".
+
+The 2D map opens capped at **z4 (continent level)** rather than fitted to the
+chapter's cities: zoomed to a region it read as "I can't see the trip", zoomed to
+the world it was a screensaver. The globe keeps its closer anchor framing — it is
+the postcard view; the 2D map is the geography view.
