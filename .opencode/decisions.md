@@ -326,3 +326,22 @@ bleed, replacing the 1px rule), which is the only place a bar fits next to the
 brand, day count and nav. The separate progress row in the strip is gone; the strip
 is now just now/next. The 881–980 clamp that hid the bar is dropped too, so it stays
 inline on tablets now that the brand meta is off there.
+
+## 2026-11-05 — "Unsynced" is measured against the payload, not the browser
+
+The header carries a 6px amber dot when the itinerary or the to-dos have moved
+since this browser's last successful push, and each row of the Sync menu shows its
+own dot so the right target is obvious. The test is a fingerprint (FNV-1a over the
+built payload) stored after a clean sync — Calendar over stop/flight/transport
+titles, dates and descriptions; Tasks over title, notes, due date and done flag.
+What that buys and what it deliberately ignores:
+
+- Prose edits in `itinerary-data.js` (intros, decisions, themes) don't light it,
+  because they never reach Google. A re-timed stop, a renamed leg, a new flight do.
+- Editing a note or a `done:` in `todo-data.js` lights it; a browser tick does not.
+  Ticks are local until Export → commit, and the Tasks sync reads the file — so the
+  dot would never clear if ticks counted.
+- A partial sync (any failed event/task) leaves the fingerprint unset, so the dot
+  survives until a run is actually clean.
+- A browser that has never synced shows nothing: the bare `Sync` label is already
+  the prompt, and there is no baseline to compare against.
