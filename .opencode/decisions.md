@@ -471,3 +471,31 @@ only moved a night from one stop to another.
   which also settles that the Boudhanath farewell kora is Nov 6, not Nov 7.
 - **Not changed:** the flight, the Nov 7 chapter end, Beijing Nov 7–15. The
   plan already matched the booking; only the split was wrong.
+
+## 2026-11-06 — A type floor, and the scrim that was never painting
+
+Two complaints, one root cause each: the UI was set for print at arm's length,
+and the atlas title was trusting a backdrop that did not exist.
+
+- **Micro type lifted ~2px app-wide**, not per page. Labels/kickers move from
+  6.5–9 to 9.5–11.5, mono metadata from 9.5–11 to 12–13, prose from 12–14.5 to
+  14–16; display sizes are untouched. Relative hierarchy is preserved, which is
+  why the pages still read as one system. The old binder-only "+1.5px" override
+  was the tell that the rest of the app needed the same licence — it is gone.
+- **`.atlas-vignette` was dead code.** It sat inside `.atlas-canvas`, whose
+  Leaflet panes (z-index 200–700) paint above anything at z-index 1, so the
+  gradient intended to back the chapter title had been invisible since the map
+  was introduced. It is now a stage-level sibling of `.atlas-canvas` at z-index
+  5: above the map, below the title (20), reel (25) and tools (30).
+- **The scrim owns the title corner.** A radial throw anchored on the title
+  block carries the sub-row and the "next up" line; per-element text-shadows are
+  the second line of defence for the case where a bright tile slides under while
+  the map pans. Rejected: a glass chip behind the metadata — it puts a card on
+  an otherwise surface-free immersive map, and the weather pills already own that
+  language.
+- **Phones get a different object, not a smaller one.** The desktop throw covers
+  more than half a phone screen; mobile uses a top band that is gone by ~50% of
+  the stage, so the title reads and the imagery stays the point.
+- A scrim that is still opaque at its own edge draws a rectangle — the gradient
+  must reach zero inside the box. Sizing it in px (not %) is what makes that
+  hold as the viewport changes.
