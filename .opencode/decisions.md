@@ -543,3 +543,9 @@ the map is the object, the chrome should not vote.
   .90 → .82 at the reel. It is the only backing the title gets on a phone and
   the band is bigger than the desktop throw, so it stays heavier there on
   purpose.
+- **The sync menu is pinned to the screen edge, not to its tab.** On the phone
+  nav the menu hung off the last tab with `right: -30px`, and that tab is flush
+  with the viewport, so a 160px panel started 30px off-screen and `.app`'s
+  `overflow: hidden` cut it. `right: 10px` anchors it inside the edge. (The
+  desktop button sits inside the header padding, where `right: 0` was already
+  right — the override existed only for the bottom nav.)
