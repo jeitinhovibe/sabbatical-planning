@@ -524,17 +524,21 @@ the map is the object, the chrome should not vote.
   `.ledger-table-wrap` and `.reel-track` for Firefox. Scrolling itself is
   untouched; only the rail is withheld. Accepted cost: no length cue in the
   binder — the content column and the type scale carry that job now.
-- **The giant name is scenery on touch.** It is a `<button>` (tap → open the
-  chapter), so a pinch with one thumb over the title hit the button and the map
-  engine — Leaflet's `touchstart` is bound to its own container, OrbitControls'
-  `pointerdown` to the canvas — never saw a second touch. Under
-  `@media (hover: none)` the name is `pointer-events: none`, so the whole title
-  block pans and pinches like open map. Cost: phones lose tap-to-open on the
-  title, which is a duplicate of the reel's current card and, on phones, never
-  showed the hover arrow that made it read as a target. Rejected: re-dispatching
-  synthetic touches at the engine — Leaflet would take a synthesized
-  `touchstart`, but OrbitControls' pointer bookkeeping and capture make the
-  globe version a re-implementation, not a bridge.
+- **The giant name is scenery on touch, and its tap is recovered by hit-test.**
+  It is a `<button>` (tap → open the chapter), so a pinch with one thumb over
+  the title hit the button and the map engine — Leaflet's `touchstart` is bound
+  to its own container, OrbitControls' `pointerdown` to the canvas — never saw a
+  second touch. Under `@media (hover: none)` the name is `pointer-events: none`,
+  so the whole title block pans and pinches like open map. The tap is then
+  rebuilt on the stage (`touchstart`/`move`/`end`, 12px slop, 700ms): a short
+  single-finger release inside the name's box opens the chapter unless a pin, a
+  reel card or a tool was under the finger, or the releasing element is not the
+  map itself — the title box can sit under the open spread. The release is
+  `preventDefault`ed (plus a 600ms guard on `onBackgroundClick`) because the map
+  reads the same gesture as a click on empty water and would close the sheet it
+  just opened. Rejected: re-dispatching synthetic touches at the engine — Leaflet
+  would take a synthesized `touchstart`, but OrbitControls' pointer bookkeeping
+  and capture make the globe version a re-implementation, not a bridge.
 - **The phone band takes the same shave**, .90/.80 → .82/.72 at the top and
   .90 → .82 at the reel. It is the only backing the title gets on a phone and
   the band is bigger than the desktop throw, so it stays heavier there on
