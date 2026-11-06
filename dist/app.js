@@ -533,7 +533,22 @@
         className: "reel-num"
       }, c.kind === 'chapter' && c.num != null ? String(c.num).padStart(2, '0') : '··'), isNow && /*#__PURE__*/React.createElement("span", {
         className: "reel-now"
-      }, /*#__PURE__*/React.createElement("i", null), " Now"), /*#__PURE__*/React.createElement("span", {
+      }, /*#__PURE__*/React.createElement("i", null), " Now"), isPast && !isNow && /*#__PURE__*/React.createElement("span", {
+        className: "reel-done",
+        role: "img",
+        title: "Already travelled",
+        "aria-label": "Already travelled"
+      }, /*#__PURE__*/React.createElement("svg", {
+        viewBox: "0 0 12 12",
+        fill: "none",
+        stroke: "currentColor",
+        strokeWidth: "1.8",
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        "aria-hidden": "true"
+      }, /*#__PURE__*/React.createElement("path", {
+        d: "M2.4 6.4 4.8 8.8 9.6 3.4"
+      }))), /*#__PURE__*/React.createElement("span", {
         className: "reel-days"
       }, c.days, " nights")), /*#__PURE__*/React.createElement("span", {
         className: "reel-meta"

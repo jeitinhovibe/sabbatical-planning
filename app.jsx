@@ -369,6 +369,11 @@
                   <window.Photo keyword={c.photos && c.photos[0]} alt={c.title} ratio="auto" style={{ width: '100%', height: '100%', aspectRatio: 'unset' }} sizes="240px" />
                   <span className="reel-num">{c.kind === 'chapter' && c.num != null ? String(c.num).padStart(2, '0') : '··'}</span>
                   {isNow && <span className="reel-now"><i /> Now</span>}
+                  {isPast && !isNow && (
+                    <span className="reel-done" role="img" title="Already travelled" aria-label="Already travelled">
+                      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2.4 6.4 4.8 8.8 9.6 3.4" /></svg>
+                    </span>
+                  )}
                   <span className="reel-days">{c.days} nights</span>
                 </span>
                 <span className="reel-meta">
