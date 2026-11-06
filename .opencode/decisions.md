@@ -549,3 +549,41 @@ the map is the object, the chrome should not vote.
   `overflow: hidden` cut it. `right: 10px` anchors it inside the edge. (The
   desktop button sits inside the header padding, where `right: 0` was already
   right — the override existed only for the bottom nav.)
+
+## 2026-11-06 — Two phantom nights, a nine-night boat, and the legs nobody could see
+
+A full todo↔itinerary audit (21 chapters, 359 nights, 157 todo items). The
+chapter arithmetic, geo, colours, photo keywords, budget rows and totals all
+checked out; what did not was where three nights actually lived.
+
+- **The Denpasar night was Cebu's.** `philippines` ended with a 1n "Denpasar"
+  stop (Apr 13–14) while its own text said "Apr 14 Cebu → Denpasar", the flight
+  record was Apr 14 and Indonesia Entry 2 began Apr 14 in Nusa Penida. A place
+  can only hold nights the chapter actually spends there. Cebu / Moalboal goes
+  2n → 3n and the Denpasar place is gone; the chapter stays 14 nights.
+- **Sanur, not Penida, gets the first Bali night.** `indonesia-b` opened with
+  Nusa Penida 4n from Apr 14, but its own highlight and the transport record
+  both had the fast boat leaving Sanur on Apr 15 — the flight lands Apr 14, from
+  Cebu via Manila/Singapore. So: Sanur 1n (Apr 14), Penida 3n (Apr 15–18),
+  Komodo 7n, Bali 6n — still 17. **Cost: Penida loses a night.** The alternative
+  was keeping 4n and putting an international arrival and a 45-min boat ride in
+  the same afternoon; not worth a night on a scooter island.
+- **The liveaboard is nine nights, not ten.** The operator's run is Mar 11–20
+  (traveller-confirmed), so Raja Ampat is 9n and the Mar 20 night is in Sorong,
+  before the Mar 21 flight to Kota Kinabalu. The plan had the boat ending Mar 21
+  — which is where the "10 days" in the calendar event came from. Sorong now
+  appears twice (pre-boat, post-boat), which is why the geo key is renamed.
+- **Baku has no stay todo because there is no stay to book.** The Azerbaijan
+  Airlines stopover programme covers the hotel; the budget already carried $0
+  lodging. Recorded as a done item so the gap does not get re-audited every
+  time, and so nobody "fixes" the empty lodging line.
+- **Eleven travel legs existed only in prose.** `transports` is what the
+  calendar syncs, and it was missing the in-chapter flights and road/sea legs
+  the plan assumes: Kayseri→Izmir and Izmir→Istanbul (Sep), Yogyakarta→Bali,
+  Bali↔Labuan Bajo, Manila→Coron→El Nido→Cebu, and Borneo's three transfers.
+  All added as estimates — none of them is ticketed, and none should be read as
+  a timetable.
+- **Left alone on purpose:** eleven todo `place` labels that name a route, an
+  office or a landmark rather than a stop (Izmir, TECO, Borobudur, Java, Sipadan,
+  "Cebu → Bali"). The field is display-only; renaming them would churn the file
+  without changing a single date.
