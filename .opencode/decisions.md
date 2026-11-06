@@ -499,3 +499,53 @@ and the atlas title was trusting a backdrop that did not exist.
 - A scrim that is still opaque at its own edge draws a rectangle — the gradient
   must reach zero inside the box. Sizing it in px (not %) is what makes that
   hold as the viewport changes.
+
+## 2026-11-06 — The scrim steps back, past chapters get a check, no rails
+
+Three readability follow-ups to the scrim commit, all in the same direction:
+the map is the object, the chrome should not vote.
+
+- **Scrim dialled down, not off.** The corner throw ran 0.90/0.60/0.22 and read
+  as a black card over the imagery. Now 0.76/0.44/0.15, with the two edge
+  gradients on the same shave. The title was never carrying itself on the
+  gradient alone — the text-shadows are the insurance, so the scrim can be a
+  lens instead of a wall. Rejected: deleting it and leaning on shadows; a
+  snowfield or a bright city grid still wins that fight at 12px mono.
+- **Past chapters are marked, not dimmed.** `.reel-card.is-past` at 0.58 opacity
+  made a third of the reel look disabled, which reads as "unavailable", not
+  "travelled". The card keeps full colour and gets a small circular check on the
+  photo's top-right — the same slot the amber "Now" pill uses, which is safe
+  because a card can be the current chapter or past, never both. Rejected:
+  striking the date, and a checklist on the year spine (the spine's ticks are
+  3px wide; there is no room for a glyph).
+- **No visible scrollbars anywhere.** The 10px rail was the loudest chrome on
+  screen and every scrolling surface here is a page, not a box. Hidden globally
+  in Chrome/Safari and by name on `.page`, `.detail-scroll`, `.binder-scroll`,
+  `.ledger-table-wrap` and `.reel-track` for Firefox. Scrolling itself is
+  untouched; only the rail is withheld. Accepted cost: no length cue in the
+  binder — the content column and the type scale carry that job now.
+- **The giant name is scenery on touch, and its tap is recovered by hit-test.**
+  It is a `<button>` (tap → open the chapter), so a pinch with one thumb over
+  the title hit the button and the map engine — Leaflet's `touchstart` is bound
+  to its own container, OrbitControls' `pointerdown` to the canvas — never saw a
+  second touch. Under `@media (hover: none)` the name is `pointer-events: none`,
+  so the whole title block pans and pinches like open map. The tap is then
+  rebuilt on the stage (`touchstart`/`move`/`end`, 12px slop, 700ms): a short
+  single-finger release inside the name's box opens the chapter unless a pin, a
+  reel card or a tool was under the finger, or the releasing element is not the
+  map itself — the title box can sit under the open spread. The release is
+  `preventDefault`ed (plus a 600ms guard on `onBackgroundClick`) because the map
+  reads the same gesture as a click on empty water and would close the sheet it
+  just opened. Rejected: re-dispatching synthetic touches at the engine — Leaflet
+  would take a synthesized `touchstart`, but OrbitControls' pointer bookkeeping
+  and capture make the globe version a re-implementation, not a bridge.
+- **The phone band takes the same shave**, .90/.80 → .82/.72 at the top and
+  .90 → .82 at the reel. It is the only backing the title gets on a phone and
+  the band is bigger than the desktop throw, so it stays heavier there on
+  purpose.
+- **The sync menu is pinned to the screen edge, not to its tab.** On the phone
+  nav the menu hung off the last tab with `right: -30px`, and that tab is flush
+  with the viewport, so a 160px panel started 30px off-screen and `.app`'s
+  `overflow: hidden` cut it. `right: 10px` anchors it inside the edge. (The
+  desktop button sits inside the header padding, where `right: 0` was already
+  right — the override existed only for the bottom nav.)
