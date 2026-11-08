@@ -571,6 +571,7 @@ window.TRIP = (function () {
       { item: 'Ko Lanta stay, Dec 18–26 (8n, Christmas)', cost: 900, note: 'Booked ✅ — $112.50/n. Christmas week on the Andaman is the peak inside the peak' },
       { item: 'Kaohsiung stay, Dec 29–Jan 2 (4n, NYE)', cost: 431, note: 'Booked ✅ — $107.75/n. NYE harbour-front, where the plan already warned hotels go 2–3×' },
       { item: 'Alishan stay, Jan 6–8 (2n)', cost: 183, note: 'Booked ✅ — $91.50/n, inside the recreation area' },
+      { item: 'Shenzhen stay, Nov 30–Dec 4 (4n)', cost: 215, note: 'Booked ✅ — $53.75/n, a third under the $77.50 China E2 line; the mainland is cheap even on the Pearl Delta' },
     ],
     // Per-chapter estimates for two. lodging/food are chapter totals; transport
     // is in-chapter only (inter-chapter flights live in `flights` below).
@@ -584,7 +585,7 @@ window.TRIP = (function () {
       { id: 'nepal', days: 17, lodging: 300, food: 260, transport: 100, activities: 1440, fees: 100, note: 'Trek $1,440 locked w/ Discovery World ($720pp; $144 paid, $1,296 due Oct 24) · KTM 7n (pre 4n Oct 21–25 booked ✅ $171 + post 3n Nov 4–7 booked ✅ $129) · KTM→PEK Nov 7 ($477) · tips/visa cash' },
       { id: 'china-e1', days: 16, lodging: 1134, food: 1045, transport: 550, activities: 350, fees: 0, note: 'Beijing 8n Nov 7–15 (booked $472) + Tangkou 3n Nov 15–18 (booked $84) + Hongcun 1n Nov 18–19 (booked $60) + Hangzhou 4n Nov 19–23 (booked $156) — all 16 nights locked at $772 vs $1,134 est (−$362, $48.25/n) · G2553 Beijing South→Huangshan North $176 + G2396 Huangshan North→Hangzhou East $33, both booked · HGH→HKG $183 booked in flights · Suzhou moved to spring' },
       { id: 'hk', days: 5, lodging: 750, food: 450, transport: 120, activities: 0, fees: 0, note: '~$150/n · Peak tram + ferries + Lamma · free gardens/markets' },
-      { id: 'china-e2', days: 8, lodging: 620, food: 520, transport: 170, activities: 120, fees: 0, note: 'CAN 2n + Shenzhen 4n + Macau 2n · Shekou ferry + MFM→KUL direct · Shanghai moved to spring China' },
+      { id: 'china-e2', days: 8, lodging: 620, food: 520, transport: 170, activities: 120, fees: 0, note: 'CAN 2n + Shenzhen 4n + Macau 2n · Shenzhen booked Nov 30–Dec 4 $215 — 4 of 8 nights at $53.75/n vs $77.50 est, the first line under budget in a while · Guangzhou + Macau still open · Shekou ferry + MFM→KUL direct' },
       { id: 'malaysia', days: 8, lodging: 440, food: 320, transport: 190, activities: 70, fees: 0, note: 'KL 4n + Langkawi 4n · Langkawi booked Dec 10–14 at $286 ($71.50/n vs $55 est) · KL still open · KL→Langkawi flight · Langkawi is the ferry bridge to Koh Lipe' },
       { id: 'thailand', days: 15, lodging: 1120, food: 620, transport: 250, activities: 180, fees: 0, note: 'Koh Lipe 4n + Ko Lanta 8n + Bangkok 3n · Lipe booked Dec 14–18 $369 + Lanta booked Dec 18–26 $900 — 12 of 15 nights at $105.75/n vs $74.67 est, Christmas week doing most of it · Bangkok still open · Lipe→Lanta speedboat + Lanta→Krabi transfer' },
       { id: 'taiwan', days: 15, lodging: 1125, food: 675, transport: 300, activities: 200, fees: 0, note: 'Kaohsiung 4n + Tainan 4n + Alishan 2n + Taipei 5n · Kaohsiung booked Dec 29–Jan 2 $431 + Alishan booked Jan 6–8 $183 — 6 of 15 nights at $102.33/n vs $75 est, NYE doing most of it · Tainan + Taipei still open · HSR + Alishan forest railway + Kaohsiung/Tainan trains' },
