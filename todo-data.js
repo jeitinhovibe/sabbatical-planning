@@ -98,8 +98,7 @@ window.TODO_ITEMS = [
   { id: 'hk-3', ch: 'hk', place: null, cat: 'transport', title: 'Hong Kong→Guangzhou HSR Nov 28', note: 'West Kowloon → Guangzhou South direct, ~1h; Entry 2 starts', due: '2026-11-20', done: false },
 
   // ── china-e2 ──────────────────────────────────────────────────────
-  { id: 'china-e2-1-shenzhen', ch: 'china-e2', place: 'Shenzhen', cat: 'stay', title: 'Shenzhen stay (4n)', note: 'Nov 30 – Dec 4 — friends at another hotel, book own stay (rendezvous tail) · Booked ✅ — $215 for 4 nights ($53.75/n)', due: '2026-11-09', done: true },
-  { id: 'china-e2-1-shenzhen-ext', ch: 'china-e2', place: 'Shenzhen', cat: 'stay', title: 'Shenzhen extra nights (2n)', note: 'Dec 4–6 — extend the booked Nov 30–Dec 4 stay or rebook nearby; the $53.75/n rate may not extend. Replaces the Macau nights', due: '2026-11-13', done: false },
+  { id: 'china-e2-1-shenzhen', ch: 'china-e2', place: 'Shenzhen', cat: 'stay', title: 'Shenzhen stay (6n)', note: 'Nov 30 – Dec 6 — friends at another hotel through Dec 4, then two more nights. Nov 30 – Dec 4 booked ✅ $215 ($53.75/n); the last 2 nights (Dec 4–6) still to book and the rate may not extend', due: '2026-11-13', done: false },
   { id: 'china-e2-1-guangzhou', ch: 'china-e2', place: 'Guangzhou', cat: 'stay', title: 'Guangzhou stay (2n)', note: 'Nov 28–30, Cantonese opening straight off the Hong Kong HSR · Booked ✅ — $78 for 2 nights ($39/n)', due: '2026-11-07', done: true },
   { id: 'china-e2-10', ch: 'china-e2', place: 'Shenzhen → Kuala Lumpur', cat: 'transport', title: 'Shenzhen–Kuala Lumpur flight Dec 6 (~4h10)', note: 'SZX → KUL direct, daily (AirAsia/CZ/ZH/MH). Take a daytime departure — the 21:50 AirAsia lands 01:55 and eats the first KL night. Book with the extra Shenzhen nights', due: '2026-11-01', done: false },
 
