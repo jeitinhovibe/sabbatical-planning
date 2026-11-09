@@ -8,6 +8,32 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-09 — Macau cut; Shenzhen grows to six nights
+
+Macau removed from China E2. Its two nights go to Shenzhen (4 → 6) and the Dec 6
+flight moves from MFM to SZX. Nothing downstream moves: Malaysia still starts
+Dec 6, and the mainland stay grows 6 → 9 days, still inside one 30-day visa-free
+entry, so there is no visa consequence.
+
+- **Why.** Macau's two nights bought a Shekou ferry, a second airport and a
+  chapter that ended in transit. Shenzhen already holds the only booked bed, the
+  friends, and a daily direct SZX→KUL (~4h10; AirAsia/CZ/ZH/MH).
+- **Cost accepted.** The extra two days are a big-city repeat rather than a new
+  place, spent after the friends leave. Pacing is fine (6 nights ≫ the 4-night
+  floor); the loss is novelty, not rhythm.
+- **Cheaper:** lodging estimate 620 → 440, in-chapter transport 170 → 120 (ferry
+  gone), flight estimate $300 → $280. The booked Shenzhen rate ($53.75/n) may not
+  extend — the two extra nights are a new todo.
+- **Rejected: Guangzhou 3 + Shenzhen 5.** Guangzhou's Cantonese blitz is only
+  1.5 usable days, so it is the thinner stop. Kept Shenzhen because the extra
+  nights land after the rendezvous, when a familiar base beats a new one.
+- **Rejected: Shenzhen 5 + one Zhuhai night.** Zhuhai is Macau-lite without the
+  historic centre — the border friction, none of the reason to go.
+- **Rejected: leave Dec 5 and add a KL night.** No saving on the flight and it
+  eats one of the two new nights for a city already getting four.
+
+---
+
 ## 2026-11-05 — Tangkou takes the arrival night; Hongcun moves to last night
 
 Reverses the same-day call that gave Hongcun the arrival night. The block is
