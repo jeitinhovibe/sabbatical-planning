@@ -613,3 +613,34 @@ checked out; what did not was where three nights actually lived.
   office or a landmark rather than a stop (Izmir, TECO, Borobudur, Java, Sipadan,
   "Cebu → Bali"). The field is display-only; renaming them would churn the file
   without changing a single date.
+
+## 2026-11-10 — Reservations stay manual; Google MCP parked
+
+Asked how to connect the agent to Gmail/Calendar so bookings would stop being
+retyped into `todo-data.js`. Tried the official Workspace MCP route end to end:
+OAuth client, loopback redirect, `gmail` + `gcal` servers in the global OpenCode
+config. **The handshake worked; the tool calls do not.** Every call returns
+*"requires that your Google Cloud project (…) is enrolled in the Google
+Workspace Developer Preview Program"*, including `list_labels`. Enrollment is a
+reviewed application — Workspace account + Cloud project number, "a couple of
+days" — so it cannot be relied on for a trip that is already running.
+
+- **Parked, not rejected on merit.** If the project ever clears the preview
+  program, the config is four lines and the scopes are already narrow
+  (`gmail.messages.readonly`, `gmail.labels.readonly`, `calendar.events.readonly`,
+  `calendar.calendarlist.readonly`).
+- **Two OpenCode defects, both evidenced.** `/mcps` offers no sign-in for a
+  server that answers `initialize` and `tools/list` unauthenticated and only
+  401s at call time (status reads `connected`, so the UI has nothing to show);
+  and its auth URL omits `access_type=offline`, so the stored credential has an
+  empty `refresh` and dies in ~1h. The CLI path (`opencode mcp auth <name>`)
+  works around the first; nothing works around the second.
+- **The REST fallback was designed, not built.** Label-scoped Gmail search +
+  calendar events into a gitignored `scripts/out/`, diffed against
+  `todo-data.js`, would work today with the same client once
+  `gmail.googleapis.com` is enabled on the project (it was never on — the 403
+  says so). Available whenever someone wants it; no preview gate.
+- **Unchanged facts worth keeping:** project `745260746303` has Calendar API
+  enabled (the site's sync uses it); the browser client ID is public in
+  `calendar.jsx` and must not be deleted; a client secret was pasted in chat on
+  this date and should be treated as burned.
