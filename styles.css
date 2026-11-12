@@ -659,7 +659,16 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  /* The row is chrome, not surface. On phones it stretches full width above
+     the reel, and as a hit target its box (plus the gaps between pills) turned
+     that whole band over the map into a dead zone — a pinch or a drag begun
+     beside the 2D/3D switch simply did nothing. Only the controls themselves
+     take pointers; every pixel between them belongs to the map.
+     (pointer-events is inherited, so children opt back in below.) */
+  pointer-events: none;
 }
+.atlas-tools .tool-seg,
+.atlas-tools .tool-btn { pointer-events: auto; }
 .tool-seg {
   display: inline-flex;
   padding: 3px;
@@ -725,6 +734,12 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   pointer-events: none;
   transition: opacity .3s ease;
 }
+/* The pass-through chrome re-enables pointers on its leaves, and an explicit
+   `auto` beats an inherited `none` — so a faded atlas would still let a thumb
+   tap the map switch or scroll the reel behind the spread. Put them back down. */
+.app.has-detail .atlas-tools .tool-seg,
+.app.has-detail .atlas-tools .tool-btn,
+.app.has-detail .reel-track { pointer-events: none; }
 
 /* ── Chapter reel ────────────────────────────────────────────────────── */
 .reel {
@@ -733,6 +748,11 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   left: 0; right: 0; bottom: 0;
   padding: 46px 26px 16px;
   background: linear-gradient(to top, rgba(6,9,13,.97) 0%, rgba(6,9,13,.9) 30%, rgba(6,9,13,.55) 66%, transparent 100%);
+  /* Same deal as the tool row: the plate, its gradient and the head are
+     scenery. The 34px fade above the cards on a phone was a no-man's-land
+     where a thumb could not pan the map and the strip had nothing to scroll.
+     The scrolling strip keeps its own pointers. */
+  pointer-events: none;
 }
 .reel-head {
   display: flex;
@@ -772,6 +792,8 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
      strokes are never clipped by this scroll container. */
   padding: 8px 6px 10px;
   scrollbar-width: none;
+  /* The one live part of the reel; see .reel. */
+  pointer-events: auto;
 }
 .reel-track::-webkit-scrollbar { display: none; }
 .reel-card {

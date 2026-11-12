@@ -668,3 +668,31 @@ checked out; what did not was where three nights actually lived.
   office or a landmark rather than a stop (Izmir, TECO, Borobudur, Java, Sipadan,
   "Cebu → Bali"). The field is display-only; renaming them would churn the file
   without changing a single date.
+
+## 2026-11-13 — The map's dead bands were chrome, not Leaflet
+
+Touch gestures failed "depending where the fingers land" — the report pointed at
+the band beside the 2D/3D switch. Both culprits were overlay boxes, not the map
+library.
+
+- **The tool row was a full-width hit target.** On phones `.atlas-tools` is
+  `left: 0; right: 0` at `bottom: 200px` to centre its pills, so its entire box —
+  plus every gap between the controls — sat over the map and swallowed
+  touchstart. A pinch or drag begun anywhere in that 40px band did nothing. The
+  row is now `pointer-events: none`, with `auto` on `.tool-seg` and `.tool-btn`;
+  measured with `elementFromPoint` at 390×844, the band now lands on the Leaflet
+  container, and a CDP touch drag/pinch inside it pans and zooms.
+- **The reel's top fade was the same bug at the bottom edge.** `.reel` spans the
+  full stage with 34px of gradient above the cards, and its head is a label, not
+  a control. `.reel` passes pointers through; only `.reel-track` (the scrolling
+  carousel) keeps them. Cards still open the spread.
+- **A pinch that starts on a control must not fire that control.** The finger on
+  a pill still belongs to the pill — touch events are delivered per-finger and
+  cannot be re-dispatched to Leaflet (the ctrl+wheel trick does not translate to
+  Touch objects). Accepted trade-off: a two-finger gesture *anchored* on a pill
+  pans but does not pinch. What is fixed is the misfire: a stage-level gesture
+  flag swallows the click a multi-finger gesture leaves on the tools or the reel,
+  so a zoom attempt no longer flips 2D↔3D mid-pinch.
+- **`.app.has-detail` still wins.** Re-enabling pointers on the leaves would have
+  left the faded atlas tappable behind the spread (`auto` beats an inherited
+  `none`), so those leaves are explicitly put back down while the panel is open.
