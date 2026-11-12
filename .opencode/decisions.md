@@ -8,7 +8,35 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
-## 2026-11-09 — Macau cut; Shenzhen grows to six nights
+## 2026-11-12 — The December flights are ticketed; Beijing ran over its activities line
+
+Six real bookings landed on the same day: SZX→KUL Dec 6 (R$1,500), Krabi→BKK
+Dec 26 (R$768), BKK→KHH Dec 29 (R$1,012), HK stay Nov 23–28 ($570), Forbidden
+City ($31) and Mutianyu (¥400). Plus two things that were never in the plan —
+Universal Studios Beijing on Nov 12 ($119) and the Mutianyu day on Nov 11.
+
+- **The flight estimates survived at R$5.20.** SZX→KUL $280 → $288 and BKK→KHH
+  $200 → $195 were accurate to ~3%. The one that was not: Krabi→BKK $90 → $148.
+  Dec 26 is the peakest single day of the Thai season and the estimate was a
+  normal-season fare. Net effect on the whole trip: +$61, which is noise.
+- **Hong Kong came in under.** $570 for five nights ($114/n) against the $150/n
+  the chapter carried — the −$180 pays for the Krabi fare and then some.
+- **Beijing activities will overshoot $350, and that is the line to watch, not a
+  problem to solve.** $206 of it was gone by Nov 12 (Mutianyu $56, Forbidden City
+  $31, Universal $119) with the Huangshan lifts, the ¥190pp entry and Hongcun
+  still ahead — read the line as ~$470. The chapter estimates are deliberately
+  not rewritten to match actuals (that is what `locked` and the notes are for),
+  so this stays a note until the chapter closes.
+- **The unplanned Universal day is recorded, not argued with.** It is a real cost
+  and a real day; the todo entry exists so a later audit does not treat the $119
+  as a phantom.
+- **What this changes about risk, not money.** BKK→KHH is now a ticketed,
+  non-refundable Dec 29 flight that depends on a Taiwan visa filed in Hong Kong
+  on Nov 24. The TECO morning is now the highest-consequence appointment in the
+  trip; `hk-2` says so.
+
+---
+
 
 Macau removed from China E2. Its two nights go to Shenzhen (4 → 6) and the Dec 6
 flight moves from MFM to SZX. Nothing downstream moves: Malaysia still starts
