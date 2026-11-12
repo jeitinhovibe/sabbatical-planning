@@ -1,19 +1,12 @@
 name: Deploy site + PR previews
 
 # Publishes the static site to GitHub Pages:
-#   main        -> https://sabbatical.jeitinhovibe.online/
-#   pull request -> https://sabbatical.jeitinhovibe.online/PR-<number>/
-# (github.io redirects to the custom domain, so the old /sabbatical-planning/
-# subpath preview URLs no longer serve content.)
+#   main        -> https://mlcantadori.github.io/sabbatical-planning/
+#   pull request -> https://mlcantadori.github.io/sabbatical-planning/PR-<number>/
 #
 # The workflow keeps a single `gh-pages` branch: the main site lives at the
 # root, and each same-repo PR gets its own PR-<number>/ directory. Assets in
 # index.html are relative, so the site works unchanged under a subpath.
-#
-# Custom domain: the `CNAME` file at the repo root is what publishes the site at
-# https://sabbatical.jeitinhovibe.online (DNS: CNAME sabbatical -> mlcantadori.github.io,
-# Cloudflare, DNS-only). The rsync below copies it to the gh-pages root — never
-# add CNAME to EXCLUDES, or Pages drops back to the /sabbatical-planning/ URL.
 #
 # One-time setup (repo admin): Settings -> Pages -> Build and deployment ->
 # Source: "Deploy from a branch", Branch: `gh-pages`, Folder: `/(root)`.
