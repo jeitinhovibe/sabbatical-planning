@@ -623,6 +623,39 @@
       });
       return () => stage.removeEventListener('wheel', onWheel);
     }, [mapMode, view, cover]);
+
+    // Touch has the mirror problem, and it cannot be re-dispatched: a finger
+    // that lands on a control belongs to that control, so Leaflet/OrbitControls
+    // never see it and a pinch started partly on the 2D/3D switch or a reel card
+    // is not a pinch. The controls have to stay tappable, so the fix is the CSS
+    // one — the chrome around them is pointer-events: none. What is left is the
+    // release: the browser still fires a click on the control the thumb started
+    // on, flipping the map mid-gesture. Track whether the gesture had more than
+    // one finger and swallow the click it leaves behind; the next single-finger
+    // tap clears the flag.
+    React.useEffect(() => {
+      const stage = stageRef.current;
+      if (!stage || view !== 'atlas') return undefined;
+      let multi = false;
+      const onTouchStart = e => {
+        multi = e.touches.length > 1;
+      };
+      const onClick = e => {
+        if (!multi) return;
+        const t = e.target;
+        if (!t || !t.closest || !t.closest('.atlas-tools, .reel')) return;
+        e.preventDefault();
+        e.stopPropagation();
+      };
+      stage.addEventListener('touchstart', onTouchStart, {
+        passive: true
+      });
+      stage.addEventListener('click', onClick, true);
+      return () => {
+        stage.removeEventListener('touchstart', onTouchStart);
+        stage.removeEventListener('click', onClick, true);
+      };
+    }, [view]);
     const today = todayISO();
     const current = currentChapter(chapters, today);
     const here = current ? currentCity(chapters, today) : null;
