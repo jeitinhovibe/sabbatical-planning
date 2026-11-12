@@ -1,8 +1,10 @@
 name: Deploy site + PR previews
 
 # Publishes the static site to GitHub Pages:
-#   main        -> https://mlcantadori.github.io/sabbatical-planning/
-#   pull request -> https://mlcantadori.github.io/sabbatical-planning/PR-<number>/
+#   main        -> https://sabbatical.jeitinhovibe.online/
+#   pull request -> https://sabbatical.jeitinhovibe.online/PR-<number>/
+# (github.io redirects to the custom domain, so the old /sabbatical-planning/
+# subpath preview URLs no longer serve content.)
 #
 # The workflow keeps a single `gh-pages` branch: the main site lives at the
 # root, and each same-repo PR gets its own PR-<number>/ directory. Assets in
