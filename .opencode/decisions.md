@@ -8,7 +8,34 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
-## 2026-11-12 — The December flights are ticketed; Beijing ran over its activities line
+## 2026-11-12 — Alishan: 14 days is the real window, and the gate ticket is inside the train order
+
+Checked against the operator's own 售票說明 (afrch.forest.gov.tw/0000270) rather
+than the travel blogs, which disagree with each other and with the counter.
+
+- **The rule.** Web booking runs 06:00–24:00 Taipei, 1→14 days before travel,
+  excluding the travel day. Fri and Sat extend it: a Friday order reaches the
+  Fri/Sat/Sun of the week after next (up to +16), a Saturday reaches that
+  Sat/Sun (+15). Station counters open only 12 days out, and the
+  Fenqihu→Alishan segment opens online just 3 days out. So "book months ahead"
+  was never possible and the old Oct 30 due date was fictional.
+- **Jan 6 is a Wednesday**, so Dec 23 06:00 is the only opening — the Fri/Sat
+  extension does not help. Book the Alishan *lodge* first (already done); the
+  train is the less scarce of the two.
+- **The park entrance is bundled, not separate.** Chiayi→Alishan sells as a
+  遊樂區套票 with the gate ticket in the same order and matching counts. The
+  "paid on arrival, not bundled" line in the stay note was wrong and is fixed.
+- **No e-ticket into Alishan.** E-tickets are offered only for
+  嘉義/北門/竹崎/交力坪/奮起湖/十字路. Paper tickets from a counter or 7-Eleven
+  ibon are the plan.
+- **Zhushan has a trap worth the words.** Its web window closes at noon the day
+  before, which is *before* the 14:56 arrival at Alishan — so it cannot be
+  booked on arrival, and branch lines have no e-ticket either. It gets booked
+  from Tainan (window opens Dec 24) and collected at Chiayi on Jan 6, which is
+  why that change of trains takes the 10:00, not the 09:00.
+
+---
+
 
 Six real bookings landed on the same day: SZX→KUL Dec 6 (R$1,500), Krabi→BKK
 Dec 26 (R$768), BKK→KHH Dec 29 (R$1,012), HK stay Nov 23–28 ($570), Forbidden

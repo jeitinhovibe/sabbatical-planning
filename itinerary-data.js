@@ -345,7 +345,7 @@ window.TRIP = (function () {
         { name: 'Tainan', photo: 'tainan chihkan tower', days: 4, query: 'Chihkan Tower, Tainan',
           highlights: ['Jan 2–6: Taiwan\'s food and temple capital, after the domestic New Year crowds have gone home','Guohua Street + Shennong Street lantern lanes; beef soup for breakfast','Chihkan Tower (Fort Provintia), Confucius Temple, Grand Matsu Temple','Anping old fort + treehouse + Sicao green tunnel mangrove boat','The Penang replacement: same slow-food-city rhythm, warmer and drier','Jan 6: train to Chiayi, then bus up to Alishan (~2.5h)'] },
         { name: 'Alishan', photo: 'alishan sea of clouds', days: 2, query: 'Alishan National Forest Recreation Area, Taiwan',
-          highlights: ['Jan 6–8: giant red cypress forest at 2,200m — January is the dry-season sea-of-clouds window','Sunrise train to Chushan above the clouds and Jade Mountain','High-mountain oolong tasting; forest trails in crisp 6–10°C air','Book the forest railway and lodge months ahead — this is peak cloud season','Jan 8: descend to Chiayi → HSR to Taipei (~1h40)'] },
+          highlights: ['Jan 6–8: giant red cypress forest at 2,200m — January is the dry-season sea-of-clouds window','Sunrise train to Chushan above the clouds and Jade Mountain','High-mountain oolong tasting; forest trails in crisp 6–10°C air','The lodge is the scarce booking, not the train: the forest railway opens online 14 days out (06:00), so Jan 6 goes on sale Dec 23 — book the room first, then set the alarm for the train','Jan 8: descend to Chiayi → HSR to Taipei (~1h40)'] },
         { name: 'Taipei', photo: 'taipei taiyuan road', days: 5, query: 'Xinyi District, Taipei',
           highlights: ['Jan 8–13: the departure city, not the NYE city — Taipei 101 is a 20-minute look, not a six-hour crowd','National Palace Museum (closed Mon), Chiang Kai-shek Memorial, Dihua Street','Beitou hot springs on a drizzly afternoon — the rain is finally an asset','Jiufen at weekday dusk (arrive 15:00, stay past 18:30 for the lanterns)','Raohe + Ningxia night markets, Yongkang Street beef noodles','Jan 13: fly Taipei → Osaka — Japan begins'] },
       ],
@@ -707,7 +707,7 @@ window.TRIP = (function () {
     { mode: 'bus', route: 'Ko Lanta → Krabi airport', date: '2026-12-26', note: 'Ferry/van ~2.5–3h; then the afternoon flight to Bangkok' },
     // Taiwan — south to north
     { mode: 'train', route: 'Kaohsiung → Tainan', date: '2027-01-02', note: 'TRA ~35min' },
-    { mode: 'train', route: 'Tainan → Chiayi → Alishan', date: '2027-01-06', note: 'TRA Tainan→Chiayi ~35min (no booking), then the forest railway — Chiayi 09:00 or 10:00, Alishan 14:56 on the second. Online booking opens 06:00 exactly 14 days out (Dec 23 for Jan 6); the county bus from Chiayi bus station is the fallback' },
+    { mode: 'train', route: 'Tainan → Chiayi → Alishan', date: '2027-01-06', note: 'TRA Tainan→Chiayi ~35min (no booking), then the forest railway — Chiayi 09:00 or 10:00, Alishan 14:56 on the second. Web booking opens 06:00 exactly 14 days out (Dec 23 for Jan 6; Fri orders reach +16, Sat +15; the Fenqihu–Alishan segment only 3 days out); the county bus from Chiayi bus station is the fallback' },
     { mode: 'train', route: 'Chiayi → Taipei', date: '2027-01-08', note: 'Alishan bus down + HSR ~1h40' },
     // China spring finale
     { mode: 'train', route: 'Changsha → Shanghai', date: '2027-05-28', note: 'HSR ~5h' },
