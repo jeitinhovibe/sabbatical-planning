@@ -17,6 +17,15 @@
     "directory": "./_site"
   },
   "routes": [
-    { "pattern": "sabbatical.jeitinhovibe.online", "custom_domain": true }
-  ]
+    {
+      "pattern": "sabbatical.jeitinhovibe.online",
+      "custom_domain": true,
+      // Per-PR previews get <preview>.sabbatical.jeitinhovibe.online, with the
+      // wildcard DNS record and certificate created by Cloudflare.
+      "previews_enabled": true
+    }
+  ],
+  // Enables `wrangler preview` — the per-PR previews CI publishes. Empty on
+  // purpose: assets and compatibility stay at the top level.
+  "previews": {}
 }

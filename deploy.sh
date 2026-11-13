@@ -1,8 +1,9 @@
 #!/bin/bash
 # Publish the static site to Cloudflare Workers (static assets).
 #
-#   ./deploy.sh            -> production: <name>.<account>.workers.dev
-#   ./deploy.sh preview    -> upload-only version with a preview URL, no traffic
+#   ./deploy.sh            -> production: https://sabbatical.jeitinhovibe.online
+#   ./deploy.sh preview <name> -> https://<name>.sabbatical.jeitinhovibe.online
+#   ./deploy.sh stage      -> stage _site/ only (CI does the uploading)
 #
 # Run ./build.sh first if any .jsx changed; `dist/` is committed, so this never
 # rebuilds on its own. Requires a logged-in `wrangler` (npx fetches it).
@@ -27,6 +28,7 @@ rsync -a \
   ./ "$STAGE"/
 
 case "$MODE" in
-  preview) npx --yes wrangler@4 versions upload ;;
+  stage)   exit 0 ;;
+  preview) npx --yes wrangler@4 preview --name "${2:-local-preview}" ;;
   *)       npx --yes wrangler@4 deploy ;;
 esac

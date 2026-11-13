@@ -90,8 +90,10 @@ the host: `dist/` is committed, so what ships is what you tested locally.
 ```bash
 ./build.sh                 # only if a .jsx changed
 ./deploy.sh                # production → sabbatical.jeitinhovibe.online
-./deploy.sh preview        # version URL only, no traffic shifted
+./deploy.sh preview <name> # preview → <name>.sabbatical.jeitinhovibe.online
 ```
+
+CI does the same on push and on PRs; the local commands are the escape hatch.
 
 `deploy.sh` stages the site into `_site/` (build tooling, notes, `.opencode/`,
 and `reviews/` excluded) and runs `wrangler deploy`. The custom domain, its DNS
@@ -103,10 +105,14 @@ deploy and never touched by hand.
 (`deploy.sh` pins `CLOUDFLARE_ACCOUNT_ID`), then `./deploy.sh`.
 
 Notes:
-- **No PR previews yet.** The old GitHub Pages job published `PR-<n>/`
-  directories. Cloudflare needs either a Git-connected Worker (dashboard →
-  Settings → Build) or a `CLOUDFLARE_API_TOKEN` repo secret for a CI job; until
-  one exists, a preview is a manual `./deploy.sh preview`.
+- **PR previews are automatic.** `.github/workflows/deploy.yml` publishes
+  `main` on push and each same-repo PR to
+  `https://pr-<number>.sabbatical.jeitinhovibe.online` (a Cloudflare Preview
+  named `pr-<number>`, deleted when the PR closes) and comments the link.
+  Locally, `./deploy.sh preview <name>` does the same thing by hand. Fork PRs
+  are skipped — they never see the repo secrets.
+- **Two repo secrets drive CI:** `CLOUDFLARE_API_TOKEN` (Workers Scripts +
+  Workers Routes + DNS, edit) and `CLOUDFLARE_ACCOUNT_ID`.
 - Assets are relative, so the site needs no base-path configuration.
 - Google Calendar/Tasks sync is origin-locked: the OAuth client must list
   `https://sabbatical.jeitinhovibe.online` under *Authorized JavaScript origins*.
