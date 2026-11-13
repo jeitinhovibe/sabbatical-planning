@@ -498,6 +498,7 @@
         // how a CUBA label survived on the wrong side of the world.
         if (facing < horizon) {
           el.style.display = 'none';
+          el._shown = false;
           continue;
         }
         const sp = wp.clone().project(s.camera);
@@ -511,17 +512,22 @@
           // A country label belongs to the map only while the whole word sits
           // on the planet. Anchored at a surface point, its centre is inside
           // the limb while half the text hangs off into space — that reads as
-          // a floating HUD callout, not a place name. Hide it (via a fade, so
-          // the auto-rotate doesn't flicker) unless every corner of the label
-          // box is inside the disc.
+          // a floating HUD callout, not a place name. Fade the label over the
+          // last 14px of travel instead of toggling a class at the edge: a
+          // binary threshold flaps when a slow drag jitters by a pixel at the
+          // rim, which is the flicker you saw. Opacity is continuous, so the
+          // same jitter is invisible.
           const [lw, lh] = countrySize(el);
           const ox = Math.abs(x - disc.cx) + lw / 2;
           const oy = Math.abs(y - disc.cy) + lh / 2;
-          if (ox * ox + oy * oy > disc.r * disc.r) {
-            el.classList.add('is-off');
+          const inside = disc.r - Math.sqrt(ox * ox + oy * oy);
+          const fade = Math.max(0, Math.min(1, inside / 14));
+          el.style.opacity = fade === 1 ? '' : fade.toFixed(3);
+          if (fade < 0.6) {
+            el._shown = false;
           } else {
             const dx = x - disc.cx, dy = y - disc.cy;
-            cand.push({ el, x, y, w: lw, h: lh, d2: dx * dx + dy * dy });
+            cand.push({ el, x, y, w: lw, h: lh, dist: Math.sqrt(dx * dx + dy * dy) });
           }
         }
       }
@@ -533,7 +539,11 @@
       // (Norway/Sweden/Finland at full-planet zoom) is dropping the labels
       // that collide, which is what a map does as you zoom out. Zooming in
       // spreads the anchors and they come back.
-      cand.sort((a, b) => a.d2 - b.d2);
+      //
+      // Labels already on screen get an 8px head start, so two labels sitting
+      // at the same distance cannot trade places frame after frame; a hidden
+      // one has to be clearly closer to win.
+      cand.sort((a, b) => (a.dist - (a.el._shown ? 8 : 0)) - (b.dist - (b.el._shown ? 8 : 0)));
       const kept = [];
       for (let i = 0; i < cand.length; i++) {
         const c = cand[i];
@@ -547,7 +557,10 @@
             break;
           }
         }
-        c.el.classList.toggle('is-off', !clear);
+        c.el._shown = clear;
+        // The inner span carries the collision fade, so the continuous rim
+        // opacity on the parent stays untouched.
+        c.el.firstChild.classList.toggle('is-off', !clear);
         if (clear) kept.push(c);
       }
     }
@@ -593,7 +606,12 @@
       el.className = 'eq-country';
       el._anchor = [lat, lng];
       el._country = true;
-      el.textContent = name;
+      // Inner span: the rim fade drives the parent's opacity continuously,
+      // while the declutter fade lives here so the two never fight over one
+      // property.
+      const span = document.createElement('span');
+      span.textContent = name;
+      el.appendChild(span);
       return el;
     }
 
