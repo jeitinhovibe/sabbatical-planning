@@ -24,15 +24,15 @@ what made a hosting change cheap: there was no working public link to preserve.
   lives in the *Jeitinho Vibe* account, so `sabbatical.jeitinhovibe.online` costs
   nothing extra and gives a stable URL that survives the next repo move. The
   `*.workers.dev` URL still exists as the project's raw endpoint.
-- **Deploy is local and manual.** `./deploy.sh` stages `_site/` with the old
-  Pages-excludes and deploys. Uploading an API token to this repo was not
-  possible from the OAuth session we have, and a CI job that fails until a secret
-  appears is worse than a documented two-word command. **Rejected for now:** Git-
-  connected Worker builds and a `CLOUDFLARE_API_TOKEN` Actions job — both restore
-  per-PR previews and either can be added without touching the site.
-- **What was lost:** PR previews (`PR-<n>/` directories) and the `gh-pages`
-  branch. `./deploy.sh preview` uploads a version without shifting traffic, but it
-  is not automatic.
+- **Deploy is CI, with a local escape hatch.** `.github/workflows/deploy.yml`
+  publishes `main` on push and gives each same-repo PR a Cloudflare Preview at
+  `pr-<number>.sabbatical.jeitinhovibe.online`, deleting it when the PR closes.
+  The `verify` job rebuilds `dist/` and fails if the committed bundles are stale,
+  which is the "my change didn't appear" bug caught before it ships. Secrets:
+  `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`.
+- **Previews are Cloudflare Previews, not Pages directories.** `previews_enabled`
+  on the custom-domain route makes Cloudflare mint the wildcard DNS record and
+  certificate, so a preview is one extra label on the real domain.
 - **Still on a human:** the Google OAuth client behind Calendar/Tasks sync must
   add `https://sabbatical.jeitinhovibe.online` to *Authorized JavaScript origins*,
   or Sync fails with `origin_mismatch` no matter what the code says.
