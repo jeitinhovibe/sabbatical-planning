@@ -475,6 +475,9 @@
     function updateOverlay() {
       const s = st.current; if (!s) return;
       const disc = globeDisc();
+      // Tangency latitude for a sphere of radius 1 seen from d: the horizon is
+      // n·ĉ = 1/d, not 0. Anything below it is behind the planet's body.
+      const horizon = 1 / s.camera.position.length();
       const kids = s.overlay.children;
       for (let i = 0; i < kids.length; i++) {
         const el = kids[i];
@@ -486,7 +489,11 @@
         if (!a) continue;
         const wp = llv(a[0], a[1], 1);
         const facing = wp.clone().normalize().dot(s.camera.position.clone().normalize());
-        if (facing < (el._country ? 0.0 : 0.08)) {
+        // Visible cap, not the front hemisphere. A point with n·ĉ between
+        // R/d and 0 is past the limb but still on the camera's side, so it
+        // projects *inside* the disc and draws through the planet — that is
+        // how a CUBA label survived on the wrong side of the world.
+        if (facing < horizon) {
           el.style.display = 'none';
           continue;
         }
