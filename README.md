@@ -81,29 +81,35 @@ python3 -m http.server 8000
 Internet is needed on first load (React, Leaflet, Three.js, fonts, map tiles
 come from CDNs). Everything trip-specific lives in local files.
 
-## PR previews
+## Deploy
 
-Every **same-repo** pull request is published to:
+Live at **https://sabbatical.jeitinhovibe.online** — a Cloudflare Worker serving
+static assets, in the *Jeitinho Vibe* account. No server, and no build step on
+the host: `dist/` is committed, so what ships is what you tested locally.
 
+```bash
+./build.sh                 # only if a .jsx changed
+./deploy.sh                # production → sabbatical.jeitinhovibe.online
+./deploy.sh preview        # version URL only, no traffic shifted
 ```
-https://jeitinhovibe.github.io/sabbatical-planning/PR-<number>/
-```
 
-The workflow in `.github/workflows/pages.yml` keeps a single `gh-pages`
-branch: `main` is the root, and each PR lives in `PR-<number>/`. The preview
-is updated on every push to the PR and removed when the PR closes.
+`deploy.sh` stages the site into `_site/` (build tooling, notes, `.opencode/`,
+and `reviews/` excluded) and runs `wrangler deploy`. The custom domain, its DNS
+record, and its certificate are declared in `wrangler.jsonc`; the zone
+`jeitinhovibe.online` is in the same account, so they are created on first
+deploy and never touched by hand.
 
-**One-time setup (repo admin):** Settings → Pages → Build and deployment →
-Source: *Deploy from a branch*, Branch: **`gh-pages`**, Folder: **`/(root)`**.
-The workflow creates the branch on its first run (`workflow_dispatch` works
-for a manual bootstrap).
+**On a new machine:** `npx wrangler login`, pick the *Jeitinho Vibe* account
+(`deploy.sh` pins `CLOUDFLARE_ACCOUNT_ID`), then `./deploy.sh`.
 
 Notes:
-- **Fork PRs are skipped** — the `pull_request` token can't write to the repo.
-- Previews share the `jeitinhovibe.github.io` origin with the main site, so
-  `localStorage` (todo ticks, cached trip data, sync IDs) is shared. Use a
-  private window when testing a preview.
+- **No PR previews yet.** The old GitHub Pages job published `PR-<n>/`
+  directories. Cloudflare needs either a Git-connected Worker (dashboard →
+  Settings → Build) or a `CLOUDFLARE_API_TOKEN` repo secret for a CI job; until
+  one exists, a preview is a manual `./deploy.sh preview`.
 - Assets are relative, so the site needs no base-path configuration.
+- Google Calendar/Tasks sync is origin-locked: the OAuth client must list
+  `https://sabbatical.jeitinhovibe.online` under *Authorized JavaScript origins*.
 
 ## Editing the trip
 

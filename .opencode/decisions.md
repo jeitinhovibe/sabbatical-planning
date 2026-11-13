@@ -8,24 +8,34 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
-## 2026-11-13 — Repo host is the `jeitinhovibe` org; the old Pages URL is dead
+## 2026-11-13 — Hosting is Cloudflare at `sabbatical.jeitinhovibe.online`; GitHub Pages is retired
 
-Verified, not assumed: `gh repo view` reports owner `jeitinhovibe`, the Pages API
-reports `https://jeitinhovibe.github.io/sabbatical-planning/` with `cname: null`,
-and `git ls-remote` on the old remote still resolves through GitHub's transfer
-redirect.
+Verified, not assumed: `gh repo view` reports owner `jeitinhovibe`, and after the
+transfer `mlcantadori.github.io/sabbatical-planning/` returns **404** — GitHub
+Pages does not follow a repo transfer, only the git remote does. That dead URL is
+what made a hosting change cheap: there was no working public link to preserve.
 
-- **The Pages host does not redirect.** `mlcantadori.github.io/sabbatical-planning/`
-  returns 404 after the transfer, so old links and bookmarks are broken, not
-  forwarded. The git remote redirects; the published site does not.
-- **Everything repo-side already self-corrects.** `pages.yml` derives owner/repo
-  from `context.repo`, so main and PR-preview URLs needed no logic change — only
-  the comments and docs that name the host by hand (README, `calendar.jsx`,
-  `tasks.jsx`, `calendar-config.example.js`).
-- **The one thing the repo cannot fix:** the Google OAuth client behind the
-  Calendar/Tasks sync must have `https://jeitinhovibe.github.io` in *Authorized
-  JavaScript origins*. Until then Sync fails with `origin_mismatch`, and no code
-  change helps.
+- **Decision: Cloudflare Workers with static assets, not Pages.** `wrangler`
+  itself now delegates `pages project create` to Workers, so the fork in the road
+  was "legacy Pages via `--force`" or the current path. Chose Workers: the site is
+  pure files, needs no Worker code, and `wrangler.jsonc` puts the project, the
+  custom domain, and the cert in version control instead of a dashboard.
+- **Custom domain, because the zone was already here.** `jeitinhovibe.online`
+  lives in the *Jeitinho Vibe* account, so `sabbatical.jeitinhovibe.online` costs
+  nothing extra and gives a stable URL that survives the next repo move. The
+  `*.workers.dev` URL still exists as the project's raw endpoint.
+- **Deploy is local and manual.** `./deploy.sh` stages `_site/` with the old
+  Pages-excludes and deploys. Uploading an API token to this repo was not
+  possible from the OAuth session we have, and a CI job that fails until a secret
+  appears is worse than a documented two-word command. **Rejected for now:** Git-
+  connected Worker builds and a `CLOUDFLARE_API_TOKEN` Actions job — both restore
+  per-PR previews and either can be added without touching the site.
+- **What was lost:** PR previews (`PR-<n>/` directories) and the `gh-pages`
+  branch. `./deploy.sh preview` uploads a version without shifting traffic, but it
+  is not automatic.
+- **Still on a human:** the Google OAuth client behind Calendar/Tasks sync must
+  add `https://sabbatical.jeitinhovibe.online` to *Authorized JavaScript origins*,
+  or Sync fails with `origin_mismatch` no matter what the code says.
 
 ---
 
