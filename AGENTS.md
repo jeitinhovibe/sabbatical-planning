@@ -117,11 +117,10 @@ Static page, no server. `index.html` loads hand-written data scripts plus
 precompiled `dist/*.js` bundles.
 
 - **Edit `.jsx`, never `dist/`.** Run `./build.sh` to recompile the eight sources
-  into `dist/*.js`.
-- **Data lives in five plain scripts** (globals, not modules): `itinerary-data.js`
-  (the plan — source of truth), `itinerary-geo.js` (coordinates),
-  `itinerary-photos.js` (keyword → local image), `itinerary-store.js` (state +
-  cache key), `todo-data.js` (bookings).
+  into `dist/*.js`. Data is five plain scripts (globals, not modules):
+  `itinerary-data.js` (the plan — source of truth), `itinerary-geo.js`
+  (coordinates), `itinerary-photos.js` (keyword → local image),
+  `itinerary-store.js` (state + cache key), `todo-data.js` (bookings).
 - **Cache busting is the host's job, not yours.** Cloudflare serves every file
   with `max-age=0` + an ETag, so a changed bundle is revalidated on the next
   load; `index.html` has no query strings and needs none. The one manual key is
@@ -131,6 +130,11 @@ precompiled `dist/*.js` bundles.
   the filenames in `build.sh` instead of reintroducing `?v=` by hand.
 - **Photos are vendored** — no hotlinks. New image: add the file, map a keyword,
   credit it in `extra-pictures/CREDITS.md`.
+- **Prose has a budget.** A `highlights` chip is one day-level line — one action
+  or one fact, ~110 characters, no prices, no departure times, no contingency
+  handbook. A chapter carries ~5 `decisions`, each naming the option it beat.
+  Booking mechanics, quotas and arrival logistics belong in `todo-data.js`: a chip
+  that restates a todo note is duplication, not documentation.
 - **Every data edit must pass** `node scripts/validate-photo-urls.mjs`, plus day
   sums, date continuity, geo coverage, budget arithmetic, and todo chapter ids.
   A chapter's `end` is its **exit day, not its last night**; `places[].days` are
