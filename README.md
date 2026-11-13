@@ -56,8 +56,8 @@ photography given room to breathe.
 
 - 🌍 **3D globe + 2D map** — the full route, great-circle arcs, one-tap
   Google Maps links for every stop.
-- 📖 **21 chapter spreads** — photos, dates, weather, stops, highlights, and
-  route decisions.
+- 📖 **21 chapter spreads** — photos, dates, weather, stops, what you do there,
+  and route decisions.
 - 📊 **A ledger that does math** — per-chapter sortable table, inter-chapter
   flights, locked costs, contingency, per-day and per-person run-rates.
 - ✅ **A field kit** — every flight, stay, visa, and permit with book-by dates,

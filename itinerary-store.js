@@ -15,7 +15,8 @@ window.STORE = (function () {
   // to 18n south-to-north (Koh Lipe -> Ko Lanta -> Railay -> Bangkok 4n),
   // Japan swaps Kanazawa for Hakone/Mt. Fuji, China Spring moves to May 6-28
   // ahead of June plum rains, and Korea closes the trip May 28 - Jun 11.
-  const LS_KEY = 'trip-data-v25';
+  // v26: stops carry `plan` prose + `notes` instead of a flat `highlights` list.
+  const LS_KEY = 'trip-data-v26';
   const listeners = new Set();
   let chapters;
 
@@ -36,7 +37,7 @@ window.STORE = (function () {
       // Defensive: make sure every chapter has the fields we expect
       chapters.forEach((c) => {
         if (!c.places) c.places = [];
-        c.places.forEach((p) => { if (!p.highlights) p.highlights = []; });
+        c.places.forEach((p) => { if (!p.notes) p.notes = []; });
         // photos are source-derived, never user-edited — always re-bake from TRIP
         // so curated photo edits propagate without a cache bump or Reset.
         const src = srcById.get(c.id);
@@ -76,7 +77,8 @@ window.STORE = (function () {
         query: p.query,
         photo: p.photo || null,
         coords: (window.TRIP_GEO.places[`${c.id}/${p.name}`] || null),
-        highlights: p.highlights.slice(),
+        plan: p.plan || '',
+        notes: (p.notes || []).slice(),
       })),
     }));
   }

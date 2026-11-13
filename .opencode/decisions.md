@@ -770,27 +770,30 @@ library.
   left the faded atlas tappable behind the spread (`auto` beats an inherited
   `none`), so those leaves are explicitly put back down while the panel is open.
 
-## 2026-11-13 — Chapter prose cut to what changes a day
+## 2026-11-13 — A stop is a paragraph plus footnotes, not a bullet list
 
 The China chapters had become a second copy of `todo-data.js`: 31 chips carrying
 4,838 characters in E1 alone, the longest a 328-character paragraph inside a
-bullet. The panel is a reading surface, not a briefing pack.
+bullet. Worse, the chips mixed two different kinds of thing — what you *do*
+there, and house rules like gear or a last cable — in one undifferentiated list,
+so nothing read as a plan.
 
-- **Rule now in `AGENTS.md`:** a `highlights` chip is one day-level line (~110
-  chars, no prices, no departure times, no contingency handbook); ~5 `decisions`
-  per chapter, each naming the option it beat. Booking mechanics stay in the
-  ledger — a chip that restates a todo note is duplication.
+- **Shape now in `AGENTS.md`:** `plan` is one short paragraph you could say out
+  loud — what you do, in order, trade-off named. `notes` are ≤4 quiet lines of
+  constraint (closures, gear, ticket mechanics, the one irreversible transfer).
+  No date stamps or prices in either: the timeline column already shows the
+  dates and the ledger holds the prices. Applied to all 77 stops, all chapters.
+- **Rendered differently, because they are different:** `.stop-plan` at 13.5px in
+  body ink, `.stop-notes` at 12px behind a hairline rule. `LS_KEY` → v26 since
+  the saved shape changed.
 - **Deleted on purpose:** the Beijing night-bus timetable, Huangshan ticket
   prices and lift arithmetic, the Tangkou→Hongcun bus times, the Hangzhou wake-up
   clock. All of it survives in `todo-data.js` (`china-e1-3`, `-4`, `-5`, `-6-*`,
   `-7`, `-8`) or is a taxi they will take on the night.
-- **Kept because it changes the day:** the second-entry quota (decision only at
-  the exit gate), the 1 Dec West Sea Canyon / Tiandu closure, the 16:00 Yuping
-  deadline against a 17:10 last cable, Hongcun's name-linked 3-day ticket,
-  Tangkou's Zhaixi base.
-- **Stale decision fixed, not just shortened:** E1 argued for the G87
-  (06:56→12:13) as if it were still the plan; they booked G2553 07:17. The line
-  now records the booking, per `todo-data.js`.
-- Same trim swept the 14 chips over 110 characters elsewhere (Nepal close,
-  Taiwan NYE and Alishan, Myoko's two long lines, the Cebu→Bali handoffs).
-  Chapter `intro` strings were tightened too, though nothing renders them.
+- **Kept because it changes the day:** the second-entry quota (decided at the exit
+  gate, never before), the 1 Dec West Sea Canyon / Tiandu closure, the 17:10 last
+  cable — now folded into Huangshan's plan sentence rather than standing alone,
+  Hongcun's name-linked 3-day ticket, Tangkou's Zhaixi base.
+- **Stale decision fixed inside the trim:** E1 argued for the G87 (06:56→12:13) as
+  if it were still the plan; they booked G2553 07:17. The line now records the
+  booking, per `todo-data.js`.

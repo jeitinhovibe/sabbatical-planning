@@ -1472,22 +1472,30 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   letter-spacing: -.02em;
   color: var(--ink);
 }
-.stop-highlights { display: flex; flex-direction: column; gap: 4px; margin-top: 7px; }
-.stop-highlight {
-  position: relative;
+.stop-plan {
+  margin: 7px 0 0;
   font-family: var(--f-sans);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 13.5px;
+  line-height: 1.55;
   color: var(--ink-2);
-  padding-left: 12px;
+  max-width: 56ch;
   text-wrap: pretty;
 }
-.stop-highlight::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 8px;
-  width: 5px; height: 1px;
-  background: var(--tint, var(--ember));
+.stop-notes {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0 0 0 12px;
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.stop-notes li {
+  font-family: var(--f-sans);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-3);
+  text-wrap: pretty;
 }
 .decision-list {
   list-style: none;

@@ -185,11 +185,12 @@
                         <span className="stop-idx">{String(i + 1).padStart(2, '0')}</span>
                         <span className="stop-name">{p.name}</span>
                       </div>
-                      <div className="stop-highlights">
-                        {(p.highlights || []).map((h, j) => (
-                          <span key={j} className="stop-highlight">{h}</span>
-                        ))}
-                      </div>
+                      {p.plan && <p className="stop-plan">{p.plan}</p>}
+                      {p.notes && p.notes.length > 0 && (
+                        <ul className="stop-notes">
+                          {p.notes.map((n, j) => <li key={j}>{n}</li>)}
+                        </ul>
+                      )}
                     </div>
                   </div>
                 );

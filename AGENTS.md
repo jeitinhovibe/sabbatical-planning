@@ -130,11 +130,12 @@ precompiled `dist/*.js` bundles.
   the filenames in `build.sh` instead of reintroducing `?v=` by hand.
 - **Photos are vendored** — no hotlinks. New image: add the file, map a keyword,
   credit it in `extra-pictures/CREDITS.md`.
-- **Prose has a budget.** A `highlights` chip is one day-level line — one action
-  or one fact, ~110 characters, no prices, no departure times, no contingency
-  handbook. A chapter carries ~5 `decisions`, each naming the option it beat.
-  Booking mechanics, quotas and arrival logistics belong in `todo-data.js`: a chip
-  that restates a todo note is duplication, not documentation.
+- **A stop has a shape.** `plan` is one short paragraph you could say out loud:
+  what you do there, in order, with the trade-off named. `notes` are ≤4 quiet
+  lines of constraint — closures, gear, ticket mechanics, the one irreversible
+  transfer. No date stamps, prices or timetables in either (the timeline already
+  shows the dates; booking mechanics live in `todo-data.js`), and never a flat
+  bullet list — a chip that restates a todo note is duplication.
 - **Every data edit must pass** `node scripts/validate-photo-urls.mjs`, plus day
   sums, date continuity, geo coverage, budget arithmetic, and todo chapter ids.
   A chapter's `end` is its **exit day, not its last night**; `places[].days` are
