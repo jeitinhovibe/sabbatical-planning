@@ -479,6 +479,9 @@
       // n·ĉ = 1/d, not 0. Anything below it is behind the planet's body.
       const horizon = 1 / s.camera.position.length();
       const kids = s.overlay.children;
+      // Country labels that survive the on-disc test, for the declutter pass
+      // below. Filled in DOM order, resolved after every position is known.
+      const cand = [];
       for (let i = 0; i < kids.length; i++) {
         const el = kids[i];
         if (el._hidden) {
@@ -514,8 +517,38 @@
           const [lw, lh] = countrySize(el);
           const ox = Math.abs(x - disc.cx) + lw / 2;
           const oy = Math.abs(y - disc.cy) + lh / 2;
-          el.classList.toggle('is-off', ox * ox + oy * oy > disc.r * disc.r);
+          if (ox * ox + oy * oy > disc.r * disc.r) {
+            el.classList.add('is-off');
+          } else {
+            const dx = x - disc.cx, dy = y - disc.cy;
+            cand.push({ el, x, y, w: lw, h: lh, d2: dx * dx + dy * dy });
+          }
         }
+      }
+
+      // Declutter: greedy, nearest-to-centre first. Font size is deliberately
+      // zoom-invariant — scaling it with the globe would scale label widths
+      // and anchor spacing by the same factor and leave every overlap exactly
+      // where it was. The only thing that actually separates tight clusters
+      // (Norway/Sweden/Finland at full-planet zoom) is dropping the labels
+      // that collide, which is what a map does as you zoom out. Zooming in
+      // spreads the anchors and they come back.
+      cand.sort((a, b) => a.d2 - b.d2);
+      const kept = [];
+      for (let i = 0; i < cand.length; i++) {
+        const c = cand[i];
+        let clear = true;
+        for (let j = 0; j < kept.length; j++) {
+          const k = kept[j];
+          // A few px of breathing room so two labels never touch.
+          if (Math.abs(c.x - k.x) < (c.w + k.w) / 2 + 4
+            && Math.abs(c.y - k.y) < (c.h + k.h) / 2 + 3) {
+            clear = false;
+            break;
+          }
+        }
+        c.el.classList.toggle('is-off', !clear);
+        if (clear) kept.push(c);
       }
     }
 
