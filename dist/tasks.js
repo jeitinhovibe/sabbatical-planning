@@ -9,7 +9,7 @@
 //      sync → enable the Google Tasks API (same OAuth Client ID works for
 //      both; no new credentials needed).
 //   2. Authorized JavaScript origins already cover the app if Calendar sync
-//      works (https://mlcantadori.github.io + http://localhost:8000).
+//      works (https://jeitinhovibe.github.io + http://localhost:8000).
 //
 // Usage: header Sync ▾ → Tasks. The app is the source of truth: re-syncs
 // match entries by remembered Google ID (this browser) with title matching

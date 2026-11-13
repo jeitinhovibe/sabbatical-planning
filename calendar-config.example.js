@@ -4,7 +4,7 @@
 // (gitignored, never committed) and set window.SABBATICAL_CALENDAR_CLIENT_ID.
 //
 // Authorized JavaScript origins on the Client ID must include:
-//   https://mlcantadori.github.io
+//   https://jeitinhovibe.github.io
 //   http://localhost:8000   (local testing)
 //
 // The same Client ID also powers the Tasks sync (Sync ▾ → Tasks) once the

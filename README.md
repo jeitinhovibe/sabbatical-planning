@@ -86,7 +86,7 @@ come from CDNs). Everything trip-specific lives in local files.
 Every **same-repo** pull request is published to:
 
 ```
-https://mlcantadori.github.io/sabbatical-planning/PR-<number>/
+https://jeitinhovibe.github.io/sabbatical-planning/PR-<number>/
 ```
 
 The workflow in `.github/workflows/pages.yml` keeps a single `gh-pages`
@@ -100,7 +100,7 @@ for a manual bootstrap).
 
 Notes:
 - **Fork PRs are skipped** — the `pull_request` token can't write to the repo.
-- Previews share the `mlcantadori.github.io` origin with the main site, so
+- Previews share the `jeitinhovibe.github.io` origin with the main site, so
   `localStorage` (todo ticks, cached trip data, sync IDs) is shared. Use a
   private window when testing a preview.
 - Assets are relative, so the site needs no base-path configuration.
