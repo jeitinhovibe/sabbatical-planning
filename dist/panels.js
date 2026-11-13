@@ -278,12 +278,13 @@
         className: "stop-idx"
       }, String(i + 1).padStart(2, '0')), /*#__PURE__*/React.createElement("span", {
         className: "stop-name"
-      }, p.name)), /*#__PURE__*/React.createElement("div", {
-        className: "stop-highlights"
-      }, (p.highlights || []).map((h, j) => /*#__PURE__*/React.createElement("span", {
-        key: j,
-        className: "stop-highlight"
-      }, h)))));
+      }, p.name)), p.plan && /*#__PURE__*/React.createElement("p", {
+        className: "stop-plan"
+      }, p.plan), p.notes && p.notes.length > 0 && /*#__PURE__*/React.createElement("ul", {
+        className: "stop-notes"
+      }, p.notes.map((n, j) => /*#__PURE__*/React.createElement("li", {
+        key: j
+      }, n)))));
     })), ch.decisions && ch.decisions.length > 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(SectionHead, {
       num: "02",
       title: "Why it looks like this",

@@ -769,3 +769,66 @@ library.
 - **`.app.has-detail` still wins.** Re-enabling pointers on the leaves would have
   left the faded atlas tappable behind the spread (`auto` beats an inherited
   `none`), so those leaves are explicitly put back down while the panel is open.
+
+## 2026-11-13 — A stop is a paragraph plus footnotes, not a bullet list
+
+The China chapters had become a second copy of `todo-data.js`: 31 chips carrying
+4,838 characters in E1 alone, the longest a 328-character paragraph inside a
+bullet. Worse, the chips mixed two different kinds of thing — what you *do*
+there, and house rules like gear or a last cable — in one undifferentiated list,
+so nothing read as a plan.
+
+- **Shape now in `AGENTS.md`:** `plan` is one short paragraph you could say out
+  loud — what you do, in order, trade-off named. `notes` are ≤4 quiet lines of
+  constraint (closures, gear, ticket mechanics, the one irreversible transfer).
+  No date stamps or prices in either: the timeline column already shows the
+  dates and the ledger holds the prices. Applied to all 77 stops, all chapters.
+- **Rendered differently, because they are different:** `.stop-plan` at 13.5px in
+  body ink, `.stop-notes` at 12px behind a hairline rule. `LS_KEY` → v26 since
+  the saved shape changed.
+- **Deleted on purpose:** the Beijing night-bus timetable, Huangshan ticket
+  prices and lift arithmetic, the Tangkou→Hongcun bus times, the Hangzhou wake-up
+  clock. All of it survives in `todo-data.js` (`china-e1-3`, `-4`, `-5`, `-6-*`,
+  `-7`, `-8`) or is a taxi they will take on the night.
+- **Kept because it changes the day:** the second-entry quota (decided at the exit
+  gate, never before), the 1 Dec West Sea Canyon / Tiandu closure, the 17:10 last
+  cable — now folded into Huangshan's plan sentence rather than standing alone,
+  Hongcun's name-linked 3-day ticket, Tangkou's Zhaixi base.
+- **Stale decision fixed inside the trim:** E1 argued for the G87 (06:56→12:13) as
+  if it were still the plan; they booked G2553 07:17. The line now records the
+  booking, per `todo-data.js`.
+
+## 2026-11-13 — The stop panel is the working reference, so plans carry detail
+
+Cutting the bullets revealed the real balance: a plan can be one paragraph and
+still be *rich*. The panel is what they read on arrival, so a plan that says
+"beaches and temples" is worth less than one that says which beach, which
+temple, and where dinner is.
+
+- **Rule now in `AGENTS.md`:** the paragraph names the real places, streets and
+  dishes, in the order you would do them; `notes` stay constraint-only. Detail
+  is not the enemy — *unordered* detail is. Average plan is now ~210 characters
+  (max 391) against 25k characters of chips before the restructure.
+- **Depth scales with nights.** One-night buffers get a sentence; a week gets
+  four or five named anchors plus a base or a rhythm. The home months (Rio,
+  Cumbuco) stay short on purpose — they are one repeated activity, not a
+  sightseeing list.
+
+## 2026-11-13 — "Why it looks like this" holds reasons, not bookkeeping
+
+The section had become a changelog: *"Beijing cut 9→8 nights: the one night
+worth losing was Monday Nov 16…"* is a true and hard-won fact, but it explains
+how the plan arrived, not why the route is what it is. Read on the page it is
+noise, and it invites the same argument again.
+
+- **Now:** 34 decisions across 11 chapters (~3.7k chars, down from 40 / 5.3k),
+  each one sentence answering *why this stop, this order, this base, this
+  month* — and naming the alternative it beat.
+- **Cut:** every night reallocation (Beijing 9→8, Hangzhou 2→4, Malaysia 6→8,
+  Thailand 11→15, China E2 14→8), the "moved from June into May by dropping the
+  Gulf chapter" history, the G2553-vs-G87 train line, and Athens' list of what
+  was visited in Crete (that is the plan's job, not a reason).
+- **Added where it was missing:** Hong Kong — five days because the stop resets
+  the mainland clock and TECO needs 3–5 business days. That is the only reason
+  the chapter exists, and it was nowhere in the UI.
+- Chapters with nothing non-obvious to say still carry no section at all.
