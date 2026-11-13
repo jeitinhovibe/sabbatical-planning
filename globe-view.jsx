@@ -7,6 +7,11 @@
   const { chapterColor } = window.TRIP;
 
   const HOME = { lat: 18, lng: 15, r: 3.3 };
+  // How far out the wheel is allowed to go. The whole-route view (HOME.r) is
+  // already framing the planet; past roughly a quarter further the Earth
+  // shrinks to a marble on a field of black and the pins stop being readable,
+  // so the zoom-out floor sits just beyond home instead of at the far plane.
+  const MAX_DIST = HOME.r * 1.25;
   // Base tube radius (world units, at the home distance) — the tick loop
   // thins tubes as you zoom in so the on-screen line weight stays ~constant.
   const ARC_R = 0.0014;
@@ -180,7 +185,7 @@
       controls.dampingFactor = 0.06;
       controls.enablePan = false;
       controls.minDistance = minDist;
-      controls.maxDistance = 9;
+      controls.maxDistance = MAX_DIST;
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.55;
       // First manual grab (drag or wheel) stops the spin for good —
