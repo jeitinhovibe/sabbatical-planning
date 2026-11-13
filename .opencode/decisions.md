@@ -8,6 +8,27 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-13 — Repo host is the `jeitinhovibe` org; the old Pages URL is dead
+
+Verified, not assumed: `gh repo view` reports owner `jeitinhovibe`, the Pages API
+reports `https://jeitinhovibe.github.io/sabbatical-planning/` with `cname: null`,
+and `git ls-remote` on the old remote still resolves through GitHub's transfer
+redirect.
+
+- **The Pages host does not redirect.** `mlcantadori.github.io/sabbatical-planning/`
+  returns 404 after the transfer, so old links and bookmarks are broken, not
+  forwarded. The git remote redirects; the published site does not.
+- **Everything repo-side already self-corrects.** `pages.yml` derives owner/repo
+  from `context.repo`, so main and PR-preview URLs needed no logic change — only
+  the comments and docs that name the host by hand (README, `calendar.jsx`,
+  `tasks.jsx`, `calendar-config.example.js`).
+- **The one thing the repo cannot fix:** the Google OAuth client behind the
+  Calendar/Tasks sync must have `https://jeitinhovibe.github.io` in *Authorized
+  JavaScript origins*. Until then Sync fails with `origin_mismatch`, and no code
+  change helps.
+
+---
+
 ## 2026-11-12 — Alishan: 14 days is the real window, and the gate ticket is inside the train order
 
 Checked against the operator's own 售票說明 (afrch.forest.gov.tw/0000270) rather
