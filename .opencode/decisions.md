@@ -8,6 +8,28 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-13 — PR previews come from the shared org workflow
+
+Two Cloudflare apps now need previews, so the pipeline moved out of this repo
+instead of being copied a second time with small differences.
+
+- **Decision: call `jeitinhovibe/.github/.github/workflows/pr-preview.yml@main`.**
+  This repo passes `profile: stateless` (static assets, no bindings) and
+  `prepare_command: ./deploy.sh stage`. Halfsies passes `profile: isolated`,
+  because a Cloudflare Preview shares the Worker's bindings and would write to
+  the real household D1 database.
+- **One secret, one place for the account id.** `CLOUDFLARE_ACCOUNT_ID` is no
+  longer a repo secret; the id is committed in `wrangler.jsonc`. Only
+  `CLOUDFLARE_API_TOKEN` remains, with Workers Scripts, Workers Routes and Zone
+  read — DNS edit is not needed; custom-domain and preview DNS records are
+  created by the Workers APIs themselves.
+- **Standard shape.** `pr-<number>.<production hostname>` in both projects, one
+  PR comment with a stable `<!-- preview -->` marker, a smoke test that polls
+  for `200` before commenting, and cleanup on close that tolerates an already
+  deleted preview.
+
+---
+
 ## 2026-11-13 — Hosting is Cloudflare at `sabbatical.jeitinhovibe.online`; GitHub Pages is retired
 
 Verified, not assumed: `gh repo view` reports owner `jeitinhovibe`, and after the

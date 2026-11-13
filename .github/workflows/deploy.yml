@@ -6,10 +6,12 @@ name: Deploy site
 #
 # The site is files only — no server code — so the job stages `_site/` with
 # `./deploy.sh stage` and lets wrangler upload it. Previews are Cloudflare
-# Previews: one per PR, named `pr-<number>`, deleted when the PR closes.
+# Previews: one per PR, named `pr-<number>`, deleted when the PR closes. That
+# preview pipeline lives in the shared org workflow
+# (`jeitinhovibe/.github`), using the `stateless` profile.
 #
-# Secrets (repo settings): CLOUDFLARE_API_TOKEN with Workers Scripts, Workers
-# Routes and DNS edit; CLOUDFLARE_ACCOUNT_ID = 9b30dc9ed19dff935fa4e6a6cb4ae6a7.
+# Secret (repo settings): CLOUDFLARE_API_TOKEN with Workers Scripts, Workers
+# Routes and Zone read. The account id is committed in `wrangler.jsonc`.
 # Fork PRs are skipped — they do not get the secrets.
 
 on:
@@ -69,7 +71,6 @@ jobs:
         uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4"
           command: deploy
 
@@ -97,53 +98,12 @@ jobs:
       github.event_name == 'pull_request' &&
       github.event.action != 'closed' &&
       github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Stage the site
-        run: ./deploy.sh stage
-
-      - name: Upload the preview
-        id: cf
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: "4"
-          command: preview --name pr-${{ github.event.pull_request.number }}
-
-      - name: Comment the preview URL
-        uses: actions/github-script@v7
-        env:
-          PREVIEW_URL: ${{ steps.cf.outputs.preview-url }}
-        with:
-          script: |
-            const marker = '<!-- pr-preview-link -->';
-            const url = process.env.PREVIEW_URL;
-            if (!url) {
-              core.setFailed('Cloudflare returned no preview URL');
-              return;
-            }
-            const body = [
-              marker,
-              `🔎 **Preview:** ${url}`,
-              '',
-              `_Updated ${new Date().toISOString()}_`,
-            ].join('\n');
-            const { data: comments } = await github.rest.issues.listComments({
-              ...context.repo,
-              issue_number: context.issue.number,
-              per_page: 100,
-            });
-            const existing = comments.find((c) => c.body && c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
-            } else {
-              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
-            }
+    uses: jeitinhovibe/.github/.github/workflows/pr-preview.yml@main
+    with:
+      profile: stateless
+      prepare_command: ./deploy.sh stage
+      note: "Deployed from this pull request's build."
+    secrets: inherit
 
   cleanup-preview:
     name: Remove PR preview
@@ -151,33 +111,7 @@ jobs:
       github.event_name == 'pull_request' &&
       github.event.action == 'closed' &&
       github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Delete the preview
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          wranglerVersion: "4"
-          command: preview delete --name pr-${{ github.event.number }}
-
-      - name: Mark the preview as removed
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const marker = '<!-- pr-preview-link -->';
-            const { data: comments } = await github.rest.issues.listComments({
-              ...context.repo,
-              issue_number: context.issue.number,
-              per_page: 100,
-            });
-            const existing = comments.find((c) => c.body && c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({
-                ...context.repo,
-                comment_id: existing.id,
-                body: `${marker}\n🔎 Preview removed (PR closed).`,
-              });
-            }
+    uses: jeitinhovibe/.github/.github/workflows/pr-preview.yml@main
+    with:
+      profile: stateless
+    secrets: inherit

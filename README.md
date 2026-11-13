@@ -109,10 +109,11 @@ Notes:
   `main` on push and each same-repo PR to
   `https://pr-<number>.sabbatical.jeitinhovibe.online` (a Cloudflare Preview
   named `pr-<number>`, deleted when the PR closes) and comments the link.
-  Locally, `./deploy.sh preview <name>` does the same thing by hand. Fork PRs
-  are skipped — they never see the repo secrets.
-- **Two repo secrets drive CI:** `CLOUDFLARE_API_TOKEN` (Workers Scripts +
-  Workers Routes + DNS, edit) and `CLOUDFLARE_ACCOUNT_ID`.
+  The pipeline is the shared `jeitinhovibe/.github` workflow, `stateless`
+  profile. Locally, `./deploy.sh preview <name>` does the same thing by hand.
+  Fork PRs are skipped — they never see the repo secret.
+- **One repo secret drives CI:** `CLOUDFLARE_API_TOKEN` (Workers Scripts +
+  Workers Routes + Zone read). The account id is committed in `wrangler.jsonc`.
 - Assets are relative, so the site needs no base-path configuration.
 - Google Calendar/Tasks sync is origin-locked: the OAuth client must list
   `https://sabbatical.jeitinhovibe.online` under *Authorized JavaScript origins*.
