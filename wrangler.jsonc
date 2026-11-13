@@ -12,6 +12,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "sabbatical-planning",
+  "account_id": "9b30dc9ed19dff935fa4e6a6cb4ae6a7",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./_site"
