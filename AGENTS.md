@@ -137,7 +137,10 @@ precompiled `dist/*.js` bundles.
   nights summing to `days`; and an overnight flight means the next chapter starts
   after `end` (São Paulo 21:35 Aug 26 → Toronto Aug 27). Not a gap — don't "fix" it.
 - **Ship as a PR.** Comparison variants live on their own branches off the base,
-  targeting `main`.
+  targeting `main`. **Report the preview URL every time** — it is
+  `https://pr-<number>.sabbatical.jeitinhovibe.online`, live once the *Deploy PR
+  preview* check is green. Put it in the PR body and in your reply, so reviewing
+  never starts with a branch checkout.
 
 ## Where things live
 
