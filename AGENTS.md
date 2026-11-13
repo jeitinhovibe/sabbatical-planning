@@ -26,6 +26,9 @@ move to a worktree. Commit by explicit path, never `-A`, and re-check
 --ff-only`, remove your worktree, then delete the merged local and remote
 branch. `git worktree list` should show main plus only worktrees another session
 still owns — a merged branch left behind becomes tomorrow's stale checkout.
+Check that `https://pr-<number>.sabbatical.jeitinhovibe.online` now returns 404:
+the upstream cleanup step is `continue-on-error`, so a Cloudflare outage leaves
+the preview serving happily on a green run.
 
 ## Part 1 — Planning
 
