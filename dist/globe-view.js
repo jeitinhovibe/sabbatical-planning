@@ -272,6 +272,23 @@
       };
       tick();
       rebuildAll();
+
+      // Country labels are measured once for the on-disc test; the webfont can
+      // arrive after the first frame and change how wide a word is, so drop the
+      // cached sizes and let the next tick re-measure.
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          const s = st.current;
+          if (!s) return;
+          for (let i = 0; i < s.overlay.children.length; i++) {
+            const el = s.overlay.children[i];
+            if (el._country) {
+              el._w = 0;
+              el._h = 0;
+            }
+          }
+        });
+      }
       return () => {
         ro.disconnect();
         if (st.current) {
@@ -438,9 +455,40 @@
       mesh.userData.arcMat = mat;
       return mesh;
     }
+
+    // Screen-space circle the planet occupies. The camera always looks at the
+    // globe's centre (OrbitControls targets the origin, even when a chapter is
+    // selected), so the silhouette is a circle at the screen centre with
+    // radius f·R/√(d²−R²) for R = 1.
+    function globeDisc() {
+      const s = st.current;
+      const d = s.camera.position.length();
+      const f = s.h * 0.5 / Math.tan(s.camera.fov * Math.PI / 360);
+      return {
+        cx: s.w * 0.5,
+        cy: s.h * 0.5,
+        r: d > 1 ? f / Math.sqrt(d * d - 1) : f
+      };
+    }
+
+    // Label widths for the on-disc test, measured lazily: offsetWidth forces
+    // layout, so measuring ~80 labels every frame would be wasteful. Invalidated
+    // once the webfont lands (see the mount effect), since the fallback mono
+    // face can be wider than JetBrains Mono.
+    function countrySize(el) {
+      if (!el._w) {
+        const prev = el.style.display;
+        el.style.display = '';
+        el._w = el.offsetWidth || 1;
+        el._h = el.offsetHeight || 1;
+        el.style.display = prev;
+      }
+      return [el._w, el._h];
+    }
     function updateOverlay() {
       const s = st.current;
       if (!s) return;
+      const disc = globeDisc();
       const kids = s.overlay.children;
       for (let i = 0; i < kids.length; i++) {
         const el = kids[i];
@@ -461,6 +509,18 @@
         const y = (-sp.y * 0.5 + 0.5) * s.h;
         el.style.display = null;
         el.style.transform = el._country ? `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)` : `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
+        if (el._country) {
+          // A country label belongs to the map only while the whole word sits
+          // on the planet. Anchored at a surface point, its centre is inside
+          // the limb while half the text hangs off into space — that reads as
+          // a floating HUD callout, not a place name. Hide it (via a fade, so
+          // the auto-rotate doesn't flicker) unless every corner of the label
+          // box is inside the disc.
+          const [lw, lh] = countrySize(el);
+          const ox = Math.abs(x - disc.cx) + lw / 2;
+          const oy = Math.abs(y - disc.cy) + lh / 2;
+          el.classList.toggle('is-off', ox * ox + oy * oy > disc.r * disc.r);
+        }
       }
     }
     function pinEl(c) {

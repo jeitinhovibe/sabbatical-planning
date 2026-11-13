@@ -977,7 +977,10 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   text-shadow: 0 1px 4px rgba(0,0,0,.9);
   white-space: nowrap;
   pointer-events: none;
+  transition: opacity .18s linear;
 }
+/* Set by updateOverlay when the word would hang off the planet's edge. */
+.eq-country.is-off { opacity: 0; }
 /* Pins */
 .map-pin-wrap { background: transparent !important; border: none !important; pointer-events: none; }
 .map-pin {
