@@ -797,3 +797,19 @@ so nothing read as a plan.
 - **Stale decision fixed inside the trim:** E1 argued for the G87 (06:56→12:13) as
   if it were still the plan; they booked G2553 07:17. The line now records the
   booking, per `todo-data.js`.
+
+## 2026-11-13 — The stop panel is the working reference, so plans carry detail
+
+Cutting the bullets revealed the real balance: a plan can be one paragraph and
+still be *rich*. The panel is what they read on arrival, so a plan that says
+"beaches and temples" is worth less than one that says which beach, which
+temple, and where dinner is.
+
+- **Rule now in `AGENTS.md`:** the paragraph names the real places, streets and
+  dishes, in the order you would do them; `notes` stay constraint-only. Detail
+  is not the enemy — *unordered* detail is. Average plan is now ~210 characters
+  (max 391) against 25k characters of chips before the restructure.
+- **Depth scales with nights.** One-night buffers get a sentence; a week gets
+  four or five named anchors plus a base or a rhythm. The home months (Rio,
+  Cumbuco) stay short on purpose — they are one repeated activity, not a
+  sightseeing list.
