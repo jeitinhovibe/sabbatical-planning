@@ -813,3 +813,22 @@ temple, and where dinner is.
   four or five named anchors plus a base or a rhythm. The home months (Rio,
   Cumbuco) stay short on purpose — they are one repeated activity, not a
   sightseeing list.
+
+## 2026-11-13 — "Why it looks like this" holds reasons, not bookkeeping
+
+The section had become a changelog: *"Beijing cut 9→8 nights: the one night
+worth losing was Monday Nov 16…"* is a true and hard-won fact, but it explains
+how the plan arrived, not why the route is what it is. Read on the page it is
+noise, and it invites the same argument again.
+
+- **Now:** 34 decisions across 11 chapters (~3.7k chars, down from 40 / 5.3k),
+  each one sentence answering *why this stop, this order, this base, this
+  month* — and naming the alternative it beat.
+- **Cut:** every night reallocation (Beijing 9→8, Hangzhou 2→4, Malaysia 6→8,
+  Thailand 11→15, China E2 14→8), the "moved from June into May by dropping the
+  Gulf chapter" history, the G2553-vs-G87 train line, and Athens' list of what
+  was visited in Crete (that is the plan's job, not a reason).
+- **Added where it was missing:** Hong Kong — five days because the stop resets
+  the mainland clock and TECO needs 3–5 business days. That is the only reason
+  the chapter exists, and it was nowhere in the UI.
+- Chapters with nothing non-obvious to say still carry no section at all.

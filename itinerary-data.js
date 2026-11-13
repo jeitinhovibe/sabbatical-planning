@@ -177,7 +177,7 @@ window.TRIP = (function () {
         { name: 'Athens', photo: 'cape sounion', days: 1, query: 'Piraeus, Athens',
           plan: 'One night near the airport before the Cappadocia flight — a buffer, with Sounion\'s temple at sunset if the connection allows.' },
       ],
-      decisions: ['Crete replaced Naxos — superlative trails, authentic interior, cheaper; Heraklion dropped, Rethymno gets 3 nights with the direct seasonal ferry','Car rented in Chania (not Rethymno) — west-Crete day trips: Balos, Elafonisi, Therisos Gorge, Falasarna; Rethymno as car-free city base','Visited in Crete: Balos, Elafonisi, Therisos Gorge, Falasarna beach, Chania + Rethymno cities — other spots excluded','Folegandros kept as the un-hyped bet — fully walkable island','Milos→Athens flight discarded; bought ferry + buffer night solves the connection'],
+      decisions: ['Crete instead of Naxos: better trails, a cheaper interior, and a direct seasonal ferry from Rethymno', 'The car comes out of Chania, for the west-Crete days — Balos, Elafonisi, Falasarna; Rethymno is on foot', 'Folegandros is the un-hyped pick: fully walkable, no car, and the quietest two nights of the island run', 'Ferry back from Milos with a buffer night by the airport — a flight would have saved nothing and added a transfer'],
     },
     {
       id: 'turkey', kind: 'chapter', region: 'crossroads',
@@ -204,7 +204,7 @@ window.TRIP = (function () {
         { name: 'Istanbul', photo: 'istanbul mosque', days: 10, query: 'Sultanahmet, Istanbul',
           plan: 'Ten nights, deliberately unhurried: Hagia Sophia and Topkapi on separate mornings, the Blue Mosque and the basilica cistern, ferries to Kadıköy for market mornings and Moda\'s cafés, and the Bosphorus as a daily commute. Ten days is what turns the peninsula from a checklist into a neighbourhood.', },
       ],
-      decisions: ['Göreme as the Cappadocia base — valleys, balloon logistics, Open Air Museum','Coastal loop by rental car (Alaçatı + Şirince/Ephesus + Kaş + Akyaka) instead of a Kaş turnaround','Şirince picked for Ephesus access + quiet village night; Akyaka breaks the Kaş→Izmir drive','Istanbul as 10-night close (Oct 2–12), then Baku stopover Oct 13 to break IST → DEL'],
+      decisions: ['A car loop down the Aegean rather than a Kaş turnaround: Alaçatı, Ephesus, Kaş, Akyaka, back to Izmir', 'Şirince earns its night on Ephesus access; Akyaka breaks the long Kaş→Izmir drive instead of being a transit day', 'Istanbul closes the chapter with ten nights — the first real stay after three weeks of moving', 'Baku is a deliberate stopover: one full day, and the Istanbul→Delhi red-eye becomes two civilised flights'],
     },
     {
       id: 'baku', kind: 'chapter', region: 'crossroads',
@@ -281,7 +281,7 @@ window.TRIP = (function () {
           plan: 'Four nights at the lake in peak colour: the causeways and a boat out to Three Pools, Lingyin\'s carvings and the cedar groves behind them, the tea terraces at Meijiawu and Longjing, Hefang Street for an old-town evening, and a Shaoxing day trip when the city needs a change.',
           notes: ['Base at Wulin Square — Line 19 runs straight to the airport', 'Nov 23: the 08:00 flight is the chapter\'s one fixed point'] },
       ],
-      decisions: ['Mountain-side before every climb, village-side on the way out: Tangkou takes the arrival night (station shuttle every 20–30min, nothing to miss), Hongcun the last — its good hours are 06–08 and 17–19 and the ticket is 3-day re-entry','One mountain day planned, not two: a second entry can only be re-reserved at the exit gate, so Nov 17 gets decided at 17:00 on the 16th','Huangshan sleeps in Tangkou, not on the summit: summit doubles are ¥1,000–1,680 and the ¥250–300 dorms are sold out — so the chapter buys one full canyon day instead of a sunrise','Beijing cut 9→8 nights: the one night worth losing was Monday Nov 16, when the Forbidden City and National Museum both shut — it pays for the 4th Huangshan night','Hangzhou grown 2→4 nights: the chapter ends at a booked 08:00 flight, so the last night cannot move, and two nights held neither the lake nor a day trip','Suzhou moved to spring China as a day trip from Shanghai: the flight out is HGH now, not SHA, and the old Suzhou→Hongqiao→SHA chain was two connections for one morning','Beijing→Huangshan runs on the booked G2553 07:17 rather than the G87 the plan first priced — 21 minutes later, still the arrival that keeps the whole afternoon'],
+      decisions: ['Mountain-side before every climb, village-side on the way out: Tangkou takes the arrival night, Hongcun the last, when its lanes are empty', 'One mountain day planned, a second decided at the exit gate — re-entry can only be reserved after the first check-in', 'Tangkou rather than the summit: summit doubles are ¥1,000–1,680, so the chapter buys a full canyon day instead of a sunrise', 'Suzhou is a spring day trip from Shanghai, not a stop here — the flight out is HGH, and the old chain ran two connections for one morning'],
     },
     {
       id: 'hk', kind: 'chapter', region: 'middle',
@@ -297,6 +297,7 @@ window.TRIP = (function () {
           plan: 'Five days of city: the Peak at dusk with the tram up, the Star Ferry at night, dim sum until it becomes a habit — Tim Ho Wan, Lin Heung, One Dim Sum — Temple Street\'s jade and fortune tellers, and the Nan Lian garden and Chi Lin nunnery for quiet. A Lamma day trip for seafood and a car-free walk, and the TECO errand that gates Taiwan.',
           notes: ['TECO visa filing for Taiwan on the Tuesday morning — allow 3–5 business days'] },
       ],
+      decisions: ['Five days, not two: the stop resets the 30-day mainland clock, and TECO needs 3–5 business days for the Taiwan visas'],
     },
     {
       id: 'china-e2', kind: 'chapter', region: 'middle',
@@ -314,7 +315,7 @@ window.TRIP = (function () {
         { name: 'Shenzhen', photo: 'huaqiangbei', days: 6, query: 'Shekou, Shenzhen',
           plan: 'Six nights built around friends: four days together, then two quieter ones once they go — Huaqiangbei\'s electronics floors, OCT-LOFT\'s galleries, Nantou\'s old town, Lianhuashan for the skyline, and Shekou for the sea.', },
       ],
-      decisions: ['Macau cut: two nights bought a ferry and a second airport for a chapter that ended in transit — Shenzhen already had the bed and the friends, and the mainland stay still fits one 30-day entry','Cut from 14 to 8 nights: Shanghai moved to spring China, freeing six nights for Malaysia and the Andaman','Shanghai in December is damp and gray at 10°C; in May it is 24°C, and a better departure hub than Changsha'],
+      decisions: ['Macau cut: two nights bought a ferry and a second airport for a chapter that ended in transit, and Shenzhen already had the bed and the friends', 'Eight days, one 30-day entry: this block is a bridge between Hong Kong and Malaysia, not a destination on its own'],
     },
     {
       id: 'malaysia', kind: 'chapter', region: 'isthmus',
@@ -332,7 +333,7 @@ window.TRIP = (function () {
           plan: 'Four beach days between Pantai Cenang and the quieter Tanjung Rhu, the SkyCab and Sky Bridge over the rainforest, a Kilim mangrove boat and duty-free sunsets. Very little is scheduled on purpose.',
           notes: ['Dec 14: 90min ferry from Telaga Harbour — Thai immigration is on the beach'] },
       ],
-      decisions: ['Grown from 6 to 8 nights: four in each base, so neither stop is a staging night', 'Keeps Langkawi because it is the only clean bridge to Koh Lipe — the 90-min ferry beats a 7-hour van-and-boat slog via Pak Bara', 'Penang stays cut: it would need 5+ nights to be worth the extra move, and Taiwan already supplies the slow food-city chapter'],
+      decisions: ['Langkawi is the only clean bridge to Koh Lipe — a 90-minute ferry against a seven-hour van-and-boat via Pak Bara', 'Penang stays cut: it needs five nights to be worth the move, and Taiwan already covers the slow food city'],
     },
     {
       id: 'thailand', kind: 'chapter', region: 'isthmus',
@@ -352,7 +353,7 @@ window.TRIP = (function () {
         { name: 'Bangkok', photo: 'bangkok wat arun', days: 3, query: 'Talad Noi, Bangkok',
           plan: 'Three days in the city\'s best weather, eating rather than sightseeing: Charoenkrung and Talad Noi\'s shophouse restaurants, Yaowarat at night, Ari\'s cafés, a river ferry to ICONSIAM, and a proper Thai massage before Taiwan.', },
       ],
-      decisions: ['Enters Thailand by 90-min ferry from Langkawi to Koh Lipe, threading the Andaman islands continuously south-to-north (Lipe → Lanta → Railay) with zero airport backtracking', 'Grown from 11 to 15 nights: Lipe 4, Lanta 8, Bangkok 3 — every stop at the right size rather than three nights each', 'Railay replaced by Bangkok: at 3–4 weeks\' notice the peninsula was sold out or priced at 2–3×, and Dec 26–29 is its absolute peak; Bangkok has capacity, better weather, and a cleaner flight out', 'Christmas lands on Ko Lanta, the quiet holiday there; NYE is in Kaohsiung two days after arrival, and the Bangkok countdown is skipped by leaving Dec 29'],
+      decisions: ['In by ferry at Koh Lipe, out by air from Bangkok — the Andaman threaded south to north with no airport backtracking', 'Bangkok rather than Railay for Dec 26–29: Railay is at its absolute peak, sold out at two to three times the price; the city has capacity and better weather', 'Christmas on Ko Lanta, which keeps it quiet — the NYE countdown is skipped entirely by leaving on the 29th'],
     },
     {
       id: 'taiwan', kind: 'chapter', region: 'northeast',
@@ -376,7 +377,7 @@ window.TRIP = (function () {
           plan: 'The departure city, not the NYE one: the National Palace Museum\'s jade and bronzes, Dihua Street\'s old shopfronts, Beitou\'s hot springs on a wet afternoon, Jiufen at dusk on a weekday, and Raohe or Ningxia for dinner.',
           notes: ['National Palace Museum shut Mondays'] },
       ],
-      decisions: ['NYE in Kaohsiung, not Taipei: ~200–400k with space to stand versus ~500k–1.2M in Xinyi with station closures — and 20°C dry instead of 15°C drizzle', 'South-to-north order (Kaohsiung → Tainan → Alishan → Taipei) puts the warm, sunny half in the first week and leaves Taipei as the departure hub', 'Tainan positioned Jan 2–6, after Taiwan\'s Jan 1–3 domestic New Year travel surge', 'Two clear days in Kaohsiung before NYE, so a flight delay cannot cost you the countdown'],
+      decisions: ['NYE in Kaohsiung, not Taipei: 200–400k people with room to stand, against a million in Xinyi', 'South to north — warm, dry Kaohsiung and Tainan first, Taipei last as the departure hub', 'Two clear days in Kaohsiung before the 31st, so a delayed flight cannot cost the countdown', 'Tainan after Jan 3, once Taiwan\'s domestic New Year travel is over'],
     },
     {
       id: 'japan', kind: 'chapter', region: 'northeast',
@@ -408,7 +409,7 @@ window.TRIP = (function () {
         { name: 'Tokyo', days: 1, query: 'Tokyo Station, Japan',
           plan: 'One night to catch the flight: off the Shinkansen, repack, and out.', },
       ],
-      decisions: ['Replaces gray, sleety late-January Kanazawa with Hakone + Mt. Fuji (Kawaguchiko) — late January has the clearest cobalt-blue skies of the year on the Pacific side (~80% Fuji visibility), while keeping Takayama + Shirakawa-go for the deep-snow gassho villages', 'Two snow bases instead of one: Nozawa Feb 9–14 for onsen-village rhythm and beginner/intermediate slopes, then Myoko Feb 14–23 for the booked week and Madarao tree runs', 'CNY Feb 6 lands in Tokyo by design — the big city absorbs the domestic travel surge; Myoko starts post-CNY', 'Point-to-point Shinkansen tickets only; a 21-day JR Pass would waste money on this slower, base-heavy route'],
+      decisions: ['Hakone and Fuji replace Kanazawa: late January is the Pacific side\'s clearest month (~80% visibility), and Takayama still delivers the deep-snow villages', 'Two snow bases instead of one: Nozawa\'s onsen village and gentle slopes first, then Myoko\'s booked week and Madarao\'s tree runs', 'CNY week lands in Tokyo by design — a big city absorbs the domestic surge, and Myoko starts after it', 'Point-to-point Shinkansen tickets only: a 21-day JR Pass would waste money on a route this slow and base-heavy'],
     },
     {
       id: 'indonesia-a', kind: 'chapter', region: 'archipelago',
@@ -545,7 +546,7 @@ window.TRIP = (function () {
           plan: 'Five days in the city\'s best month: the Bund at night, Yu Garden, Tianzifang and M50, the French Concession at lunch, the Shanghai Museum East, and a Suzhou day trip for the gardens at spring green.',
           notes: ['Suzhou is 25min from Hongqiao — a day trip, not a move'] },
       ],
-      decisions: ['Moved from June into May by dropping the redundant Gulf chapter and putting China before Korea','Enters May 6, after the Labor Day peak; exits Jun 2, still ahead of Dragon Boat and the Meiyu plum rains','Shanghai relocated here from December — same chapter, better month — and it replaces Changsha as the departure hub, with Suzhou following as a day trip','Chongqing → Zhangjiajie → Fenghuang → Changsha → Shanghai runs on direct HSR; Guilin and Longji stay dropped'],
+      decisions: ['In on May 6, as Labor Day clears; out on Jun 2, ahead of Dragon Boat and the Meiyu plum rains', 'May, not June: Chengdu, Chongqing, Zhangjiajie and Fenghuang at 23–26°C and roughly 40% less rain', 'Shanghai ends the chapter as the departure hub, with Suzhou a 25-minute day trip rather than a second city', 'Chongqing → Zhangjiajie → Fenghuang → Changsha → Shanghai runs on direct HSR, with Guilin and Longji dropped'],
     },
     {
       id: 'korea', kind: 'chapter', region: 'northeast',
@@ -567,7 +568,7 @@ window.TRIP = (function () {
           plan: 'Six final nights: the palaces at opening, Bukchon\'s hanok mornings, Ikseon-dong and Seongsu-dong for coffee, Gwangjang market and Euljiro\'s pocha alleys at night, a Han River picnic, and the DMZ or Suwon if the mood takes you.',
           notes: ['Gyeongbokgung shuts Tuesdays, Changdeokgung Mondays', 'Jun 16: AREX to Incheon for the flight home'] },
       ],
-      decisions: ['Placed Jun 2–16 right after China Spring: Korea stays warm, dry, and sunny (24–26°C) until the Jangma monsoon arrives in late June', 'Routed south-to-north (Jeju → Busan → Gyeongju → Seoul) so the last 6 nights of the entire trip are in Seoul, giving a stress-free departure from Incheon (ICN) megahub to São Paulo'],
+      decisions: ['Korea last because it stays 24–26°C and dry until the Jangma monsoon arrives in late June', 'South to north, so the final six nights are in Seoul — one AREX ride to Incheon for the long-haul home'],
     },
   ];
 

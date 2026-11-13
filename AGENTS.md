@@ -138,6 +138,9 @@ precompiled `dist/*.js` bundles.
   timeline shows the dates; bookings live in `todo-data.js`), and never a flat
   bullet list — a chip that restates a todo note is duplication. Detail is not
   the enemy; unordered detail is.
+- **`decisions` are route reasoning only** — why this stop, this order, this base,
+  this month. Never how the nights were reallocated or what the plan used to be:
+  that is history, and history lives in `.opencode/decisions.md`.
 - **Every data edit must pass** `node scripts/validate-photo-urls.mjs`, plus day
   sums, date continuity, geo coverage, budget arithmetic, and todo chapter ids.
   A chapter's `end` is its **exit day, not its last night**; `places[].days` are
