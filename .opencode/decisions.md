@@ -8,6 +8,37 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-13 — Hosting is Cloudflare at `sabbatical.jeitinhovibe.online`; GitHub Pages is retired
+
+Verified, not assumed: `gh repo view` reports owner `jeitinhovibe`, and after the
+transfer `mlcantadori.github.io/sabbatical-planning/` returns **404** — GitHub
+Pages does not follow a repo transfer, only the git remote does. That dead URL is
+what made a hosting change cheap: there was no working public link to preserve.
+
+- **Decision: Cloudflare Workers with static assets, not Pages.** `wrangler`
+  itself now delegates `pages project create` to Workers, so the fork in the road
+  was "legacy Pages via `--force`" or the current path. Chose Workers: the site is
+  pure files, needs no Worker code, and `wrangler.jsonc` puts the project, the
+  custom domain, and the cert in version control instead of a dashboard.
+- **Custom domain, because the zone was already here.** `jeitinhovibe.online`
+  lives in the *Jeitinho Vibe* account, so `sabbatical.jeitinhovibe.online` costs
+  nothing extra and gives a stable URL that survives the next repo move. The
+  `*.workers.dev` URL still exists as the project's raw endpoint.
+- **Deploy is CI, with a local escape hatch.** `.github/workflows/deploy.yml`
+  publishes `main` on push and gives each same-repo PR a Cloudflare Preview at
+  `pr-<number>.sabbatical.jeitinhovibe.online`, deleting it when the PR closes.
+  The `verify` job rebuilds `dist/` and fails if the committed bundles are stale,
+  which is the "my change didn't appear" bug caught before it ships. Secrets:
+  `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID`.
+- **Previews are Cloudflare Previews, not Pages directories.** `previews_enabled`
+  on the custom-domain route makes Cloudflare mint the wildcard DNS record and
+  certificate, so a preview is one extra label on the real domain.
+- **Still on a human:** the Google OAuth client behind Calendar/Tasks sync must
+  add `https://sabbatical.jeitinhovibe.online` to *Authorized JavaScript origins*,
+  or Sync fails with `origin_mismatch` no matter what the code says.
+
+---
+
 ## 2026-11-12 — Alishan: 14 days is the real window, and the gate ticket is inside the train order
 
 Checked against the operator's own 售票說明 (afrch.forest.gov.tw/0000270) rather

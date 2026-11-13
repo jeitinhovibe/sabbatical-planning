@@ -3,3 +3,5 @@ node_modules/
 .DS_Store
 calendar-config.js
 reviews/
+_site/
+.wrangler/

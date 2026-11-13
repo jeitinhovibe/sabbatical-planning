@@ -1,0 +1,183 @@
+name: Deploy site
+
+# Publishes the static site to Cloudflare Workers (static assets):
+#   main        -> https://sabbatical.jeitinhovibe.online
+#   pull request -> https://pr-<number>.sabbatical.jeitinhovibe.online
+#
+# The site is files only — no server code — so the job stages `_site/` with
+# `./deploy.sh stage` and lets wrangler upload it. Previews are Cloudflare
+# Previews: one per PR, named `pr-<number>`, deleted when the PR closes.
+#
+# Secrets (repo settings): CLOUDFLARE_API_TOKEN with Workers Scripts, Workers
+# Routes and DNS edit; CLOUDFLARE_ACCOUNT_ID = 9b30dc9ed19dff935fa4e6a6cb4ae6a7.
+# Fork PRs are skipped — they do not get the secrets.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: deploy-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    name: Verify dist/ matches sources
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      # `dist/` is committed, so a stale bundle is a silent production bug.
+      - name: Rebuild the bundles
+        run: ./build.sh
+
+      - name: Fail if a bundle is stale
+        run: |
+          if ! git diff --exit-code -- dist/; then
+            echo "::error::dist/ is out of date — run ./build.sh and commit the result."
+            exit 1
+          fi
+
+  deploy:
+    name: Deploy main
+    needs: verify
+    if: >-
+      github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stage the site
+        run: ./deploy.sh stage
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
+          command: deploy
+
+      - name: Smoke test the live site
+        run: |
+          url=https://sabbatical.jeitinhovibe.online
+          code=000
+          for attempt in 1 2 3 4 5; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$url/")
+            [ "$code" = "200" ] && break
+            sleep 10
+          done
+          echo "GET / -> $code"
+          [ "$code" = "200" ] || exit 1
+          # Every cache-busted bundle named by index.html must resolve.
+          for asset in $(grep -o 'dist/[a-z-]*\.js?v=[0-9]*' index.html); do
+            curl -fsS -o /dev/null "$url/$asset" || exit 1
+            echo "ok $asset"
+          done
+
+  preview:
+    name: Deploy PR preview
+    needs: verify
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.action != 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Stage the site
+        run: ./deploy.sh stage
+
+      - name: Upload the preview
+        id: cf
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
+          command: preview --name pr-${{ github.event.pull_request.number }}
+
+      - name: Comment the preview URL
+        uses: actions/github-script@v7
+        env:
+          PREVIEW_URL: ${{ steps.cf.outputs.preview-url }}
+        with:
+          script: |
+            const marker = '<!-- pr-preview-link -->';
+            const url = process.env.PREVIEW_URL;
+            if (!url) {
+              core.setFailed('Cloudflare returned no preview URL');
+              return;
+            }
+            const body = [
+              marker,
+              `🔎 **Preview:** ${url}`,
+              '',
+              `_Updated ${new Date().toISOString()}_`,
+            ].join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+            }
+
+  cleanup-preview:
+    name: Remove PR preview
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Delete the preview
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
+          command: preview delete --name pr-${{ github.event.number }}
+
+      - name: Mark the preview as removed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- pr-preview-link -->';
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+            const existing = comments.find((c) => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: existing.id,
+                body: `${marker}\n🔎 Preview removed (PR closed).`,
+              });
+            }

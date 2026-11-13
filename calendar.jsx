@@ -6,7 +6,7 @@
 //   1. https://console.cloud.google.com → new project → enable Google Calendar API
 //   2. APIs & Services → Credentials → Create Credentials → OAuth client ID
 //      (type: Web application)
-//   3. Authorized JavaScript origins: https://mlcantadori.github.io
+//   3. Authorized JavaScript origins: https://sabbatical.jeitinhovibe.online
 //      (plus http://localhost:8000 for local testing)
 //   4. Copy calendar-config.example.js → calendar-config.js and paste the ID,
 //      OR paste it when the Sync button asks (stored in this browser only).

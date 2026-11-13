@@ -1,0 +1,31 @@
+// Cloudflare Workers deployment of the static site.
+//
+// The site is plain files: no Worker code, only static assets. `deploy.sh`
+// stages them into `_site/` (the same excludes the old Pages job used), and
+// `wrangler deploy` uploads that directory.
+//
+//   ./deploy.sh            -> production: https://sabbatical.jeitinhovibe.online
+//   ./deploy.sh preview    -> upload-only version with a preview URL, no traffic
+//
+// The custom domain is created on deploy (DNS record + certificate) because
+// the zone jeitinhovibe.online lives in the same account.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sabbatical-planning",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./_site"
+  },
+  "routes": [
+    {
+      "pattern": "sabbatical.jeitinhovibe.online",
+      "custom_domain": true,
+      // Per-PR previews get <preview>.sabbatical.jeitinhovibe.online, with the
+      // wildcard DNS record and certificate created by Cloudflare.
+      "previews_enabled": true
+    }
+  ],
+  // Enables `wrangler preview` — the per-PR previews CI publishes. Empty on
+  // purpose: assets and compatibility stay at the top level.
+  "previews": {}
+}
