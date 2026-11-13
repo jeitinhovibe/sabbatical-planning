@@ -122,10 +122,13 @@ precompiled `dist/*.js` bundles.
   (the plan — source of truth), `itinerary-geo.js` (coordinates),
   `itinerary-photos.js` (keyword → local image), `itinerary-store.js` (state +
   cache key), `todo-data.js` (bookings).
-- **Cache invalidation is manual and mandatory.** Bump the matching `?v=` in
-  `index.html` when a data or bundle file changes; bump `LS_KEY` in
-  `itinerary-store.js` when the *shape* of saved state changes. Forgetting this is
-  the classic "my change didn't appear" bug.
+- **Cache busting is the host's job, not yours.** Cloudflare serves every file
+  with `max-age=0` + an ETag, so a changed bundle is revalidated on the next
+  load; `index.html` has no query strings and needs none. The one manual key is
+  `LS_KEY` in `itinerary-store.js` — bump it when the *shape* of saved state
+  changes, or old localStorage loads into new code. If you ever add a `_headers`
+  file with `immutable`/long `max-age`, freshness stops being automatic: hash
+  the filenames in `build.sh` instead of reintroducing `?v=` by hand.
 - **Photos are vendored** — no hotlinks. New image: add the file, map a keyword,
   credit it in `extra-pictures/CREDITS.md`.
 - **Every data edit must pass** `node scripts/validate-photo-urls.mjs`, plus day

@@ -85,8 +85,10 @@ jobs:
           done
           echo "GET / -> $code"
           [ "$code" = "200" ] || exit 1
-          # Every cache-busted bundle named by index.html must resolve.
-          for asset in $(grep -o 'dist/[a-z-]*\.js?v=[0-9]*' index.html); do
+          # Every local asset the page asks for must resolve.
+          assets=$(grep -oE '(src|href)="[^":]+\.(js|css)"' index.html | sed -E 's/.*="([^"]+)"/\1/')
+          [ -n "$assets" ] || { echo "no local assets found in index.html"; exit 1; }
+          for asset in $assets; do
             curl -fsS -o /dev/null "$url/$asset" || exit 1
             echo "ok $asset"
           done

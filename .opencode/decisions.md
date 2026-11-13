@@ -8,7 +8,27 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
-## 2026-11-13 — PR previews come from the shared org workflow
+## 2026-11-13 — `?v=` query strings are gone; the host guarantees freshness
+
+Measured on the live site, not assumed: every file — HTML, `dist/*.js`, CSS,
+images — returns `cache-control: public, max-age=0, must-revalidate` with an
+ETag (`If-None-Match` → 304), and `/` carries no ETag at all, so the document is
+re-read on every visit and can never point at a stale bundle.
+
+- **Why it existed:** GitHub Pages served `max-age=600`, a ten-minute window
+  where the HTML and the JS behind it could disagree. A hand-bumped query string
+  was the only lever. Cloudflare removed the cause, so the counter became a
+  manual step protecting against nothing.
+- **Removed:** all 14 `?v=` references in `index.html`, plus the deployed-site
+  smoke test's dependence on parsing them (it now curls every local `src`/`href`).
+- **Kept:** `LS_KEY`, which is a different problem — that one guards *state*
+  shape, not bytes, and still needs a human.
+- **Re-entry condition:** a `_headers` file with `immutable` or a long
+  `max-age` makes freshness manual again. The fix then is content-hashed
+  filenames from `build.sh`, never a re-bumped query string.
+
+---
+
 
 Two Cloudflare apps now need previews, so the pipeline moved out of this repo
 instead of being copied a second time with small differences.
