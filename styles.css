@@ -978,6 +978,10 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   white-space: nowrap;
   pointer-events: none;
 }
+/* Opacity is driven per-frame (rim fade); the declutter fade gets its own
+   span so a transition here cannot lag or flap the continuous value. */
+.eq-country > span { transition: opacity .18s linear; }
+.eq-country > span.is-off { opacity: 0; }
 /* Pins */
 .map-pin-wrap { background: transparent !important; border: none !important; pointer-events: none; }
 .map-pin {

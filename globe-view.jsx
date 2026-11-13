@@ -267,6 +267,19 @@
 
       rebuildAll();
 
+      // Country labels are measured once for the on-disc test; the webfont can
+      // arrive after the first frame and change how wide a word is, so drop the
+      // cached sizes and let the next tick re-measure.
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+          const s = st.current; if (!s) return;
+          for (let i = 0; i < s.overlay.children.length; i++) {
+            const el = s.overlay.children[i];
+            if (el._country) { el._w = 0; el._h = 0; }
+          }
+        });
+      }
+
       return () => {
         ro.disconnect();
         if (st.current) {
@@ -429,9 +442,46 @@
       return mesh;
     }
 
+    // Screen-space circle the planet occupies. The camera always looks at the
+    // globe's centre (OrbitControls targets the origin, even when a chapter is
+    // selected), so the silhouette is a circle at the screen centre with
+    // radius f·R/√(d²−R²) for R = 1.
+    function globeDisc() {
+      const s = st.current;
+      const d = s.camera.position.length();
+      const f = (s.h * 0.5) / Math.tan((s.camera.fov * Math.PI) / 360);
+      return {
+        cx: s.w * 0.5,
+        cy: s.h * 0.5,
+        r: d > 1 ? f / Math.sqrt(d * d - 1) : f,
+      };
+    }
+
+    // Label widths for the on-disc test, measured lazily: offsetWidth forces
+    // layout, so measuring ~80 labels every frame would be wasteful. Invalidated
+    // once the webfont lands (see the mount effect), since the fallback mono
+    // face can be wider than JetBrains Mono.
+    function countrySize(el) {
+      if (!el._w) {
+        const prev = el.style.display;
+        el.style.display = '';
+        el._w = el.offsetWidth || 1;
+        el._h = el.offsetHeight || 1;
+        el.style.display = prev;
+      }
+      return [el._w, el._h];
+    }
+
     function updateOverlay() {
       const s = st.current; if (!s) return;
+      const disc = globeDisc();
+      // Tangency latitude for a sphere of radius 1 seen from d: the horizon is
+      // n·ĉ = 1/d, not 0. Anything below it is behind the planet's body.
+      const horizon = 1 / s.camera.position.length();
       const kids = s.overlay.children;
+      // Country labels that survive the on-disc test, for the declutter pass
+      // below. Filled in DOM order, resolved after every position is known.
+      const cand = [];
       for (let i = 0; i < kids.length; i++) {
         const el = kids[i];
         if (el._hidden) {
@@ -442,8 +492,13 @@
         if (!a) continue;
         const wp = llv(a[0], a[1], 1);
         const facing = wp.clone().normalize().dot(s.camera.position.clone().normalize());
-        if (facing < (el._country ? 0.0 : 0.08)) {
+        // Visible cap, not the front hemisphere. A point with n·ĉ between
+        // R/d and 0 is past the limb but still on the camera's side, so it
+        // projects *inside* the disc and draws through the planet — that is
+        // how a CUBA label survived on the wrong side of the world.
+        if (facing < horizon) {
           el.style.display = 'none';
+          el._shown = false;
           continue;
         }
         const sp = wp.clone().project(s.camera);
@@ -453,6 +508,60 @@
         el.style.transform = el._country
           ? `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)`
           : `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
+        if (el._country) {
+          // A country label belongs to the map only while the whole word sits
+          // on the planet. Anchored at a surface point, its centre is inside
+          // the limb while half the text hangs off into space — that reads as
+          // a floating HUD callout, not a place name. Fade the label over the
+          // last 14px of travel instead of toggling a class at the edge: a
+          // binary threshold flaps when a slow drag jitters by a pixel at the
+          // rim, which is the flicker you saw. Opacity is continuous, so the
+          // same jitter is invisible.
+          const [lw, lh] = countrySize(el);
+          const ox = Math.abs(x - disc.cx) + lw / 2;
+          const oy = Math.abs(y - disc.cy) + lh / 2;
+          const inside = disc.r - Math.sqrt(ox * ox + oy * oy);
+          const fade = Math.max(0, Math.min(1, inside / 14));
+          el.style.opacity = fade === 1 ? '' : fade.toFixed(3);
+          if (fade < 0.6) {
+            el._shown = false;
+          } else {
+            const dx = x - disc.cx, dy = y - disc.cy;
+            cand.push({ el, x, y, w: lw, h: lh, dist: Math.sqrt(dx * dx + dy * dy) });
+          }
+        }
+      }
+
+      // Declutter: greedy, nearest-to-centre first. Font size is deliberately
+      // zoom-invariant — scaling it with the globe would scale label widths
+      // and anchor spacing by the same factor and leave every overlap exactly
+      // where it was. The only thing that actually separates tight clusters
+      // (Norway/Sweden/Finland at full-planet zoom) is dropping the labels
+      // that collide, which is what a map does as you zoom out. Zooming in
+      // spreads the anchors and they come back.
+      //
+      // Labels already on screen get an 8px head start, so two labels sitting
+      // at the same distance cannot trade places frame after frame; a hidden
+      // one has to be clearly closer to win.
+      cand.sort((a, b) => (a.dist - (a.el._shown ? 8 : 0)) - (b.dist - (b.el._shown ? 8 : 0)));
+      const kept = [];
+      for (let i = 0; i < cand.length; i++) {
+        const c = cand[i];
+        let clear = true;
+        for (let j = 0; j < kept.length; j++) {
+          const k = kept[j];
+          // A few px of breathing room so two labels never touch.
+          if (Math.abs(c.x - k.x) < (c.w + k.w) / 2 + 4
+            && Math.abs(c.y - k.y) < (c.h + k.h) / 2 + 3) {
+            clear = false;
+            break;
+          }
+        }
+        c.el._shown = clear;
+        // The inner span carries the collision fade, so the continuous rim
+        // opacity on the parent stays untouched.
+        c.el.firstChild.classList.toggle('is-off', !clear);
+        if (clear) kept.push(c);
       }
     }
 
@@ -497,7 +606,12 @@
       el.className = 'eq-country';
       el._anchor = [lat, lng];
       el._country = true;
-      el.textContent = name;
+      // Inner span: the rim fade drives the parent's opacity continuously,
+      // while the declutter fade lives here so the two never fight over one
+      // property.
+      const span = document.createElement('span');
+      span.textContent = name;
+      el.appendChild(span);
       return el;
     }
 
