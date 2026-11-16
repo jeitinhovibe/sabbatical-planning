@@ -46,6 +46,7 @@ window.PHOTO_IDS = {
   'huangshan sea of clouds':     'extra-pictures/china-e1/huangshan-sea-of-clouds.jpg',
   'hongcun moon pond':           'extra-pictures/china-e1/hongcun-moon-pond.jpg',
   'west lake':                   'extra-pictures/china-e1/west-lake.jpg',
+  'hangzhou qianjiang':          'extra-pictures/china-e1/hangzhou-qianjiang.jpg',
   'suzhou garden':               'extra-pictures/china-e1/suzhou-garden.jpg',
   // ── Hong Kong ─────────────────────────────────────────────────────
   'hong kong skyline':           'extra-pictures/hk/hong-kong-skyline.jpg',

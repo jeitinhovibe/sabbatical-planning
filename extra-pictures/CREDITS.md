@@ -115,9 +115,11 @@ at five times the linear resolution.
 | File | Author | License |
 |---|---|---|
 | `china-e1/hongcun-moon-pond.jpg` | EditQ | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| `china-e1/hangzhou-qianjiang.jpg` | EditQ | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
 
-Sourced from Wikimedia Commons (`File:Moon Pond, Hongcun.jpg`); cropped and
-recompressed locally.
+Sourced from Wikimedia Commons (`File:Moon Pond, Hongcun.jpg`,
+`File:杭州钱江新城 4 (cropped).jpg` — Qianjiang New City skyline); cropped,
+resized and recompressed locally.
 
 ## Added Oct 2026
 

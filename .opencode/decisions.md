@@ -843,14 +843,15 @@ Shanghai gets three nights (Nov 19–22), Hangzhou keeps one (Nov 22–23).
   both survive, and the HGH flight on Nov 23 is untouched. Hangzhou was never
   the constraint — *the 08:00 out of HGH* was.
 - **What Hangzhou is now:** one night in a hotel beside HGH, not West Lake and
-  not the city at all. Its only job is the morning — the 08:00 flight becomes a
-  walk or a shuttle, so the alarm moves from 04:45 to 06:15. West Lake at peak
-  colour is lost from the plan; the spring chapter already carries Suzhou, and
-  Shanghai's own November days are the substitute.
+  not the city at all, reached on **Line 19** — which serves Hangzhou East, West
+  *and* the airport, so the G7307 station question stops mattering and no taxi
+  is needed either night. The 08:00 flight becomes a walk, so the alarm moves
+  from 04:45 to 06:15. West Lake at peak colour is lost; the spring chapter
+  already carries Suzhou, and Shanghai's own November days are the substitute.
 - **Refunded in full:** the 4n Hangzhou stay ($156) and the G2396
   Huangshan North → Hangzhou East ($33). Net cost of the swap: +$47 transport
   ($58 + $22 vs $33), +$2 lodging ($128 + $30 vs $156).
 - **Open loop:** the ticket says G7307 at 16:20, but published charts put the
   16:20 departure at Shanghai South (G7303 → Hangzhou East) and G7307 at
   Hongqiao 17:27 → Hangzhou *West*. Confirm station and arrival before the
-  Nov 22 taxi out to the airport zone — East is roughly 20min closer than West.
+  Nov 22 metro: East is ~20min from the airport on Line 19, West ~55min.
