@@ -2,6 +2,17 @@
 
 Trip photos are vendored locally so the site has no hotlinked images.
 
+## Added Nov 2026 — Manila (stop photo)
+
+| File | Author | License |
+|---|---|---|
+| `philippines/intramuros-manila.jpg` | Ray in Manila | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0) |
+
+Sourced from Wikimedia Commons (`File:Intramuros, Manila, Philippines.jpg`,
+4153×3323 via Flickr), General Luna street inside the walls; 1400px, recompressed.
+Replaces the previous Intramuros file in place under the same name, so the
+keyword, mapping and the Manila stop need no other change.
+
 ## Added Nov 2026 — Seoul (stop photo)
 
 | File | Author | License |
