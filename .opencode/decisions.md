@@ -855,3 +855,26 @@ Shanghai gets three nights (Nov 19–22), Hangzhou keeps one (Nov 22–23).
   16:20 departure at Shanghai South (G7303 → Hangzhou East) and G7307 at
   Hongqiao 17:27 → Hangzhou *West*. Confirm station and arrival before the
   Nov 22 metro: East is ~20min from the airport on Line 19, West ~55min.
+
+## 2026-11-16 — Japan snow bookings: move the beds, not the trains
+
+Booking-window review of the snow segment. Two rules fell out of it, both
+worth keeping for the rest of the trip:
+
+- **Lodging deadlines move earlier; transport deadlines do not.** Japanese
+  Shinkansen reserved seats and express buses only go on sale ~1 month out, so
+  a January due date for a February leg is already correct — pulling it forward
+  buys a reminder, not a fare. Lodging in a small ski village is the opposite:
+  walkable lodges open months ahead and simply sell out, mostly without
+  discounting. Nozawa's own portal does sell early-bird lift passes, and Nagano
+  runs a prefecture discount campaign — those are the only genuine price levers
+  in the segment.
+- **Nozawa Feb 9–14 is the worst five nights of the month** — CNY runs Feb 5–13,
+  National Foundation Day is Feb 11, and the block ends on the 13–14 weekend.
+  That contradicts the chapter's "CNY lands in Tokyo, Myoko starts after it"
+  logic, but no date shuffle fixes it: the Tokyo→Jakarta flight on Feb 24 pins
+  the block, and any 5-night Nozawa window contains a weekend. Mitigation is
+  booking now at a free-cancellation rate, not re-cutting the calendar.
+- **Kept as-is:** gear rental + English lessons stay due Dec 1. Early booking
+  there secures sizes and slots rather than a price, and the reservation can
+  wait until the bases are certain.
