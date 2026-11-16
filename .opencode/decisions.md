@@ -832,3 +832,24 @@ noise, and it invites the same argument again.
   the mainland clock and TECO needs 3–5 business days. That is the only reason
   the chapter exists, and it was nowhere in the UI.
 - Chapters with nothing non-obvious to say still carry no section at all.
+
+## 2026-11-16 — Shanghai takes the friend meet; Hangzhou becomes a flight buffer
+
+The friend is in Shanghai on Nov 20–21, so the November Jiangnan block flipped:
+Shanghai gets three nights (Nov 19–22), Hangzhou keeps one (Nov 22–23).
+
+- **Why it works without moving the chapter:** the C3088 Huangshan North 13:20 →
+  Shanghai South 16:19 is direct, so the Hongcun dawn and the 11:00 departure
+  both survive, and the HGH flight on Nov 23 is untouched. Hangzhou was never
+  the constraint — *the 08:00 out of HGH* was.
+- **What Hangzhou is now:** one night near Hangzhou East, not West Lake. Its
+  only job is to turn a three-hour dawn run from Shanghai into a forty-minute
+  taxi. West Lake at peak colour is lost from the plan; the spring chapter
+  already carries Suzhou, and Shanghai's own November days are the substitute.
+- **Refunded in full:** the 4n Hangzhou stay ($156) and the G2396
+  Huangshan North → Hangzhou East ($33). Net cost of the swap: +$47 transport
+  ($58 + $22 vs $33), +$2 lodging ($128 + $30 vs $156).
+- **Open loop:** the ticket says G7307 at 16:20, but published charts put the
+  16:20 departure at Shanghai South (G7303 → Hangzhou East) and G7307 at
+  Hongqiao 17:27 → Hangzhou *West*. Confirm station and arrival before booking
+  the Nov 22 taxi; a West arrival adds ~30min to the station-side hotel.

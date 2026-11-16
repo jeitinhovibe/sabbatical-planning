@@ -27,7 +27,7 @@ proposal says so and explains what it buys. Nothing here is a veto.
 | # | Constraint | Notes |
 |---|---|---|
 | P4 | **Thailand coast/islands** | A stated must. Not tied to a particular month. |
-| P5 | **Committed dates** | Whatever is `done: true` in `todo-data.js` — read it, never keep a parallel list. The only fixed thing with no booking record is the Hong Kong / Shenzhen friend visit in late November. |
+| P5 | **Committed dates** | Whatever is `done: true` in `todo-data.js` — read it, never keep a parallel list. The only fixed thing with no booking record is the Shanghai friend meet, Nov 20–21. |
 
 ### Strong preferences
 

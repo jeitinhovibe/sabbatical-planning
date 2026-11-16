@@ -186,8 +186,7 @@ verified or labelled as estimates. Never invent a flight, ferry, or border rule.
   own merits.
 - **Committed = `done: true` in `todo-data.js`.** That file is the source of truth
   for what is booked, paid, or fixed. **Read it before proposing to move a date.**
-- **Not in the todo, still fixed:** the Hong Kong / Shenzhen friend visit in late
-  November. Everything else is negotiable, including snow dates and the trip end.
+- **Not in the todo, still fixed:** the friend meet in Shanghai, Nov 20–21. Everything else is negotiable, including snow dates and the trip end.
 - **Brazilian passports.** Do not assume visa-free access or trust a stored table.
   Each entry is a routing decision with a cost — verify when it matters. See
   `.opencode/trip-brief.md` § Visa posture for the two consequences baked in.
