@@ -315,7 +315,7 @@ window.TRIP = (function () {
         { name: 'Guangzhou', photo: 'guangzhou canton tower', days: 2, query: 'Shamian Island, Guangzhou',
           plan: 'Two days of Cantonese eating — morning dim sum where it was born, roast goose from a proper siu mei shop — with Shamian\'s arcades, the Chen Clan Academy and Canton Tower at night between meals.',
           notes: ['Nov 28 is the second visa entry — it restarts the 30 days'] },
-        { name: 'Shenzhen', photo: 'huaqiangbei', days: 6, query: 'Shekou, Shenzhen',
+        { name: 'Shenzhen', photo: 'shenzhen nanshan skyline', days: 6, query: 'Nanshan District, Shenzhen',
           plan: 'Six nights built around friends: four days together, then two quieter ones once they go — Huaqiangbei\'s electronics floors, OCT-LOFT\'s galleries, Nantou\'s old town, Lianhuashan for the skyline, and Shekou for the sea.', },
       ],
       decisions: ['Macau cut: two nights bought a ferry and a second airport for a chapter that ended in transit, and Shenzhen already had the bed and the friends', 'Eight days, one 30-day entry: this block is a bridge between Hong Kong and Malaysia, not a destination on its own'],

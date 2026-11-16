@@ -110,6 +110,16 @@ the rest). GIBS serves the same public-domain Visible Earth composite with
 bathymetry, which is what the old hotlinked `unpkg.com/three-globe` texture was —
 at five times the linear resolution.
 
+## Added Nov 2026 — China E2 (Shenzhen)
+
+| File | Author | License |
+|---|---|---|
+| `china-e2/shenzhen-nanshan-skyline.jpg` | Charlie fong | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+
+Sourced from Wikimedia Commons (`File:China Resources Headquarters&Shenzhen Bay
+gymnasium in Nanshan District2020.jpg` — China Resources HQ and Shenzhen Bay
+Sports Center from Talent Park); resized and recompressed locally.
+
 ## Added Nov 2026 — China E1 (Hongcun night)
 
 | File | Author | License |

@@ -55,6 +55,7 @@ window.PHOTO_IDS = {
   'guangzhou night skyline':     'extra-pictures/china-e2/guangzhou-night-skyline.jpg',
   'guangzhou canton tower aerial':'extra-pictures/china-e2/guangzhou-canton-tower-day.jpg',
   'huaqiangbei':                 'extra-pictures/china-e2/huaqiangbei.jpg',
+  'shenzhen nanshan skyline':    'extra-pictures/china-e2/shenzhen-nanshan-skyline.jpg',
   'guangzhou canton tower':      'extra-pictures/china-e2/guangzhou-canton-tower.jpg',
   'shanghai bund night':         'extra-pictures/china-e2/shanghai-bund-night.jpg',
   'chengdu panda':               'extra-pictures/china-e2/chengdu-panda.jpg',
