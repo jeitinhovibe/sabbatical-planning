@@ -145,11 +145,12 @@ Practical notes:
   copy states back into `todo-data.js` (the durable record) and commit them.
 - Every booking row carries its own facts, not just prose: a stay has `area`,
   `perNight`, `checkin`, `checkout`; a flight/ferry/bus has `from`, `to`,
-  `price`, `date`. Add `est: true` when the number is a model rate rather than
-  an actual — the page prints "est." beside it. `scripts/validate-todo.mjs`
-  (run by the pre-commit hook) fails a row that is missing one of them, whose
-  dates fall outside its chapter, or that repeats its dates in the title or the
-  opening of the note — the sub-header owns the dates.
+  `price`, `date`, plus `time` when a departure time is known and `until` when
+  one booking covers several legs. Add `est: true` when the number is a model
+  rate rather than an actual — the page prints "est." beside it.
+  `scripts/validate-todo.mjs` (run by the pre-commit hook) fails a row that is
+  missing one of them, whose dates fall outside its chapter, or that repeats its
+  dates, time or price in the title — the sub-header owns those.
 - `calendar-config.js` (gitignored, Google OAuth client ID) is optional — copy
   `calendar-config.example.js` to create it.
 

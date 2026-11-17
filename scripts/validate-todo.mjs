@@ -80,10 +80,28 @@ for (const t of items) {
     if (!t.from) errors.push(`${where}: leg has no departure station/airport`);
     if (!t.to) errors.push(`${where}: leg has no arrival station/airport`);
     if (typeof t.price !== 'number' || t.price < 0) errors.push(`${where}: leg has no price`);
+    // Same rule as stays: the sub-header owns the date, the time and the money.
+    const MONTH = '(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)';
+    if (new RegExp(`${MONTH}\\s\\d{1,2}`).test(t.title || '')) {
+      errors.push(`${where}: title carries a date the sub-header already shows`);
+    }
+    if (/\d{1,2}:\d{2}/.test(t.title || '')) {
+      errors.push(`${where}: title carries a departure time — put it in \`time\``);
+    }
+    if (/\$/.test(t.title || '')) errors.push(`${where}: title carries a price — put it in \`price\``);
+    if (t.time !== undefined && !/^\d{2}:\d{2}(–\d{2}:\d{2})?$/.test(t.time)) {
+      errors.push(`${where}: time '${t.time}' is not HH:MM or HH:MM–HH:MM`);
+    }
     if (!ISO.test(t.date || '')) {
       errors.push(`${where}: leg has no travel date`);
     } else if (ch && (t.date < ch.start || t.date > ch.end)) {
       errors.push(`${where}: travel date ${t.date} is outside chapter ${ch.id} (${ch.start}–${ch.end})`);
+    }
+    if (t.until !== undefined) {
+      // A multi-leg booking may land after the chapter it starts in — that is
+      // what a move is. Only the departure has to sit inside the chapter.
+      if (!ISO.test(t.until)) errors.push(`${where}: until is not a YYYY-MM-DD date`);
+      else if (t.until < t.date) errors.push(`${where}: until ${t.until} is before date ${t.date}`);
     }
   }
 }
