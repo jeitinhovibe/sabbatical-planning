@@ -131,6 +131,14 @@
     const renderItem = (t, showGroup) => {
       const od = !t.done && t.due && t.due < today;
       const soon = !t.done && !od && t.due && t.due <= plusDaysStr(today, 14);
+      const price = n => `$${n % 1 ? n.toFixed(2) : n}`;
+      const span = (a, b) => {
+        const A = fmt(a),
+          B = fmt(b);
+        return A.split(' ')[0] === B.split(' ')[0] ? `${A}–${B.split(' ')[1]}` : `${A} – ${B}`;
+      };
+      // The booking facts, always in the same order: where, what it costs, when.
+      const facts = t.cat === 'stay' && t.checkin ? [t.area, t.perNight ? `${price(t.perNight)}/night${t.est ? ' est.' : ''}` : 'lodging free', span(t.checkin, t.checkout)] : t.from && t.to ? [`${t.from} → ${t.to}`, `${price(t.price)}${t.est ? ' est.' : ''}`, t.date ? fmt(t.date) : null] : null;
       return /*#__PURE__*/React.createElement("div", {
         key: t.id,
         className: `kit-row${t.done ? ' is-done' : ''}`
@@ -142,13 +150,17 @@
         className: "kit-row-body"
       }, /*#__PURE__*/React.createElement("div", {
         className: "kit-row-title"
-      }, t.title), /*#__PURE__*/React.createElement("div", {
+      }, t.title), facts && /*#__PURE__*/React.createElement("div", {
+        className: "kit-facts"
+      }, facts.filter(Boolean).map((f, i) => /*#__PURE__*/React.createElement("span", {
+        key: i
+      }, f))), /*#__PURE__*/React.createElement("div", {
         className: "kit-row-meta"
       }, /*#__PURE__*/React.createElement("span", {
         className: "kit-cat"
       }, CAT_LABEL[t.cat] || t.cat), showGroup && /*#__PURE__*/React.createElement("span", {
         className: "kit-row-group"
-      }, groupTag(t)), t.place && /*#__PURE__*/React.createElement("span", {
+      }, groupTag(t)), t.place && !facts && /*#__PURE__*/React.createElement("span", {
         className: "kit-row-place"
       }, t.place), t.note && /*#__PURE__*/React.createElement("span", {
         className: "kit-row-note"

@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "./build.sh",
-    "validate:photos": "node scripts/validate-photo-urls.mjs"
+    "validate:photos": "node scripts/validate-photo-urls.mjs",
+    "validate:todo": "node scripts/validate-todo.mjs"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",

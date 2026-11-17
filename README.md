@@ -143,6 +143,12 @@ Practical notes:
   the spectrum there, not in `itinerary-data.js`.
 - Todo ticks in the UI live in the browser; use the page's **Export** button to
   copy states back into `todo-data.js` (the durable record) and commit them.
+- Every booking row carries its own facts, not just prose: a stay has `area`,
+  `perNight`, `checkin`, `checkout`; a flight/ferry/bus has `from`, `to`,
+  `price`, `date`. Add `est: true` when the number is a model rate rather than
+  an actual — the page prints "est." beside it. `scripts/validate-todo.mjs`
+  (run by the pre-commit hook) fails a row that is missing one of them, or whose
+  dates fall outside its chapter.
 - `calendar-config.js` (gitignored, Google OAuth client ID) is optional — copy
   `calendar-config.example.js` to create it.
 

@@ -8,6 +8,52 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-17 — A booking row carries its facts as fields, not buried in prose
+
+Asked for every lodging answer to name its area, its nightly price and its dates,
+and every flight/ferry/bus its price, both ends and its date. The ledger had most
+of that as prose inside `note` — inconsistent, unqueryable, and silently
+incomplete on 40-odd rows.
+
+- **Decision:** `stay` rows gain `area`, `perNight`, `checkin`, `checkout`;
+  `transport` rows gain `from`, `to`, `price`, `date`. `est: true` marks a model
+  rate, and the page prints *est.* next to it so a guess never reads as a fare.
+- **Rejected:** rewriting the notes into a fixed sentence. It reads fine and
+  breaks the moment the numbers move — and nothing can validate it.
+- **Rejected:** deriving dates from `itinerary-data.js` at render time. A chapter
+  is a window, not a stay; there is no per-stop date to derive from, and the one
+  place the two disagree is the one that matters.
+- **Cost:** `scripts/validate-todo.mjs`, run by the pre-commit hook, now fails a
+  row missing a fact or dated outside its chapter. Four rows that held two
+  separate bookings were split (`athens-1-athens-buffer`, `nepal-3-pre/-post`,
+  `indonesia-a-10-pre/-post`, `borneo-5-open/-close`) — one row, one booking.
+- **Known softness:** unbooked prices are estimates anchored to the chapter's
+  own lodging/transport budget, not fares found on a search page. They are
+  labelled; re-check before you say them out loud.
+
+---
+
+## 2026-11-17 — Previews get a browser user-agent in the smoke test
+
+The PR preview has been red on green deploys since 2026-11-16. Measured from a
+runner, not guessed: a bare `curl` to `pr-77.sabbatical.jeitinhovibe.online`
+returns `403` with `cf-mitigated: challenge` and the "Just a moment…" page — the
+request never reaches the Worker. The same request with a browser UA and
+`Accept: text/html` returns `200`.
+
+- **Decision:** fixed in the shared `jeitinhovibe/.github` pipeline (PR #1) and in
+  this repo's own `Deploy main` smoke test — browser UA plus `Accept` /
+  `Accept-Language`, and a warning that names Cloudflare when a challenge is what
+  came back.
+- **Rejected:** relaxing the gate on `403`. A 403 is also what an Access policy
+  looks like; tolerating it hides the day someone locks the site.
+- **Rejected:** disabling Bot Fight Mode on the zone. Real traffic protection for
+  a cosmetic CI signal, and it would be re-litigated the next time a bot floods.
+- **Re-entry condition:** if Cloudflare starts challenging browser-shaped
+  requests too, the check needs a service token, not a looser gate.
+
+---
+
 ## 2026-11-13 — `?v=` query strings are gone; the host guarantees freshness
 
 Measured on the live site, not assumed: every file — HTML, `dist/*.js`, CSS,
