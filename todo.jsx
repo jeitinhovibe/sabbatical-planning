@@ -126,6 +126,21 @@
     const renderItem = (t, showGroup) => {
       const od = !t.done && t.due && t.due < today;
       const soon = !t.done && !od && t.due && t.due <= plusDaysStr(today, 14);
+      const price = (n) => `$${n % 1 ? n.toFixed(2) : n.toLocaleString('en-US')}`;
+      const span = (a, b) => {
+        const A = fmt(a), B = fmt(b);
+        return A.split(' ')[0] === B.split(' ')[0] ? `${A}–${B.split(' ')[1]}` : `${A} – ${B}`;
+      };
+      // The booking facts, always in the same order: where, what it costs, when.
+      const facts = t.cat === 'stay' && t.checkin
+        ? [t.area, t.perNight ? `${price(t.perNight)}/night${t.est ? ' est.' : ''}` : 'lodging free', span(t.checkin, t.checkout)]
+        : (t.from && t.to)
+          ? [
+            `${t.from} → ${t.to}`,
+            `${price(t.price)}${t.est ? ' est.' : ''}`,
+            t.date ? `${t.until ? span(t.date, t.until) : fmt(t.date)}${t.time ? `, ${t.time}` : ''}` : null,
+          ]
+          : null;
       return (
         <div key={t.id} className={`kit-row${t.done ? ' is-done' : ''}`}>
           <button className={`booking-check${t.done ? ' is-done' : ''}`} onClick={() => toggle(t.id)} title={t.done ? 'Mark open' : 'Mark done'}>
@@ -133,10 +148,15 @@
           </button>
           <div className="kit-row-body">
             <div className="kit-row-title">{t.title}</div>
+            {facts && (
+              <div className="kit-facts">
+                {facts.filter(Boolean).map((f, i) => <span key={i}>{f}</span>)}
+              </div>
+            )}
             <div className="kit-row-meta">
               <span className="kit-cat">{CAT_LABEL[t.cat] || t.cat}</span>
               {showGroup && <span className="kit-row-group">{groupTag(t)}</span>}
-              {t.place && <span className="kit-row-place">{t.place}</span>}
+              {t.place && !facts && <span className="kit-row-place">{t.place}</span>}
               {t.note && <span className="kit-row-note">{t.note}</span>}
             </div>
           </div>

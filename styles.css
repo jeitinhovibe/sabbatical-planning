@@ -2073,6 +2073,17 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   letter-spacing: -.005em;
 }
 .kit-row.is-done .kit-row-title { text-decoration: line-through; }
+.kit-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  margin-top: 5px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: .02em;
+  color: var(--ink-2);
+}
+.kit-facts span + span::before { content: '·'; margin: 0 7px; color: var(--ink-4); }
 .kit-row-meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 9px; margin-top: 3px; }
 .kit-cat {
   font-family: var(--f-mono);

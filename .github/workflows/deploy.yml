@@ -77,10 +77,24 @@ jobs:
       - name: Smoke test the live site
         run: |
           url=https://sabbatical.jeitinhovibe.online
+          # Cloudflare's bot protection challenges a bare `curl` user-agent from
+          # a datacentre IP (403, `cf-mitigated: challenge`), which is not a
+          # signal about the deploy. Ask the way a browser would.
+          ua='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
+          get() {
+            curl -s -o /dev/null -D /tmp/smoke-headers -w '%{http_code}' --max-time 20 \
+              -A "$ua" \
+              -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8' \
+              -H 'Accept-Language: en-US,en;q=0.9' \
+              "$1" || true
+          }
           code=000
           for attempt in 1 2 3 4 5; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' "$url/")
+            code=$(get "$url/")
             [ "$code" = "200" ] && break
+            if grep -qi '^cf-mitigated: challenge' /tmp/smoke-headers 2>/dev/null; then
+              echo "::warning::Cloudflare challenged the runner itself ($url/ -> $code); the deploy may still be fine."
+            fi
             sleep 10
           done
           echo "GET / -> $code"
@@ -89,7 +103,8 @@ jobs:
           assets=$(grep -oE '(src|href)="[^":]+\.(js|css)"' index.html | sed -E 's/.*="([^"]+)"/\1/')
           [ -n "$assets" ] || { echo "no local assets found in index.html"; exit 1; }
           for asset in $assets; do
-            curl -fsS -o /dev/null "$url/$asset" || exit 1
+            code=$(get "$url/$asset")
+            [ "$code" = "200" ] || { echo "::error::$asset -> $code"; exit 1; }
             echo "ok $asset"
           done
 
