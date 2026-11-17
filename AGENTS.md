@@ -114,6 +114,14 @@ survey.
 Do not narrate the table or restate the itinerary; detail belongs in the PR body
 or `decisions.md`, linked.
 
+### Answer shape for lodging and transport
+
+- **Lodging:** neighbourhood/area + expected price per night (room, not per person)
+  + booking dates. Dates are stated, not explained — no recapping the timeline
+  around them ("after the Jan 1–3 travel surge"); that is the itinerary's job.
+- **Flights, ferries, buses:** expected price, date, and the real airport / port /
+  station at both ends — per leg. A city pair ("fly to Osaka") is not a leg.
+
 ## Part 2 — Building the app
 
 Static page, no server. `index.html` loads hand-written data scripts plus
