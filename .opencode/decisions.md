@@ -8,6 +8,28 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-17 — The row's title is the thing booked; the sub-header is everything else
+
+Second pass on the field kit, after the first one left dates in titles. The
+sub-header now owns **dates, nights, clock times, durations and fares**, and the
+title carries only what you are booking: `Bangkok stay`, not `Bangkok stay (3n)`;
+`Bangkok→Kaohsiung flight`, not `… flight Dec 29 (~3h30)`.
+
+- **Decision:** nights are *derived* from `checkin`/`checkout` and printed as
+  `Dec 26–29 (3n)`; `dur` (`~3h30`) is a new field alongside `time`; `date` +
+  `until` now render for attractions and cars too, so their dates left the titles.
+- **Rejected:** keeping the date in the title for attractions only, on the grounds
+  that nothing else showed it. Adding the field was cheaper than a rule with an
+  exception in it.
+- **Also removed:** every `✅` from the notes. The tick in the UI already says it,
+  and `Booked ✅ — $84 for 3 nights` became `Booked for $84 for 3 nights`.
+- **Enforced:** `validate-todo.mjs` fails a title that repeats a date, night count,
+  clock time, duration or price the row holds as a field. A title may still carry a
+  date when the row has no date field — that is the only exception, and it closes
+  by adding the field.
+
+---
+
 ## 2026-11-17 — A booking row carries its facts as fields, not buried in prose
 
 Asked for every lodging answer to name its area, its nightly price and its dates,

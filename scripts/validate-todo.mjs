@@ -49,19 +49,30 @@ for (const t of items) {
   if (t.ch !== 'prep' && !ch) errors.push(`${where}: chapter '${t.ch}' does not exist`);
   if (!ISO.test(t.due || '')) errors.push(`${where}: due is not a YYYY-MM-DD date`);
 
+  // The sub-header owns the dates, the clock, the duration and the money. Any
+  // row that carries one of those as a field must not repeat it in the title —
+  // otherwise the row says everything twice. Dates still belong in a title when
+  // the row has no date field to hold them.
+  const MONTH = '(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)';
+  if ((t.date || t.checkin) && new RegExp(`${MONTH}\\s\\d{1,2}`).test(t.title || '')) {
+    errors.push(`${where}: title carries a date the sub-header already shows`);
+  }
+  if (/(NT\$|R\$|\$|¥|€)\s?\d/.test(t.title || '')) {
+    errors.push(`${where}: title carries a price — put it in \`price\` or the note`);
+  }
+  if (/\d{1,2}:\d{2}/.test(t.title || '')) {
+    errors.push(`${where}: title carries a clock time — put it in \`time\``);
+  }
+  if (t.dur !== undefined && /\(~/.test(t.title || '')) {
+    errors.push(`${where}: title carries a duration — put it in \`dur\``);
+  }
+
   if (t.cat === 'stay') {
     stays++;
     if (!t.area) errors.push(`${where}: stay has no area`);
     if (typeof t.perNight !== 'number' || t.perNight < 0) errors.push(`${where}: stay has no perNight`);
-    // The sub-header prints area · price · dates, so the title and the note must
-    // not print the dates again — that is the duplication this shape exists to
-    // kill. Dates inside a sentence ("booked for the 1am Sep 25 arrival") stay.
-    const MONTH = '(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)';
     if (new RegExp(`^${MONTH}\\s\\d`).test(t.note || '')) {
       errors.push(`${where}: note opens with the dates the sub-header already shows`);
-    }
-    if (new RegExp(`${MONTH}\\s\\d{1,2}`).test(t.title || '')) {
-      errors.push(`${where}: title carries a date the sub-header already shows`);
     }
     if (/\(\d+n\)/.test(t.title || '') || /\(\d+n,/.test(t.title || '')) {
       errors.push(`${where}: title carries a night count — the sub-header derives it from the dates`);
@@ -83,16 +94,6 @@ for (const t of items) {
     if (!t.from) errors.push(`${where}: leg has no departure station/airport`);
     if (!t.to) errors.push(`${where}: leg has no arrival station/airport`);
     if (typeof t.price !== 'number' || t.price < 0) errors.push(`${where}: leg has no price`);
-    // Same rule as stays: the sub-header owns the date, the time and the money.
-    const MONTH = '(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)';
-    if (new RegExp(`${MONTH}\\s\\d{1,2}`).test(t.title || '')) {
-      errors.push(`${where}: title carries a date the sub-header already shows`);
-    }
-    if (/\d{1,2}:\d{2}/.test(t.title || '')) {
-      errors.push(`${where}: title carries a departure time — put it in \`time\``);
-    }
-    if (/\$/.test(t.title || '')) errors.push(`${where}: title carries a price — put it in \`price\``);
-    if (/\(~/.test(t.title || '')) errors.push(`${where}: title carries a duration — put it in \`dur\``);
     if (t.dur !== undefined && !/^~[\d.]/.test(t.dur)) errors.push(`${where}: dur '${t.dur}' should read like '~2h30'`);
     if (t.time !== undefined && !/^\d{2}:\d{2}(–\d{2}:\d{2})?$/.test(t.time)) {
       errors.push(`${where}: time '${t.time}' is not HH:MM or HH:MM–HH:MM`);

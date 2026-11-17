@@ -139,8 +139,9 @@
       };
       const nightsOf = (a, b) => Math.round((new Date(`${b}T00:00:00Z`) - new Date(`${a}T00:00:00Z`)) / 86400000);
       // The booking facts, always in the same order: where, what it costs, when.
-      // Night counts and leg durations live here, not in the title.
-      const facts = t.cat === 'stay' && t.checkin ? [t.area, t.perNight ? `${price(t.perNight)}/night${t.est ? ' est.' : ''}` : 'lodging free', `${span(t.checkin, t.checkout)} (${nightsOf(t.checkin, t.checkout)}n)`] : t.from && t.to ? [`${t.from} → ${t.to}`, `${price(t.price)}${t.est ? ' est.' : ''}`, t.date ? `${t.until ? span(t.date, t.until) : fmt(t.date)}${t.time ? `, ${t.time}` : ''}` : null, t.dur || null] : null;
+      // Night counts, dates and durations live here, not in the title.
+      const when = t.date ? `${t.until ? span(t.date, t.until) : fmt(t.date)}${t.time ? `, ${t.time}` : ''}` : null;
+      const facts = t.cat === 'stay' && t.checkin ? [t.area, t.perNight ? `${price(t.perNight)}/night${t.est ? ' est.' : ''}` : 'lodging free', `${span(t.checkin, t.checkout)} (${nightsOf(t.checkin, t.checkout)}n)`] : t.from && t.to ? [`${t.from} → ${t.to}`, `${price(t.price)}${t.est ? ' est.' : ''}`, when, t.dur || null] : when ? [when] : null;
       return /*#__PURE__*/React.createElement("div", {
         key: t.id,
         className: `kit-row${t.done ? ' is-done' : ''}`
