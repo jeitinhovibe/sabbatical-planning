@@ -131,14 +131,17 @@
         const A = fmt(a), B = fmt(b);
         return A.split(' ')[0] === B.split(' ')[0] ? `${A}–${B.split(' ')[1]}` : `${A} – ${B}`;
       };
+      const nightsOf = (a, b) => Math.round((new Date(`${b}T00:00:00Z`) - new Date(`${a}T00:00:00Z`)) / 86400000);
       // The booking facts, always in the same order: where, what it costs, when.
+      // Night counts and leg durations live here, not in the title.
       const facts = t.cat === 'stay' && t.checkin
-        ? [t.area, t.perNight ? `${price(t.perNight)}/night${t.est ? ' est.' : ''}` : 'lodging free', span(t.checkin, t.checkout)]
+        ? [t.area, t.perNight ? `${price(t.perNight)}/night${t.est ? ' est.' : ''}` : 'lodging free', `${span(t.checkin, t.checkout)} (${nightsOf(t.checkin, t.checkout)}n)`]
         : (t.from && t.to)
           ? [
             `${t.from} → ${t.to}`,
             `${price(t.price)}${t.est ? ' est.' : ''}`,
             t.date ? `${t.until ? span(t.date, t.until) : fmt(t.date)}${t.time ? `, ${t.time}` : ''}` : null,
+            t.dur || null,
           ]
           : null;
       return (

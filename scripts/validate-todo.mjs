@@ -63,6 +63,9 @@ for (const t of items) {
     if (new RegExp(`${MONTH}\\s\\d{1,2}`).test(t.title || '')) {
       errors.push(`${where}: title carries a date the sub-header already shows`);
     }
+    if (/\(\d+n\)/.test(t.title || '') || /\(\d+n,/.test(t.title || '')) {
+      errors.push(`${where}: title carries a night count — the sub-header derives it from the dates`);
+    }
     if (!ISO.test(t.checkin || '') || !ISO.test(t.checkout || '')) {
       errors.push(`${where}: stay needs checkin/checkout dates`);
     } else {
@@ -89,6 +92,8 @@ for (const t of items) {
       errors.push(`${where}: title carries a departure time — put it in \`time\``);
     }
     if (/\$/.test(t.title || '')) errors.push(`${where}: title carries a price — put it in \`price\``);
+    if (/\(~/.test(t.title || '')) errors.push(`${where}: title carries a duration — put it in \`dur\``);
+    if (t.dur !== undefined && !/^~[\d.]/.test(t.dur)) errors.push(`${where}: dur '${t.dur}' should read like '~2h30'`);
     if (t.time !== undefined && !/^\d{2}:\d{2}(–\d{2}:\d{2})?$/.test(t.time)) {
       errors.push(`${where}: time '${t.time}' is not HH:MM or HH:MM–HH:MM`);
     }
