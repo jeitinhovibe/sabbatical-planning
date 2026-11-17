@@ -147,8 +147,9 @@ Practical notes:
   `perNight`, `checkin`, `checkout`; a flight/ferry/bus has `from`, `to`,
   `price`, `date`. Add `est: true` when the number is a model rate rather than
   an actual — the page prints "est." beside it. `scripts/validate-todo.mjs`
-  (run by the pre-commit hook) fails a row that is missing one of them, or whose
-  dates fall outside its chapter.
+  (run by the pre-commit hook) fails a row that is missing one of them, whose
+  dates fall outside its chapter, or that repeats its dates in the title or the
+  opening of the note — the sub-header owns the dates.
 - `calendar-config.js` (gitignored, Google OAuth client ID) is optional — copy
   `calendar-config.example.js` to create it.
 

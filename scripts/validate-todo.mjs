@@ -53,6 +53,16 @@ for (const t of items) {
     stays++;
     if (!t.area) errors.push(`${where}: stay has no area`);
     if (typeof t.perNight !== 'number' || t.perNight < 0) errors.push(`${where}: stay has no perNight`);
+    // The sub-header prints area · price · dates, so the title and the note must
+    // not print the dates again — that is the duplication this shape exists to
+    // kill. Dates inside a sentence ("booked for the 1am Sep 25 arrival") stay.
+    const MONTH = '(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)';
+    if (new RegExp(`^${MONTH}\\s\\d`).test(t.note || '')) {
+      errors.push(`${where}: note opens with the dates the sub-header already shows`);
+    }
+    if (new RegExp(`${MONTH}\\s\\d{1,2}`).test(t.title || '')) {
+      errors.push(`${where}: title carries a date the sub-header already shows`);
+    }
     if (!ISO.test(t.checkin || '') || !ISO.test(t.checkout || '')) {
       errors.push(`${where}: stay needs checkin/checkout dates`);
     } else {
