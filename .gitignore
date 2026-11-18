@@ -5,3 +5,4 @@ calendar-config.js
 reviews/
 _site/
 .wrangler/
+.worktrees/
