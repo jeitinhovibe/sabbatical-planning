@@ -830,11 +830,18 @@
       if (view !== 'atlas') setView('atlas');
     };
 
-    // Tapping empty map closes the spread — except on the release that a title
-    // tap just used to open it, which is the same click from the map's side.
+    // Tapping empty map is "nothing selected": the spread closes *and* the
+    // stop loses its highlight, its own markers go and the URL drops ?chapter.
+    // The camera stays put — a click on the water is not a "back to route" —
+    // so this is a deselect, not a re-frame. Skipped on the release that a
+    // title tap just used to open the spread, which is the same click from the
+    // map's side.
     const onBackgroundClick = () => {
       if (Date.now() - swallowClick.current < 600) return;
       setDetailOpen(false);
+      setSelectedId(null);
+      setSelectedPlaceIdx(null);
+      setPlaceZoom(null);
     };
 
     // "Whole route" is really "put me back where I am": today's chapter, and

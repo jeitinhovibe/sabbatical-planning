@@ -1106,6 +1106,13 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
 }
 .map-place:hover .map-place-label,
 .map-place.is-active .map-place-label { opacity: 1; }
+/* Globe: a selected stop keeps its dot highlight, not its name. The camera is
+   already on that town, the always-on name sits under the dot and the spread
+   says which stop it is — a permanent pill read as a tooltip left open. No
+   hover exception either: the fly-to parks the marker under the cursor, so
+   hovering it would put the pill straight back. The 2D map keeps its pill —
+   there the active marker is the only thing marking the stop you clicked. */
+.map-container.is-globe .map-place.is-active .map-place-label { opacity: 0; }
 
 /* Map failure fallback */
 .map-fallback {
