@@ -700,6 +700,7 @@
       el._chId = c.id;
       el._idx = i;
       el._pri = pri;
+      el._pri0 = pri;   // base rank; the picked stop lifts above it
       el._cityLabel = true;
       const span = document.createElement('span');
       span.textContent = cityName(p.name);
@@ -778,6 +779,15 @@
         }
       });
       [...s.overlay.querySelectorAll('.eq-place-wrap')].forEach((el) => el.remove());
+      // The stop you picked keeps its name. Its neighbour can be 15km away and
+      // outrank it on proximity alone, which leaves the highlighted dot wearing
+      // the wrong word (Huangshan highlighted, "Hongcun" beside it).
+      for (let i = 0; i < s.overlay.children.length; i++) {
+        const el = s.overlay.children[i];
+        if (!el._cityLabel) continue;
+        const picked = el._chId === selectedId && el._idx != null && el._idx === selectedPlaceIdx;
+        el._pri = el._pri0 + (picked ? 300 : 0);
+      }
       s.controls.autoRotate = !selectedId && !s.spinOff;
 
       if (!selectedId) {
