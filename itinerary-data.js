@@ -651,18 +651,14 @@ window.TRIP = (function () {
       { item: 'eSIMs + trail/trek sundries', cost: 350, note: '~15 countries + thermals/laundry gaps' },
     ],
     assumptions: [
-      'All figures USD for two; mid-range with strategic splurges, researched Oct 2026 prices',
-      'China entries are 16 + 8 days (Hong Kong SAR reset between, all inside the 30d visa-free and pre-Dec-31-2026) — no visa needed; spring entry (May 6–28, 22d) needs one L visa (~$300 for two) unless the waiver renews',
-      'Malaysia and Thailand visa-free, Korea K-ETA (~$8 pp); Taiwan visitor visa required for BR passports (~$50–160 pp, TECO Hong Kong filing Nov 24)',
-      'Own kite gear in Cumbuco; mask + dive computer owned; snowboard kit rented at Nozawa Onsen and Myoko Kogen',
-      'Free stays: Toronto (friends) and Azerbaijan (stopover program) — lodging paid elsewhere',
-      'Inter-chapter flights are one-way advance fares; peak-season spikes are what the 8% contingency is for',
+      'All figures USD for two, mid-range with the odd splurge — priced Oct 2026',
+      'Inter-chapter flights are one-way fares; the 8% contingency is what absorbs a peak-season spike',
+      'Gear owned where it pays: kite kit, mask and dive computer — snowboard kit is rented at both snow bases',
+      'Two free beds (Toronto with friends, Baku on the stopover programme) and two monthly rentals in Brazil — those zeros and low nightly rates are real, not rounding',
     ],
     levers: [
-      'Diving is ~$12k of the total — fewer Coron/Komodo/Penida dive days saves $1,500+ fast',
-      'Japan + Korea are ~$16k combined — business hotels + konbini breakfasts already assumed; ryokan splurge kept to zero',
-      'Shoulder-season flights (early fares) and slow-travel lodging (weekly rates) are the two biggest structural savers',
-      'Toronto + Azerbaijan avoid lodging costs; monthly rates in Rio/Cumbuco beat nightly prices',
+      'Diving is ~$12k of the total — fewer Coron/Komodo/Penida days saves $1,500+ fast',
+      'Shoulder-season fares and weekly/monthly lodging are the two structural savers: every extra stop buys a fare, every extra night buys a rate',
     ],
   };
 

@@ -157,7 +157,8 @@ precompiled `dist/*.js` bundles.
   panels — `todo-data.js` owns every booking, and a second copy drifts silently.
   Same for the budget panel: totals, receipt and assumptions, not another copy of
   the stays and flights. A price is a number; *estimate* or *actual* describes the
-  figure, never whether the paperwork exists.
+  figure, never whether the paperwork exists. An *assumption* explains how a
+  number was built — a visa rule or a routing fact belongs in the plan or the todo.
 - **Every data edit must pass** `node scripts/validate-photo-urls.mjs`, plus day
   sums, date continuity, geo coverage, budget arithmetic, and todo chapter ids.
   `scripts/validate-todo.mjs` is the bookings ledger's own gate — and **no `✅` in
