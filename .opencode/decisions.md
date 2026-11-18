@@ -1070,3 +1070,139 @@ by reordering the chapter, not just rebooking the same slots:
   its main winter draw — runs Feb 4–11 historically, landing squarely in the
   CNY/Foundation Day window this whole reorder exists to avoid, and it has
   no direct Shinkansen link either.
+
+## 2026-11-18 — The atlas opens with a slow push-in, not a jump cut
+
+Arriving on the home screen now pushes the camera 13% closer over fifteen
+seconds, starting from exactly the framing main already used: today's chapter at
+2.7, the world view at HOME.r. Nothing about the landing frame changes, so the
+2026-11-05 "opens on the current chapter" call stands — the move is added in
+front of it, not instead of it.
+
+- **Why 13% and no more.** It stops at 2.35, the chapter framing a selection
+  already flies to, and the last distance where the planet's left and right
+  limbs are comfortably inside the frame (a 1280-wide stage leaves ~130px of
+  space either side). Deeper and the globe reads as a flat map; shallower and
+  the drift is invisible.
+- **Why fifteen seconds.** At 4.6s the same move read as a zoom; the point is a
+  drift you notice only after reading a line of the title. It is cancellable at
+  any moment — a drag, a wheel or any fly-to clears it (`s.intro = null`) — so
+  the length costs nothing to someone who starts interacting immediately.
+- **Rejected: starting from the far end of the wheel and approaching a whole
+  Earth.** First cut, and it made the atlas land on a small planet before
+  filling the frame — a screensaver, and it moved the landing frame away from
+  the chapter framing the globe was tuned for. The default stays the default.
+- **Kept:** the cover still owns the first ~3s; the intro waits for it to lift
+  rather than spending itself behind an opaque curtain. Reduced-motion lands on
+  the end distance in one frame, a deep-linked chapter skips the move entirely,
+  and returning to the atlas from Budget/Tasks replays it — that is the same
+  "opening the home screen".
+
+## 2026-11-18 — The home map faces the town, not the chapter
+
+Both map modes now open on **today's city** instead of the chapter's anchor or
+its fit. On China this is the difference between Hongcun and Beijing — ten
+degrees of latitude, and the pin you actually want to see was a third of the
+way up the screen.
+
+- **The globe keeps its distance; only the bearing moves.** 2.7, still drifting
+  to 2.35 (see the entry above). The town is dead centre and the region around
+  it fills the frame, which is what "centred on the city" means at this zoom.
+  Zooming to city scale was *not* done: it would crop the planet completely and
+  contradict the "edges still visible" call from the same day.
+- **The 2D map centres at z6** (its chapter zoom) rather than fitting the
+  chapter's places edge to edge. Same zoom as before, new centre — so the map
+  and the globe now agree on where "here" is.
+- **Outside the trip, the first stop before it starts and the last stop after it
+  ends** — Rio, then Seoul. That is the same pair the atlas title already falls
+  back to (`next ? chapters[0] : chapters[last]`), so the copy and the map never
+  disagree; the world view is no longer the default for those dates.
+- **The spin is gone from those fallbacks too.** A slow orbit around a town the
+  view is supposed to be centred on just drifts off it; the pre/post-trip state
+  is now a still frame like the rest of the home view.
+- **"Now" matches the landing view.** Selecting today's chapter (the Now button,
+  or reset) frames the town, not the anchor; selecting any other chapter still
+  frames its anchor, which is what that chapter's spread describes.
+- One helper, `TRIP_NOW.homeStop()`, so the two maps and the Now button cannot
+  drift apart.
+
+Amends the 2026-11-05 line "**2D fit of its places, globe camera on its
+anchor**": the seat of the view is the town. The rest of that decision — the
+atlas opens on the present rather than the world, and the panel framing — stands.
+
+## 2026-11-18 — The globe names the itinerary's cities
+
+The 3D globe had two annotation layers: country names at rest, and city names
+only as a hover pill on a dot (`3. Hongcun`, numbered by stop). The home view
+therefore showed a route with no place names — the dots were there, the towns
+were not.
+
+- **A third layer, on at rest, itinerary-only.** Every place with coords in
+  `itinerary-data.js` gets a plain name hung under its dot. Nothing outside the
+  plan is named: no world-city gazetteer, no capitals, no peaks. The dots keep
+  their hover pill, which is where the chapter's numbering belongs.
+- **One town per label.** `cityName()` takes the first name out of
+  "Takayama + Shirakawa-go", "Cebu / Moalboal", "Sanur (arrival night)" — a
+  globe annotation is one place, and the full string stays on the dot's pill and
+  in the spread.
+- **Collisions are ranked, not random.** Today's city beats its neighbours
+  (Huangshan and Hongcun are 15km apart and were fighting over one label), then
+  today's chapter, then the rest of the itinerary, then country names. The
+  existing greedy pass does the dropping, so nothing flickers, and the same
+  declutter now fades labels at the *frame* edge as well as the limb — on a
+  phone the globe is wider than the screen and names were cut mid-word.
+- **The selected chapter keeps its names.** Its dots are replaced by numbered
+  markers, but the pill is hover-only, so hiding the label too would have left
+  the chapter you just opened as the only unlabelled one on screen.
+- **Measured in one batch.** `offsetWidth` forces layout; reading 160 labels one
+  at a time was a first-paint hitch, so the whole layer is measured once per
+  rebuild (and again when the webfont lands). 61fps at the home view with ~35
+  city and ~24 country labels visible.
+
+## 2026-11-18 — The reel folds, and the 2D dots get their point back
+
+- **A chevron folds the chapter strip.** One 12px handle at the end of the
+  "The arc" row, no plate until hover, `aria-expanded` + `aria-controls` on the
+  track. Collapsed leaves the head line over a thinner scrim, so the planet gets
+  the bottom of the stage without losing the count or the way back. Expanded is
+  the default; the choice is kept in `localStorage` like the 2D/3D switch, so
+  it survives a reload but never surprises a first visit. The reel is scenery
+  (`pointer-events: none`), so the button re-enables its own pointers — and has
+  to be switched off again under `.has-detail`, or a spread would leave it live.
+- **The 2D map's dots were 7px high.** Leaflet sizes the divIcon 14×14 and
+  anchors it at its centre, but the marker's content is a plain block: its line
+  box had no height, so the dot's `top: 50%` resolved to the box's *top*, not
+  its middle. Every place marker sat ~7px above its coordinate (the chapter
+  pins, 30×30, the same bug at 15px). The content now fills the box Leaflet
+  sized, which puts 50%/50% back on the anchor. The globe is unaffected: its
+  markers hang off a 0×0 wrapper that is already the anchor point.
+
+## 2026-11-18 — Switching map type keeps the ground
+
+The 3D globe and the 2D map used to each open on their own home framing, so
+flipping the switch after moving one of them threw you back to today's town. Now
+each view reports the point at the centre of the frame — the globe inverts its
+camera direction, the map reads `getCenter()` on `moveend` — and the other takes
+it as its opening centre.
+
+- **A ref, not state.** The globe moves every frame; writing that into React
+  would re-render the app sixty times a second for a value only the *next* mount
+  reads. It is reported into a ref and read once, at the render that swaps the
+  component.
+- **The zoom carries too, on a scale that both can agree on:** pixels per degree
+  of longitude at the centre of the frame. The map is 256·2^z px across 360°; the
+  globe renders the surface under the crosshair at f/(d−1) px per radian, with
+  cos(lat) turning surface arc into longitude. Solving one for the other gives
+  the zoom that shows the same ground at the same size (z5 ↔ d≈1.6 at 35°N,
+  verified both ways to a pixel).
+- **Each direction stops where its own view stops.** Leaflet snaps to whole
+  levels, and the globe's range is only ≈z2.9–z4.9 because it must keep a sphere
+  in frame: the map's z6 home arrives at d≈1.33, which clamps to `minDist`, and
+  going back lands near z5–6 rather than z7+. The clamp is the honest answer;
+  faking the rest would mean zooming the globe inside its own surface.
+- **A carried zoom is a resume, not an opening.** The 15-second push-in is for
+  arriving at the atlas; when the view is being restored from the other map the
+  camera opens where that view left off and holds still.
+- **A selection still wins.** Switching with a chapter or stop open frames that
+  stop in both modes, as before; the carried centre only decides the opening
+  position it flies from.

@@ -183,6 +183,34 @@ function nextCity(chapters, today) {
   return stops.find(s => s.start > t) || null;
 }
 
+// The town the home view opens on. Inside the trip that is today's city — the
+// map should face the town you wake up in, not the chapter's centroid. Outside
+// it, the first stop before the start and the last stop after the end: the same
+// chapters the atlas title falls back to, so "before" reads as home and
+// "after" as where it finished instead of a faceless world view.
+function homeStop(chapters, today) {
+  const t = today || todayISO();
+  const ch = currentChapter(chapters, t);
+  if (ch) {
+    const w = currentCity(chapters, t);
+    return {
+      chapter: ch,
+      place: w ? w.place : null,
+      idx: w ? w.idx : null
+    };
+  }
+  const route = (chapters || []).filter(c => c.kind !== 'transit' && c.start);
+  if (!route.length) return null;
+  const before = t < route[0].start;
+  const end = before ? route[0] : route[route.length - 1];
+  const places = (end.places || []).filter(p => p.coords);
+  return {
+    chapter: end,
+    place: places.length ? places[before ? 0 : places.length - 1] : null,
+    idx: null
+  };
+}
+
 // Subscribe to the store and re-render on mutation.
 function useStore() {
   const [, force] = React.useReducer(x => x + 1, 0);
@@ -586,6 +614,30 @@ function dataDigest(value) {
   // Length rides along so a collision would also have to match size.
   return (h >>> 0).toString(16) + ':' + s.length.toString(36);
 }
+
+// ── Zoom equivalence between the 2D map and the 3D globe ────────────────
+// Both views are compared on the one thing they share: pixels per degree of
+// longitude at the centre of the frame.
+//   map:    256·2^z px across 360° → 128·2^z/π px per radian
+//   globe:  the surface under the crosshair sits (d−1) radii away and renders
+//           at f/(d−1) px per radian of surface, f = (H/2)/tan(fov/2); cos(lat)
+//           turns surface arc into longitude
+// Solving one for the other gives "the same ground at the same size". The fov
+// mirrors the globe's camera (36°), and both views share the stage height, so
+// either can compute the other's number without knowing its state.
+function globeFocalPx(viewportH) {
+  return viewportH / 2 / Math.tan(36 * Math.PI / 360);
+}
+function mapZoomForGlobe(dist, lat, viewportH) {
+  const cos = Math.max(0.15, Math.cos(lat * Math.PI / 180));
+  const f = globeFocalPx(viewportH);
+  return Math.log2(Math.PI * f * cos / (128 * Math.max(0.01, dist - 1)));
+}
+function globeDistForMap(zoom, lat, viewportH) {
+  const cos = Math.max(0.15, Math.cos(lat * Math.PI / 180));
+  const f = globeFocalPx(viewportH);
+  return 1 + Math.PI * f * cos / (128 * Math.pow(2, zoom));
+}
 Object.assign(window, {
   Photo,
   openMaps,
@@ -597,7 +649,9 @@ Object.assign(window, {
   SPECTRUM,
   dayIndex,
   monthsBetween,
-  tripStats
+  tripStats,
+  mapZoomForGlobe,
+  globeDistForMap
 });
 window.TRIP_NOW = {
   todayISO,
@@ -606,5 +660,6 @@ window.TRIP_NOW = {
   daysUntil,
   placeWindows,
   currentCity,
-  nextCity
+  nextCity,
+  homeStop
 };

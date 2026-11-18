@@ -739,7 +739,9 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
    tap the map switch or scroll the reel behind the spread. Put them back down. */
 .app.has-detail .atlas-tools .tool-seg,
 .app.has-detail .atlas-tools .tool-btn,
-.app.has-detail .reel-track { pointer-events: none; }
+.app.has-detail .reel-track,
+.app.has-detail .reel-toggle,
+.app.has-detail .reel-head-left { pointer-events: none; }
 
 /* ── Chapter reel ────────────────────────────────────────────────────── */
 .reel {
@@ -761,7 +763,49 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   gap: 14px;
   margin-bottom: 10px;
 }
-.reel-head-left { display: flex; align-items: baseline; gap: 12px; }
+.reel-head-left {
+  /* The label is the handle too: same type, no plate. A button so it is
+     focusable and announced, with the visible "The arc · N chapters" as its
+     name; the empty middle of the head stays scenery so a drag there still
+     reaches the map. */
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.reel-head-left:hover .reel-kicker { color: var(--ink); }
+.reel-head-left:hover .reel-count { color: var(--ink-3); }
+/* The collapse handle: one 12px chevron at the end of the head row, no plate
+   until you hover it. It is the only live thing in the head — the rest is
+   scenery, so the button has to re-enable its own pointer events. */
+.reel-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 26px; height: 22px;
+  margin-bottom: 1px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-4);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color .18s ease, border-color .18s ease, background .18s ease;
+}
+.reel-toggle:hover { color: var(--ink); border-color: var(--line); background: rgba(243,236,221,.05); }
+.reel-toggle svg { transition: transform .3s ease; }
+.reel.is-collapsed .reel-toggle svg { transform: rotate(180deg); }
+.reel.is-collapsed .reel-head { margin-bottom: 0; }
 .reel-kicker {
   font-family: var(--f-mono);
   font-size: 11px;
@@ -794,6 +838,21 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   scrollbar-width: none;
   /* The one live part of the reel; see .reel. */
   pointer-events: auto;
+  /* A cap to animate the collapse from. Comfortably above the real row height
+     (~180 desktop, ~140 phone), so nothing is ever clipped while expanded and
+     the fold still starts moving on the first frame. */
+  max-height: 240px;
+  transition: max-height .34s ease, opacity .22s ease;
+}
+/* Collapsed leaves the head — and the chevron that brings the strip back —
+   sitting over a thinner scrim, so the planet gets the bottom of the stage. */
+.reel.is-collapsed .reel-track {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 .reel-track::-webkit-scrollbar { display: none; }
 .reel-card {
@@ -991,8 +1050,43 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
    span so a transition here cannot lag or flap the continuous value. */
 .eq-country > span { transition: opacity .18s linear; }
 .eq-country > span.is-off { opacity: 0; }
+/* Itinerary city names — the one annotation layer that is on at rest. Smaller
+   and quieter than a country (no tracking, title case, no uppercase), and hung
+   under its dot so the marker still marks. */
+.eq-city-label {
+  position: absolute;
+  left: 0; top: 0;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: rgba(243,236,221,.78);
+  text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 10px rgba(0,0,0,.7);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.eq-city-label > span { transition: opacity .18s linear; }
+.eq-city-label > span.is-off { opacity: 0; }
+/* Stacking: dots mark, names annotate. A name drawn under a neighbouring dot
+   reads as if the dot had been punched out of the word — Shanghai's label sat
+   behind the Huangshan dot at the home zoom. So the two label layers sit above
+   every marker, and the marker under the cursor lifts back above them so its
+   own pill is never buried. */
+.eq-pins > .eq-pin-wrap { z-index: 1; }
+.eq-pins > .eq-country,
+.eq-pins > .eq-city-label { z-index: 2; }
+.eq-pins > .eq-pin-wrap:hover { z-index: 3; }
 /* Pins */
 .map-pin-wrap { background: transparent !important; border: none !important; pointer-events: none; }
+/* Leaflet sizes the divIcon (14×14 for a place, 30×30 for a pin) and anchors it
+   at its centre, but the content inside was a plain block: its line box had no
+   height, so every 50%/50% child — the dot, the number, the label — was measured
+   from a zero-height origin and the marker rendered ~7px (place) / 15px (pin)
+   above the coordinate it marked. Filling the box puts the centre back where
+   Leaflet anchors it. The globe's markers live in a 0×0 .eq-pin-wrap and are
+   unaffected. */
+.map-place-wrap .map-place,
+.map-pin-wrap .map-pin { width: 100%; height: 100%; }
 .map-pin {
   position: relative;
   pointer-events: auto;
@@ -1089,6 +1183,11 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
 }
 .map-place:hover .map-place-label,
 .map-place.is-active .map-place-label { opacity: 1; }
+/* Globe: the dots carry no pill at all — not on hover, not on selection. The
+   always-on city name is the label; the pill only repeated it with a stop
+   number, and after a fly-to it sat under the cursor like a tooltip left open.
+   The 2D map keeps it: there the marker has no name of its own. */
+.map-container.is-globe .map-place-label { display: none; }
 
 /* Map failure fallback */
 .map-fallback {

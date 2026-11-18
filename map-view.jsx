@@ -52,7 +52,7 @@
     return pts;
   }
 
-  function MapView({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, focusKey, placeZoom, onBackgroundClick }) {
+  function MapView({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, focusKey, placeZoom, onBackgroundClick, initialCenter, initialZoom, onCenterChange }) {
     const store = window.useStore();
     const chapters = store.getChapters();
     const ROUTE_CHAPTERS = chapters.filter((c) => c.kind !== 'transit' && c.anchor);
@@ -80,36 +80,43 @@
     };
     const stopCoords = (s) => (s.place ? s.place.coords : s.ch.anchor);
 
-    // The chapter today falls in — the map opens here. Null before the trip
-    // starts and after it ends, when the whole route (world view) is home.
-    const homeChapter = () => (window.TRIP_NOW ? window.TRIP_NOW.currentChapter(chapters) : null);
+    // The town the home view opens on — today's city, or outside the trip the
+    // first/last stop. Null only if there is no route at all, which is when the
+    // whole-route view is the right answer.
+    const homeStop = () => (window.TRIP_NOW ? window.TRIP_NOW.homeStop(chapters) : null);
+    const stopPoint = (stop) => (stop ? ((stop.place && stop.place.coords) || stop.chapter.anchor) || null : null);
 
-    // Points + framing for the home view: today's chapter when there is
-    // one, otherwise every city stop edge-to-edge.
+    // Framing for the home view: the town today sits in the centre at chapter
+    // zoom — the map opens on where you are, not on the chapter's whole spread.
+    // Arriving from the 3D globe, "where you are" is wherever that globe was
+    // looking, at the zoom that shows the same ground at the same size (see
+    // mapZoomForGlobe; the globe's range is roughly z2.9–z4.9, so this lands
+    // wider than the chapter framing). With no stop at all, every city stop
+    // edge-to-edge (the world view).
     const homeFrame = () => {
-      const cur = homeChapter();
-      if (cur) {
-        const pts = (cur.places || []).map((p) => p.coords).filter(Boolean);
-        // "Where I am" is framed exactly like a selected chapter: same zoom,
-        // same padding. It used to be capped at z4 ("South Asia, not
-        // Kathmandu"), which made the landing view wider than every chapter
-        // you could click to — and wider than what the Now button restored.
-        return { pts, padding: [40, 40], maxZoom: CHAPTER_ZOOM, single: cur.anchor };
+      const carried = initialZoom != null ? Math.max(2, Math.min(19, initialZoom)) : null;
+      if (initialCenter && initialCenter.length >= 2) {
+        return { pts: [initialCenter], padding: [40, 40], zoom: carried == null ? CHAPTER_ZOOM : carried, single: initialCenter };
       }
-      return { pts: getStops().map(stopCoords).filter(Boolean), padding: [24, 24], maxZoom: undefined, single: null };
+      const stop = homeStop();
+      if (stop) {
+        const pt = stopPoint(stop);
+        return { pts: pt ? [pt] : [], padding: [40, 40], zoom: carried == null ? CHAPTER_ZOOM : carried, single: pt };
+      }
+      return { pts: getStops().map(stopCoords).filter(Boolean), padding: [24, 24], zoom: null, single: null };
     };
 
     const frameHome = () => {
       const map = mapRef.current;
       if (!map || selectedIdRef.current) return;
       map.invalidateSize();
-      const { pts, padding, maxZoom, single } = homeFrame();
+      const { pts, padding, maxZoom, zoom, single } = homeFrame();
       if (pts.length > 1) {
         map.fitBounds(pts, { padding, maxZoom, animate: false });
       } else if (pts.length === 1) {
-        map.setView(pts[0], CHAPTER_ZOOM, { animate: false });
+        map.setView(pts[0], zoom == null ? CHAPTER_ZOOM : zoom, { animate: false });
       } else if (single) {
-        map.setView(single, CHAPTER_ZOOM, { animate: false });
+        map.setView(single, zoom == null ? CHAPTER_ZOOM : zoom, { animate: false });
       }
     };
 
@@ -133,13 +140,14 @@
     React.useEffect(() => {
       if (mapRef.current || !window.L) return;
       const L = window.L;
-      // First paint already faces today's chapter instead of a generic
-      // Asia-wide center (frameHome below settles the exact framing).
-      const cur = homeChapter();
-      const firstPt = cur ? (cur.anchor || (cur.places || []).map((p) => p.coords).filter(Boolean)[0]) : null;
+      // First paint already faces the town — or the point the globe was
+      // looking at — instead of a generic Asia-wide centre (frameHome below
+      // settles the exact framing).
+      const home0 = homeFrame();
+      const firstPt = home0.pts && home0.pts.length === 1 ? home0.pts[0] : null;
       const map = L.map(ref.current, {
         center: firstPt || [25, 105],
-        zoom: firstPt ? 4 : 3,
+        zoom: firstPt ? (home0.zoom == null ? 4 : home0.zoom) : 3,
         minZoom: 2,
         maxZoom: 19,
         zoomControl: false,
@@ -150,6 +158,15 @@
       });
       mapRef.current = map;
       window._map = map;
+      // Report the centre and the zoom so a switch to the 3D globe opens on the
+      // same ground at the same size.
+      const reportCenter = () => {
+        if (!onCenterChange) return;
+        const c = map.getCenter();
+        onCenterChange([c.lat, c.lng, map.getZoom()]);
+      };
+      map.on('moveend', reportCenter);
+      reportCenter();
 
       // Esri World Imagery (satellite) + reference overlay for city names,
       // boundaries and water labels. Note the {z}/{y}/{x} order.
@@ -416,10 +433,11 @@
           ? Math.min(CHAPTER_ZOOM, map.getBoundsZoom(bounds, false, L.point(80, 80)))
           : CHAPTER_ZOOM;
         if (focused && focused.coords) {
-          // A day on the spine locates the city at the chapter's zoom; a pin
-          // click is its own request for the city itself and passes a tight
-          // zoom, which is the one place a deliberate zoom-in is wanted.
-          moveTo(focused.coords, placeZoom == null ? chapterZoom : placeZoom);
+          // A day on the spine locates the city at the chapter's zoom; a dot
+          // click keeps whatever zoom you are already at and only moves the
+          // centre — you picked a place, not a scale, and snapping to a preset
+          // level mid-read yanked the map out from under you.
+          moveTo(focused.coords, placeZoom === 'keep' ? map.getZoom() : placeZoom == null ? chapterZoom : placeZoom);
         } else if (bounds) {
           // fitBounds cannot animate a pan (it computes a zoom and jumps), so
           // the same framing is derived twice: bounds → zoom, then flown to.
