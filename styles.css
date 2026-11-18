@@ -1686,41 +1686,6 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
 /* The share of the total, spelled out instead of read off the ring. */
 .donut-pct { font-style: normal; font-weight: 400; margin-left: 5px; color: var(--ink-4); }
 
-.bar-list { display: flex; flex-direction: column; }
-.bar-row {
-  display: grid;
-  grid-template-columns: 240px 1fr 92px 92px;
-  align-items: center;
-  gap: 14px;
-  border: 0;
-  border-bottom: 1px solid var(--line-2);
-  background: transparent;
-  padding: 9px 6px;
-  text-align: left;
-  color: var(--ink);
-  border-radius: 4px;
-  transition: background .15s;
-}
-.bar-row:hover { background: rgba(243,236,221,.035); }
-.bar-ch {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--f-mono);
-  font-size: 12.5px;
-  letter-spacing: .04em;
-  color: var(--ink-2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.bar-ch i { width: 7px; height: 7px; border-radius: 50%; flex: none; }
-.bar-track { height: 7px; background: rgba(243,236,221,.06); border-radius: 4px; overflow: hidden; }
-.bar-track span { display: block; height: 100%; border-radius: 4px; opacity: .85; }
-.bar-val { text-align: right; font-family: var(--f-mono); font-size: 13px; color: var(--ink); }
-.bar-per { text-align: right; font-family: var(--f-mono); font-size: 12px; color: var(--ink-4); }
-.bar-per i { font-style: normal; opacity: .6; }
-
 .ledger-table-wrap { overflow-x: auto; margin: 0 -4px; }
 .ledger-table {
   width: 100%;
@@ -1762,6 +1727,48 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
 .ledger-table .is-total { color: var(--ink); font-weight: 500; }
 .ledger-table .is-share { text-align: right; color: var(--ink-3); padding-left: 10px; }
 .ledger-table tr.is-sum td { border-top: 1px solid var(--line); border-bottom: 0; padding-top: 12px; color: var(--ink); }
+/* The chapter name is the drill-in: the row itself is not a button, so the
+   keyboard reaches the spread the way it reaches every other link. */
+.ledger-table .ch-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.ledger-table .ch-link:hover { color: var(--gold); }
+.ledger-table .ch-dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+/* Two comparisons in one table: length carries the total, tint carries the
+   nightly rate against the trip's weighted average. */
+.ledger-table .is-heat { text-align: left; font-variant-numeric: tabular-nums; }
+.ledger-table .heat-x { font-style: normal; font-size: 10px; margin-left: 5px; opacity: .7; }
+.ledger-table .cell-total { position: relative; }
+.ledger-table .cell-bar {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  border-radius: 2px;
+  opacity: .26;
+  pointer-events: none;
+}
+.ledger-table .cell-val { position: relative; }
+.ledger-legend {
+  margin: 10px 0 0;
+  max-width: 760px;
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  line-height: 1.65;
+  letter-spacing: .02em;
+  color: var(--ink-4);
+}
 
 .ledger-below {
   display: grid;
@@ -2265,10 +2272,6 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
 /* ════════════════════════════════════════════════════════════════════════
    RESPONSIVE
    ════════════════════════════════════════════════════════════════════════ */
-@media (max-width: 1280px) {
-  .bar-row { grid-template-columns: 200px 1fr 86px 86px; }
-}
-
 @media (max-width: 1080px) {
   .topbar { gap: 12px; padding: 0 18px; }
   .topnav { margin-left: 0; }
@@ -2377,12 +2380,13 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   .donut, .donut-hole { display: none; }
   .donut-key { min-width: 0; width: 100%; gap: 8px; }
   .donut-key li { font-size: 9px; }
-  .bar-row { grid-template-columns: 1fr 78px; grid-template-areas: "ch val" "track per"; gap: 6px 10px; padding: 10px 2px; }
-  .bar-ch { grid-area: ch; }
-  .bar-val { grid-area: val; }
-  .bar-track { grid-area: track; }
-  .bar-per { grid-area: per; }
-  .ledger-table { min-width: 760px; }
+  /* On a phone: chapter, nights, rate, total — and the bar behind the total
+     already carries the share, so the breakdown and the % go before the
+     table has to scroll sideways. */
+  .ledger-table { min-width: 0; font-size: 11.5px; }
+  .ledger-table .is-idx, .ledger-table .is-cat, .ledger-table .is-share,
+  .ledger-table .heat-x { display: none; }
+  .ledger-table th, .ledger-table td { padding-right: 6px; }
   .ledger-notes { grid-template-columns: 1fr; gap: 20px; }
   .receipt { max-width: none; }
 

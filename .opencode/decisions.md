@@ -8,6 +8,31 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-18 — The budget is one table, not two
+
+The ledger listed every chapter twice: a spectrum bar list (chapter, bar, total,
+$/night) and an eleven-column table (the same three facts plus the category
+split). Same rows, same order, one screen apart — two things to keep in step and
+two places to read the same number.
+
+- **Decision:** one sortable table. The bar moves inside the Total cell
+  (length = the chapter total against the biggest chapter, in the chapter's own
+  tint), and $/night is heat-tinted against the trip's weighted average
+  ($211/night), cool below, ember above, with the × multiple spelled out past
+  ±15% so colour is never the only signal.
+- **Why the bar stayed in the table rather than beside it:** a separate track
+  column is the old bar list wearing a table header. Inside the Total cell the
+  row keeps its sort and the bar keeps its 1:1 scale whatever the sort.
+- **Phones:** the five category columns and the share % drop out (the bar already
+  carries the share), leaving chapter, nights, rate, total in one screen width
+  instead of a sideways scroll.
+- **Rejected:** expandable rows that reveal the categories — it hides the
+  cross-chapter comparison, which is the only reason to look at the table.
+- **Rejected:** a toggle between total and per-night views — it hides half the
+  data behind a control nobody will press.
+
+---
+
 ## 2026-11-18 — The itinerary carries the plan; the task list carries procurement
 
 The itinerary panel and the booking ledger had quietly become two copies of the

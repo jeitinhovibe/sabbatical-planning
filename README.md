@@ -39,9 +39,10 @@ photography given room to breathe.
   route decisions in the margin — so future-you remembers *why* Folegandros
   beat Naxos.
 - **The ledger.** The budget is now a visual one: a donut of where the money
-  goes, a spectrum bar for every chapter, the sortable long table, and a
-  receipt that runs from chapters to grand total. Nothing is hardcoded; the
-  numbers still compute from the line items.
+  goes, one sortable table where the bar in each total and the tint on each
+  nightly rate carry the comparison, and a receipt that runs from chapters to
+  grand total. Nothing is hardcoded; the numbers still compute from the line
+  items.
 - **The field kit.** The advance-booking checklist gets a readiness ring, open
   and overdue counts, per-chapter progress, and the same browser ticks and
   export-to-file workflow.
