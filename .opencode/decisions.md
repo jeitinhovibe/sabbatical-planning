@@ -1165,3 +1165,65 @@ it as its opening centre.
 - **A selection still wins.** Switching with a chapter or stop open frames that
   stop in both modes, as before; the carried centre only decides the opening
   position it flies from.
+
+## 2026-11-18 — The globe's earth is KTX2
+
+The 16k Blue Marble was 537MB of RGBA before its mip chain: decoded on the CPU
+from a 6.2MB WebP, mip-mapped, and uploaded on every visit. That is the largest
+allocation the site makes, and on a MacBook Air it is the one thing that can
+stutter the whole page.
+
+- **ETC1S, not UASTC.** UASTC keeps more detail but stays ~4 bpp on the wire — a
+  60MB+ 16k file, over Cloudflare's 25MiB per-asset limit and ten times the
+  download. ETC1S lands at 12MB for 16k and transcodes to BC1/ASTC: 89–179MB of
+  VRAM instead of 716MB, with no main-thread decode.
+- **qlevel 160, not the default 128.** At 1:1 the default visibly blocks up the
+  ocean gradients and softens coastlines; 160 recovers almost all of the gap for
+  ~13% more bytes at 4k and ~20% at 16k. The tier plan and the camera distances
+  are unchanged.
+- **Mips are baked into the file** (`toktx --genmipmap`). Three uploads the
+  chain instead of asking the GPU to build one from 134M texels.
+- **WebP stays.** It is both the master and the fallback: `file://` cannot fetch
+  the `.ktx2` (XHR), and a missing transcoder or failed transcode has to degrade
+  to a soft globe, not the black one the old code would show.
+- **The 2k WebP poster paints first.** Booting the Basis transcoder and
+  transcoding a 16k mip chain is ~3s before the first textured frame — longer
+  than the WebP decode it replaced. And the texture request does not even start
+  until React and three have mounted (~1.4s in), so the 4k fallback still showed
+  a black planet when the cover lifted. So `index.html` preloads a 2k WebP
+  poster (≈170KB): it starts with the document, is decoded before the globe
+  mounts, and the tier's KTX2 swaps in when it lands.
+- **The texture is stored flipped.** Compressed uploads ignore
+  `UNPACK_FLIP_Y_WEBGL`, and SphereGeometry puts the north pole at `v=1`, so
+  `scripts/build-earth-ktx2.sh` flips the master before encoding. Regenerate it
+  without that step and the planet turns south-up.
+- **Three's loader is bundled, not hotlinked.** r147 is the last UMD three, but
+  KTX2Loader only ships as an ES module; `scripts/build-ktx2-loader.mjs` bundles
+  it (with WorkerPool, ktx-parse and zstddec) against the page's global `THREE`
+  and commits `vendor/ktx2-loader.js`. The Basis transcoder is vendored beside
+  it, so the globe does not add a fourth CDN dependency.
+- **Download goes up, not down.** 6.2MB → 12MB on the retina-desktop tier;
+  8k and 4k are 2.7MB → 3.5MB and 0.82MB → 1.0MB. The win is memory and upload
+  time, not bytes — a 12k tier would cut the 16k file to ~7MB if that ever
+  matters more than the closest-zoom sharpness.
+
+## 2026-11-18 — The earth texture survives a 2D switch
+
+`GlobeView` and `MapView` are mutually exclusive mounts, and the globe's cleanup
+disposes the renderer, the transcoder and every texture. Coming back from the 2D
+map therefore re-ran the whole cold start — worker boot plus a 16k Basis
+transcode, seconds for a texture that had just been decoded.
+
+- **The decoded texture is kept for the page's lifetime**, keyed by tier, and
+  re-uploaded into the next WebGL context. A remount now costs the context
+  (~50ms) and the upload, not the transcode; it paints textured on the first
+  frame. The scene, materials and workers are still disposed as before.
+- **Why not keep the globe mounted and hidden?** That would make the switch
+  instant and hold the 179MB of VRAM while you are reading the 2D map. The cache
+  holds the compressed blocks in RAM instead and lets the GPU copy go with the
+  context — same speed to the eye, less pressure on the Air.
+- **Why not gate the cover on the texture?** The cover is a title card, not a
+  loading screen, and it only shows once per session — the switch is the case
+  that had no cover to hide behind. It is already 3s (2300ms + a 750ms fade),
+  and the preloaded poster has painted long before it lifts; waiting for the 12MB
+  KTX2 would put a slow connection behind a curtain for ten seconds.
