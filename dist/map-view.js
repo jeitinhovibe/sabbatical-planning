@@ -62,7 +62,9 @@
     onSelectPlace,
     focusKey,
     placeZoom,
-    onBackgroundClick
+    onBackgroundClick,
+    initialCenter,
+    onCenterChange
   }) {
     const store = window.useStore();
     const chapters = store.getChapters();
@@ -112,8 +114,18 @@
 
     // Framing for the home view: the town today sits in the centre at chapter
     // zoom — the map opens on where you are, not on the chapter's whole spread.
-    // With no stop at all, every city stop edge-to-edge (the world view).
+    // Arriving from the 3D globe, "where you are" is wherever that globe was
+    // looking: same ground, its own zoom. With no stop at all, every city stop
+    // edge-to-edge (the world view).
     const homeFrame = () => {
+      if (initialCenter && initialCenter.length === 2) {
+        return {
+          pts: [initialCenter],
+          padding: [40, 40],
+          maxZoom: CHAPTER_ZOOM,
+          single: initialCenter
+        };
+      }
       const stop = homeStop();
       if (stop) {
         const pt = stopPoint(stop);
@@ -186,9 +198,11 @@
     React.useEffect(() => {
       if (mapRef.current || !window.L) return;
       const L = window.L;
-      // First paint already faces the town instead of a generic Asia-wide
-      // center (frameHome below settles the exact framing).
-      const firstPt = stopPoint(homeStop());
+      // First paint already faces the town — or the point the globe was
+      // looking at — instead of a generic Asia-wide centre (frameHome below
+      // settles the exact framing).
+      const home0 = homeFrame();
+      const firstPt = home0.pts && home0.pts.length === 1 ? home0.pts[0] : null;
       const map = L.map(ref.current, {
         center: firstPt || [25, 105],
         zoom: firstPt ? 4 : 3,
@@ -202,6 +216,14 @@
       });
       mapRef.current = map;
       window._map = map;
+      // Report the centre so a switch to the 3D globe opens on the same ground.
+      const reportCenter = () => {
+        if (!onCenterChange) return;
+        const c = map.getCenter();
+        onCenterChange([c.lat, c.lng]);
+      };
+      map.on('moveend', reportCenter);
+      reportCenter();
 
       // Esri World Imagery (satellite) + reference overlay for city names,
       // boundaries and water labels. Note the {z}/{y}/{x} order.

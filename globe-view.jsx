@@ -75,14 +75,14 @@
     ['Australia', 134, -25], ['New Zealand', 172, -42], ['Papua New Guinea', 141, -6],
   ];
 
-  function GlobeView({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, focusKey, onBackgroundClick, intro }) {
+  function GlobeView({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, focusKey, onBackgroundClick, intro, initialCenter, onCenterChange }) {
     const store = window.useStore();
     const chapters = store.getChapters();
 
     const ref = React.useRef(null);
     const st = React.useRef(null);
-    const propsRef = React.useRef({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, chapters, onBackgroundClick });
-    propsRef.current = { selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, chapters, onBackgroundClick };
+    const propsRef = React.useRef({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, chapters, onBackgroundClick, onCenterChange });
+    propsRef.current = { selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, chapters, onBackgroundClick, onCenterChange };
 
     function llv(lat, lng, r) {
       const phi = (90 - lat) * Math.PI / 180;
@@ -99,6 +99,19 @@
       const n = worldPos.clone().normalize();
       const c = s.camera.position.clone().normalize();
       return n.dot(c) > (margin == null ? 0.08 : margin);
+    }
+
+    // The inverse of llv(): the point on the surface the camera is looking at.
+    // OrbitControls always targets the origin, so the camera's own direction is
+    // the centre of the frame.
+    function centerOf(pos) {
+      const r = pos.length() || 1;
+      const y = Math.max(-1, Math.min(1, pos.y / r));
+      const lat = 90 - (Math.acos(y) * 180) / Math.PI;
+      let lng = (Math.atan2(pos.z, -pos.x) * 180) / Math.PI - 180;
+      if (lng < -180) lng += 360;
+      if (lng > 180) lng -= 360;
+      return [lat, lng];
     }
 
     function toScreen(worldPos) {
@@ -205,6 +218,16 @@
         s.intro = null;
         s.controls.autoRotate = false;
       });
+      // Where the camera is looking, reported to the shell so switching to the
+      // 2D map opens on the same ground. A ref in App, not state: this fires on
+      // every frame of a drag and must not re-render anything.
+      const reportCenter = () => {
+        const s = st.current; if (!s) return;
+        const c = centerOf(s.camera.position);
+        const cb = propsRef.current.onCenterChange;
+        if (cb) cb(c);
+      };
+      controls.addEventListener('change', reportCenter);
 
       // HTML overlays
       const overlay = document.createElement('div');
@@ -222,14 +245,19 @@
       // Open facing the town, not the chapter: today's city, and outside the
       // trip the first or last stop (the same chapters the title falls back
       // to). Opening holds still — a spin would drift off the place you are.
+      // Coming back from the 2D map, the point to open on is the one that map
+      // was showing: switching modes should not move the ground under you.
       const nowStop = window.TRIP_NOW ? window.TRIP_NOW.homeStop(chapters) : null;
-      const here = nowStop
-        ? (nowStop.place && nowStop.place.coords) || (nowStop.chapter && nowStop.chapter.anchor) || null
-        : null;
+      const here = initialCenter && initialCenter.length === 2
+        ? initialCenter
+        : nowStop
+          ? (nowStop.place && nowStop.place.coords) || (nowStop.chapter && nowStop.chapter.anchor) || null
+          : null;
       const openPos = here ? llv(here[0], here[1], 2.7) : home;
       camera.position.copy(openPos);
       controls.target.set(0, 0, 0);
       controls.update();
+      reportCenter();
       if (here) {
         controls.autoRotate = false;
         st.current.spinOff = true;
@@ -298,6 +326,7 @@
         ro.disconnect();
         if (st.current) {
           cancelAnimationFrame(st.current.raf);
+          st.current.controls.removeEventListener('change', reportCenter);
           st.current.controls.dispose();
           st.current.scene.traverse((o) => {
             if (o.geometry) o.geometry.dispose();

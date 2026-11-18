@@ -1135,3 +1135,23 @@ were not.
   pins, 30×30, the same bug at 15px). The content now fills the box Leaflet
   sized, which puts 50%/50% back on the anchor. The globe is unaffected: its
   markers hang off a 0×0 wrapper that is already the anchor point.
+
+## 2026-11-18 — Switching map type keeps the ground
+
+The 3D globe and the 2D map used to each open on their own home framing, so
+flipping the switch after moving one of them threw you back to today's town. Now
+each view reports the point at the centre of the frame — the globe inverts its
+camera direction, the map reads `getCenter()` on `moveend` — and the other takes
+it as its opening centre.
+
+- **A ref, not state.** The globe moves every frame; writing that into React
+  would re-render the app sixty times a second for a value only the *next* mount
+  reads. It is reported into a ref and read once, at the render that swaps the
+  component.
+- **The centre carries, the zoom does not.** There is no honest conversion: z6
+  on the 2D map shows a ~7° cap, while the globe's closest distance still shows
+  ~46°. Carrying zoom would clamp the globe to `minDist` and snap the 2D map to a
+  scale it never uses. Each view keeps its own framing rules for scale.
+- **A selection still wins.** Switching with a chapter or stop open frames that
+  stop in both modes, as before; the carried centre only decides the opening
+  position it flies from.

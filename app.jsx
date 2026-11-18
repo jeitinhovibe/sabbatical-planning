@@ -709,6 +709,11 @@
     );
 
     const showDetail = detailOpen && !!selectedId && !!store.getChapter(selectedId);
+    // Where the atlas is looking, in [lat, lng]. A ref, not state: the globe
+    // reports on every frame of a drag, and the only consumer is the next map
+    // mount — so the switch reads it at render time and nothing re-renders.
+    const viewCenter = React.useRef(null);
+    const onCenterChange = (c) => { viewCenter.current = c; };
 
     return (
       <div className={`app view-${view} ${isMobile ? 'is-mobile' : ''} ${showDetail ? 'has-detail' : ''}`}>
@@ -729,6 +734,8 @@
                       onBackgroundClick={onBackgroundClick}
                       focusKey={focusKey}
                       intro={!cover}
+                      initialCenter={viewCenter.current}
+                      onCenterChange={onCenterChange}
                     />
                   ) : (
                     <window.MapView
@@ -739,6 +746,8 @@
                       onSelectPlace={onSelectPlace}
                       onBackgroundClick={onBackgroundClick}
                       focusKey={focusKey}
+                      initialCenter={viewCenter.current}
+                      onCenterChange={onCenterChange}
                     />
                   )}
                 </window.ErrorBoundary>
