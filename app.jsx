@@ -84,7 +84,7 @@
         </div>
         <div className="cover-top">
           <span>2026 — 2027</span>
-          <span>SABBATICAL · NO. 01</span>
+          <span>SABBATICAL · NO. 02</span>
         </div>
         <div className="cover-center">
           <div className="cover-kicker">One year · two travellers · twenty-one chapters</div>

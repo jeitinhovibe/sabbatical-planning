@@ -134,7 +134,7 @@
       }
     }))), /*#__PURE__*/React.createElement("div", {
       className: "cover-top"
-    }, /*#__PURE__*/React.createElement("span", null, "2026 \u2014 2027"), /*#__PURE__*/React.createElement("span", null, "SABBATICAL \xB7 NO. 01")), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement("span", null, "2026 \u2014 2027"), /*#__PURE__*/React.createElement("span", null, "SABBATICAL \xB7 NO. 02")), /*#__PURE__*/React.createElement("div", {
       className: "cover-center"
     }, /*#__PURE__*/React.createElement("div", {
       className: "cover-kicker"
