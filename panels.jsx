@@ -6,12 +6,13 @@
   const { fmt, dayRange, dayCounter, contrastText } = helpers;
   const { placeWindows } = window.TRIP_NOW;
 
-  function SectionHead({ num, title, note }) {
+  function SectionHead({ num, title, note, action }) {
     return (
       <div className="section-head">
         <span className="section-head-num">{num}</span>
         <h2 className="section-head-title">{title}</h2>
         {note && <span className="section-head-note">{note}</span>}
+        {action}
       </div>
     );
   }
@@ -303,25 +304,32 @@
     };
     const chapterNights = budget.chapters.reduce((s, r) => s + r.days, 0);
     // The whole table is read against one number: what an average chapter night
-    // costs. Tint is a log scale off that line, so a 2× chapter saturates and
-    // the cheap end stays visible instead of flattening.
+    // costs. The rate bar is coloured off that line on a log scale, so a 2×
+    // chapter saturates and the cheap end stays visible instead of flattening.
     const avgNight = chTotal / chapterNights;
-    const heat = (ratio) => {
+    const rateBar = (ratio) => {
       const dev = Math.min(1, Math.abs(Math.log(ratio)) / Math.log(2));
-      const tint = ratio < 1 ? '91,176,193' : '255,122,69';
-      return {
-        background: `rgba(${tint},${(0.06 + dev * 0.16).toFixed(2)})`,
-        color: dev > 0.4 ? (ratio < 1 ? '#a9dde4' : '#ffb699') : undefined,
-      };
+      const rgb = ratio < 1 ? '91,176,193' : '255,122,69';
+      return { background: `rgba(${rgb},${(0.18 + dev * 0.38).toFixed(2)})`, opacity: 1 };
     };
     // Percentages are rounded, but a sub-1% chapter must not read as "0%".
     const pct = (v) => (v > 0 && v < 1 ? v.toFixed(1) + '%' : Math.round(v) + '%');
     const COLS = [
       ['idx', '#'], ['title', 'Chapter'], ['days', 'Nights'], ['perDay', '$/night'],
       ['lodging', 'Lodging'], ['food', 'Food'], ['transport', 'Transport'],
-      ['activities', 'Activities'], ['fees', 'Fees'], ['share', 'Share'], ['total', 'Total'],
+      ['activities', 'Activities'], ['fees', 'Fees'], ['total', 'Total'], ['share', 'Share'],
     ];
     const CAT_KEYS = CATS.map(([k]) => k);
+    const maxNight = Math.max(...rows.map((r) => r.perDay));
+    // The breakdown is opt-in: five columns of categories is a different
+    // question from "which chapter is eating the year".
+    const [showCats, setShowCats] = React.useState(false);
+    const toggleCats = () => {
+      // A sort on a column that just disappeared would reorder rows with no
+      // visible reason, so fall back to chapter order.
+      if (showCats && CAT_KEYS.includes(sortKey)) { setSortKey('idx'); setSortDir(1); }
+      setShowCats(!showCats);
+    };
 
     return (
       <div className="page-inner ledger-page">
@@ -360,18 +368,33 @@
           </div>
         </div>
 
-        <SectionHead num="01" title="Where the nights go" note="per night, except share & total · click to sort" />
+        <SectionHead
+          num="01"
+          title="Where the nights go"
+          note="per night · click to sort"
+          action={
+            <button
+              className="ledger-toggle"
+              onClick={toggleCats}
+              aria-expanded={showCats}
+              title={showCats ? 'Hide the category breakdown' : 'Show the category breakdown'}
+            >
+              {showCats ? 'Hide the breakdown ←' : 'Breakdown →'}
+            </button>
+          }
+        />
         <div className="ledger-table-wrap">
-          <table className="ledger-table">
+          <table className={'ledger-table' + (showCats ? ' is-wide' : '')}>
             <thead>
               <tr>
                 {COLS.map(([k, label]) => (
                   <th
                     key={k}
                     className={[
-                      k === 'total' ? 'is-num' : '',
+                      k === 'total' || k === 'perDay' ? 'is-num' : '',
                       k === 'share' ? 'is-share' : '',
                       k === 'idx' ? 'is-idx' : '',
+                      k === 'days' ? 'is-days' : '',
                       CAT_KEYS.includes(k) ? 'is-cat' : '',
                     ].join(' ').trim()}
                     title={k === 'share'
@@ -379,7 +402,7 @@
                       : k === 'total'
                         ? 'Bar length is the chapter total against the biggest chapter'
                         : k === 'perDay'
-                          ? `Per night for two, tinted against the trip's weighted average of ${fmt$(avgNight)}`
+                          ? `Per night for two; the bar is coloured against the trip's weighted average of ${fmt$(avgNight)}`
                           : (rows.length && k in rows[0].nightly ? 'Per night, two travellers' : undefined)}
                   >
                     <button onClick={() => toggleSort(k)}>
@@ -405,21 +428,20 @@
                         {r.title}
                       </button>
                     </td>
-                    <td>{r.days}</td>
+                    <td className="is-days">{r.days}</td>
                     <td
-                      className="is-heat"
-                      style={heat(ratio)}
+                      className="is-num cell-rate"
                       title={`${ratio.toFixed(2)}× the trip's weighted average of ${fmt$(avgNight)}/night`}
                     >
-                      {fmt$(r.perDay)}
-                      {Math.abs(ratio - 1) >= 0.15 && (
-                        <i className="heat-x">×{ratio.toFixed(1)}</i>
-                      )}
+                      <span
+                        className="cell-bar"
+                        style={{ width: `${Math.max(2, (r.perDay / maxNight) * 100)}%`, ...rateBar(ratio) }}
+                      />
+                      <span className="cell-val">{fmt$(r.perDay)}</span>
                     </td>
                     {CATS.map(([k]) => (
                       <td key={k} className="is-cat">{fmt$(r.nightly[k])}</td>
                     ))}
-                    <td className="is-share">{pct(r.share * 100)}</td>
                     <td className="is-num is-total cell-total">
                       <span
                         className="cell-bar"
@@ -427,6 +449,7 @@
                       />
                       <span className="cell-val">{fmt$(r.total)}</span>
                     </td>
+                    <td className="is-share" title="Share of all chapter spend">{pct(r.share * 100)}</td>
                   </tr>
                 );
               })}
@@ -436,19 +459,19 @@
               >
                 <td className="is-idx" />
                 <td className="is-name">Chapters · avg / night</td>
-                <td>{chapterNights}</td>
-                <td>{fmt$(chTotal / chapterNights)}</td>
+                <td className="is-days">{chapterNights}</td>
+                <td className="is-num">{fmt$(chTotal / chapterNights)}</td>
                 {CATS.map(([k]) => <td key={k} className="is-cat">{fmt$(catTotals[k] / chapterNights)}</td>)}
-                <td className="is-share">100%</td>
                 <td className="is-num is-total">{fmt$(chTotal)}</td>
+                <td className="is-share">100%</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p className="ledger-legend">
-          Bar length is the chapter total against the biggest chapter. $/night is tinted
-          against the trip's weighted average of {fmt$(avgNight)} — cool below it, ember
-          above — and the × figure is that multiple, shown past ±15%.
+          A bar runs to the top of its column: the biggest chapter total, the priciest
+          night ({fmt$(maxNight)}). The $/night bar is coloured against the trip's
+          weighted average of {fmt$(avgNight)} — cool below it, ember above.
         </p>
 
         <div className="ledger-below">

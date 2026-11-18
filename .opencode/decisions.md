@@ -15,17 +15,26 @@ $/night) and an eleven-column table (the same three facts plus the category
 split). Same rows, same order, one screen apart — two things to keep in step and
 two places to read the same number.
 
-- **Decision:** one sortable table. The bar moves inside the Total cell
-  (length = the chapter total against the biggest chapter, in the chapter's own
-  tint), and $/night is heat-tinted against the trip's weighted average
-  ($211/night), cool below, ember above, with the × multiple spelled out past
-  ±15% so colour is never the only signal.
+- **Decision:** one sortable table, and the same bar in both money columns:
+  length = that cell's value against the top of its column (the biggest chapter
+  total, the priciest night at $420), in the chapter's own tint. The $/night
+  bar is coloured against the trip's weighted average ($211/night) — cool below,
+  ember above — so colour carries the "cheap or expensive here" reading that
+  length alone cannot, and no multiplier has to be typed into the cell.
 - **Why the bar stayed in the table rather than beside it:** a separate track
-  column is the old bar list wearing a table header. Inside the Total cell the
-  row keeps its sort and the bar keeps its 1:1 scale whatever the sort.
-- **Phones:** the five category columns and the share % drop out (the bar already
-  carries the share), leaving chapter, nights, rate, total in one screen width
-  instead of a sideways scroll.
+  column is the old bar list wearing a table header. Inside the cell the row
+  keeps its sort and the bar keeps its 1:1 scale whatever the sort.
+- **The breakdown is opt-in:** the table opens on #, chapter, nights, $/night,
+  total and share, and a *Breakdown →* toggle adds lodging, food, transport,
+  activities and fees. Six columns was the question everyone asks; eleven was a
+  spreadsheet. Collapsing while sorted on a hidden column falls back to chapter
+  order, so rows never reorder for an invisible reason.
+- **Share sits right of the total**, reading as a rider on the number it
+  qualifies rather than a column of its own: 16% of the chapter spend, next to
+  $12,450.
+- **Phones:** the row number goes too (the name is the identifier), so the five
+  default columns fit one screen width instead of scrolling sideways — and the
+  toggle is what earns the scroll when the breakdown is asked for.
 - **Rejected:** expandable rows that reveal the categories — it hides the
   cross-chapter comparison, which is the only reason to look at the table.
 - **Rejected:** a toggle between total and per-night views — it hides half the

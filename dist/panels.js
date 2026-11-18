@@ -21,7 +21,8 @@
   function SectionHead({
     num,
     title,
-    note
+    note,
+    action
   }) {
     return /*#__PURE__*/React.createElement("div", {
       className: "section-head"
@@ -31,7 +32,7 @@
       className: "section-head-title"
     }, title), note && /*#__PURE__*/React.createElement("span", {
       className: "section-head-note"
-    }, note));
+    }, note), action);
   }
 
   // ══════════════════════════════════════════════════════════════════════
@@ -403,21 +404,34 @@
     };
     const chapterNights = budget.chapters.reduce((s, r) => s + r.days, 0);
     // The whole table is read against one number: what an average chapter night
-    // costs. Tint is a log scale off that line, so a 2× chapter saturates and
-    // the cheap end stays visible instead of flattening.
+    // costs. The rate bar is coloured off that line on a log scale, so a 2×
+    // chapter saturates and the cheap end stays visible instead of flattening.
     const avgNight = chTotal / chapterNights;
-    const heat = ratio => {
+    const rateBar = ratio => {
       const dev = Math.min(1, Math.abs(Math.log(ratio)) / Math.log(2));
-      const tint = ratio < 1 ? '91,176,193' : '255,122,69';
+      const rgb = ratio < 1 ? '91,176,193' : '255,122,69';
       return {
-        background: `rgba(${tint},${(0.06 + dev * 0.16).toFixed(2)})`,
-        color: dev > 0.4 ? ratio < 1 ? '#a9dde4' : '#ffb699' : undefined
+        background: `rgba(${rgb},${(0.18 + dev * 0.38).toFixed(2)})`,
+        opacity: 1
       };
     };
     // Percentages are rounded, but a sub-1% chapter must not read as "0%".
     const pct = v => v > 0 && v < 1 ? v.toFixed(1) + '%' : Math.round(v) + '%';
-    const COLS = [['idx', '#'], ['title', 'Chapter'], ['days', 'Nights'], ['perDay', '$/night'], ['lodging', 'Lodging'], ['food', 'Food'], ['transport', 'Transport'], ['activities', 'Activities'], ['fees', 'Fees'], ['share', 'Share'], ['total', 'Total']];
+    const COLS = [['idx', '#'], ['title', 'Chapter'], ['days', 'Nights'], ['perDay', '$/night'], ['lodging', 'Lodging'], ['food', 'Food'], ['transport', 'Transport'], ['activities', 'Activities'], ['fees', 'Fees'], ['total', 'Total'], ['share', 'Share']];
     const CAT_KEYS = CATS.map(([k]) => k);
+    const maxNight = Math.max(...rows.map(r => r.perDay));
+    // The breakdown is opt-in: five columns of categories is a different
+    // question from "which chapter is eating the year".
+    const [showCats, setShowCats] = React.useState(false);
+    const toggleCats = () => {
+      // A sort on a column that just disappeared would reorder rows with no
+      // visible reason, so fall back to chapter order.
+      if (showCats && CAT_KEYS.includes(sortKey)) {
+        setSortKey('idx');
+        setSortDir(1);
+      }
+      setShowCats(!showCats);
+    };
     return /*#__PURE__*/React.createElement("div", {
       className: "page-inner ledger-page"
     }, /*#__PURE__*/React.createElement("header", {
@@ -462,15 +476,21 @@
     }, "(", Math.round(s.value / grand * 100), "%)"))))))), /*#__PURE__*/React.createElement(SectionHead, {
       num: "01",
       title: "Where the nights go",
-      note: "per night, except share & total \xB7 click to sort"
+      note: "per night \xB7 click to sort",
+      action: /*#__PURE__*/React.createElement("button", {
+        className: "ledger-toggle",
+        onClick: toggleCats,
+        "aria-expanded": showCats,
+        title: showCats ? 'Hide the category breakdown' : 'Show the category breakdown'
+      }, showCats ? 'Hide the breakdown ←' : 'Breakdown →')
     }), /*#__PURE__*/React.createElement("div", {
       className: "ledger-table-wrap"
     }, /*#__PURE__*/React.createElement("table", {
-      className: "ledger-table"
+      className: 'ledger-table' + (showCats ? ' is-wide' : '')
     }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, COLS.map(([k, label]) => /*#__PURE__*/React.createElement("th", {
       key: k,
-      className: [k === 'total' ? 'is-num' : '', k === 'share' ? 'is-share' : '', k === 'idx' ? 'is-idx' : '', CAT_KEYS.includes(k) ? 'is-cat' : ''].join(' ').trim(),
-      title: k === 'share' ? 'Share of all chapter spend' : k === 'total' ? 'Bar length is the chapter total against the biggest chapter' : k === 'perDay' ? `Per night for two, tinted against the trip's weighted average of ${fmt$(avgNight)}` : rows.length && k in rows[0].nightly ? 'Per night, two travellers' : undefined
+      className: [k === 'total' || k === 'perDay' ? 'is-num' : '', k === 'share' ? 'is-share' : '', k === 'idx' ? 'is-idx' : '', k === 'days' ? 'is-days' : '', CAT_KEYS.includes(k) ? 'is-cat' : ''].join(' ').trim(),
+      title: k === 'share' ? 'Share of all chapter spend' : k === 'total' ? 'Bar length is the chapter total against the biggest chapter' : k === 'perDay' ? `Per night for two; the bar is coloured against the trip's weighted average of ${fmt$(avgNight)}` : rows.length && k in rows[0].nightly ? 'Per night, two travellers' : undefined
     }, /*#__PURE__*/React.createElement("button", {
       onClick: () => toggleSort(k)
     }, label, sortKey === k ? sortDir === 1 ? ' ▲' : ' ▼' : ''))))), /*#__PURE__*/React.createElement("tbody", null, sorted.map(r => {
@@ -491,18 +511,23 @@
         style: {
           background: r.tint
         }
-      }), r.title)), /*#__PURE__*/React.createElement("td", null, r.days), /*#__PURE__*/React.createElement("td", {
-        className: "is-heat",
-        style: heat(ratio),
+      }), r.title)), /*#__PURE__*/React.createElement("td", {
+        className: "is-days"
+      }, r.days), /*#__PURE__*/React.createElement("td", {
+        className: "is-num cell-rate",
         title: `${ratio.toFixed(2)}× the trip's weighted average of ${fmt$(avgNight)}/night`
-      }, fmt$(r.perDay), Math.abs(ratio - 1) >= 0.15 && /*#__PURE__*/React.createElement("i", {
-        className: "heat-x"
-      }, "\xD7", ratio.toFixed(1))), CATS.map(([k]) => /*#__PURE__*/React.createElement("td", {
+      }, /*#__PURE__*/React.createElement("span", {
+        className: "cell-bar",
+        style: {
+          width: `${Math.max(2, r.perDay / maxNight * 100)}%`,
+          ...rateBar(ratio)
+        }
+      }), /*#__PURE__*/React.createElement("span", {
+        className: "cell-val"
+      }, fmt$(r.perDay))), CATS.map(([k]) => /*#__PURE__*/React.createElement("td", {
         key: k,
         className: "is-cat"
       }, fmt$(r.nightly[k]))), /*#__PURE__*/React.createElement("td", {
-        className: "is-share"
-      }, pct(r.share * 100)), /*#__PURE__*/React.createElement("td", {
         className: "is-num is-total cell-total"
       }, /*#__PURE__*/React.createElement("span", {
         className: "cell-bar",
@@ -512,7 +537,10 @@
         }
       }), /*#__PURE__*/React.createElement("span", {
         className: "cell-val"
-      }, fmt$(r.total))));
+      }, fmt$(r.total))), /*#__PURE__*/React.createElement("td", {
+        className: "is-share",
+        title: "Share of all chapter spend"
+      }, pct(r.share * 100)));
     }), /*#__PURE__*/React.createElement("tr", {
       className: "is-sum",
       title: `Weighted by nights (${chapterNights}). Total column is all chapter spend.`
@@ -520,16 +548,20 @@
       className: "is-idx"
     }), /*#__PURE__*/React.createElement("td", {
       className: "is-name"
-    }, "Chapters \xB7 avg / night"), /*#__PURE__*/React.createElement("td", null, chapterNights), /*#__PURE__*/React.createElement("td", null, fmt$(chTotal / chapterNights)), CATS.map(([k]) => /*#__PURE__*/React.createElement("td", {
+    }, "Chapters \xB7 avg / night"), /*#__PURE__*/React.createElement("td", {
+      className: "is-days"
+    }, chapterNights), /*#__PURE__*/React.createElement("td", {
+      className: "is-num"
+    }, fmt$(chTotal / chapterNights)), CATS.map(([k]) => /*#__PURE__*/React.createElement("td", {
       key: k,
       className: "is-cat"
     }, fmt$(catTotals[k] / chapterNights))), /*#__PURE__*/React.createElement("td", {
-      className: "is-share"
-    }, "100%"), /*#__PURE__*/React.createElement("td", {
       className: "is-num is-total"
-    }, fmt$(chTotal)))))), /*#__PURE__*/React.createElement("p", {
+    }, fmt$(chTotal)), /*#__PURE__*/React.createElement("td", {
+      className: "is-share"
+    }, "100%"))))), /*#__PURE__*/React.createElement("p", {
       className: "ledger-legend"
-    }, "Bar length is the chapter total against the biggest chapter. $/night is tinted against the trip's weighted average of ", fmt$(avgNight), " \u2014 cool below it, ember above \u2014 and the \xD7 figure is that multiple, shown past \xB115%."), /*#__PURE__*/React.createElement("div", {
+    }, "A bar runs to the top of its column: the biggest chapter total, the priciest night (", fmt$(maxNight), "). The $/night bar is coloured against the trip's weighted average of ", fmt$(avgNight), " \u2014 cool below it, ember above."), /*#__PURE__*/React.createElement("div", {
       className: "ledger-below"
     }, /*#__PURE__*/React.createElement("div", {
       className: "receipt"
