@@ -1117,3 +1117,21 @@ were not.
   at a time was a first-paint hitch, so the whole layer is measured once per
   rebuild (and again when the webfont lands). 61fps at the home view with ~35
   city and ~24 country labels visible.
+
+## 2026-11-18 — The reel folds, and the 2D dots get their point back
+
+- **A chevron folds the chapter strip.** One 12px handle at the end of the
+  "The arc" row, no plate until hover, `aria-expanded` + `aria-controls` on the
+  track. Collapsed leaves the head line over a thinner scrim, so the planet gets
+  the bottom of the stage without losing the count or the way back. Expanded is
+  the default; the choice is kept in `localStorage` like the 2D/3D switch, so
+  it survives a reload but never surprises a first visit. The reel is scenery
+  (`pointer-events: none`), so the button re-enables its own pointers — and has
+  to be switched off again under `.has-detail`, or a spread would leave it live.
+- **The 2D map's dots were 7px high.** Leaflet sizes the divIcon 14×14 and
+  anchors it at its centre, but the marker's content is a plain block: its line
+  box had no height, so the dot's `top: 50%` resolved to the box's *top*, not
+  its middle. Every place marker sat ~7px above its coordinate (the chapter
+  pins, 30×30, the same bug at 15px). The content now fills the box Leaflet
+  sized, which puts 50%/50% back on the anchor. The globe is unaffected: its
+  markers hang off a 0×0 wrapper that is already the anchor point.
