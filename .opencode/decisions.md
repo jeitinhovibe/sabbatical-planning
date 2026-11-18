@@ -8,6 +8,18 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-18 — Labels on photographs get a surface, not a shadow
+
+The reel's "n nights" count was white mono at 85% with a text-shadow. On a
+dark frame it read; on Bangkok at night or a white sand beach it disappeared.
+A shadow only works when you know what is behind the text, and these thumbnails
+are whatever photograph the chapter points at.
+
+- **Decision:** value labels on photos — anything a reader has to actually read
+  — sit on the same chip recipe as the `Now` and travelled badges:
+  `rgba(6,9,13,.66)`, a hairline inset ring, 3px backdrop blur. No bare text
+  with a shadow over an image whose brightness nobody controls.
+
 ## 2026-11-18 — The budget is one table, not two
 
 The ledger listed every chapter twice: a spectrum bar list (chapter, bar, total,
