@@ -66,6 +66,11 @@ for (const t of items) {
   if (t.dur !== undefined && /\(~/.test(t.title || '')) {
     errors.push(`${where}: title carries a duration — put it in \`dur\``);
   }
+  // `done: true` already draws the tick in the UI, so a ✅ in the note says it
+  // twice — and stays behind when the tick is later cleared.
+  if (/✅/.test(t.note || '')) {
+    errors.push(`${where}: note carries a ✅ — done: true already draws the tick`);
+  }
 
   if (t.cat === 'stay') {
     stays++;

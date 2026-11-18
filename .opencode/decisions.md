@@ -23,6 +23,9 @@ title carries only what you are booking: `Bangkok stay`, not `Bangkok stay (3n)`
   exception in it.
 - **Also removed:** every `✅` from the notes. The tick in the UI already says it,
   and `Booked ✅ — $84 for 3 nights` became `Booked for $84 for 3 nights`.
+- **Enforced:** `validate-todo.mjs` fails any row whose note contains `✅` — it
+  crept back on 2026-11-18 in the HK→Guangzhou leg, with a `time` field beside it
+  that already showed the clock.
 - **Enforced:** `validate-todo.mjs` fails a title that repeats a date, night count,
   clock time, duration or price the row holds as a field. A title may still carry a
   date when the row has no date field — that is the only exception, and it closes
