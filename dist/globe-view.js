@@ -287,20 +287,21 @@
       tick();
       rebuildAll();
 
-      // Country labels are measured once for the on-disc test; the webfont can
-      // arrive after the first frame and change how wide a word is, so drop the
-      // cached sizes and let the next tick re-measure.
+      // Country and city labels are measured once for the on-disc test; the
+      // webfont can arrive after the first frame and change how wide a word is,
+      // so drop the cached sizes and re-measure in one batch.
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
           const s = st.current;
           if (!s) return;
           for (let i = 0; i < s.overlay.children.length; i++) {
             const el = s.overlay.children[i];
-            if (el._country) {
+            if (el._country || el._cityLabel) {
               el._w = 0;
               el._h = 0;
             }
           }
+          measureLabels();
         });
       }
       return () => {
@@ -500,19 +501,41 @@
       };
     }
 
-    // Label widths for the on-disc test, measured lazily: offsetWidth forces
-    // layout, so measuring ~80 labels every frame would be wasteful. Invalidated
-    // once the webfont lands (see the mount effect), since the fallback mono
+    // Label widths for the on-disc test and the declutter pass. offsetWidth
+    // forces layout, so it is measured in one batch (measureLabels) instead of
+    // per element per frame — a hundred separate reads on first paint is a
+    // visible hitch. Invalidated once the webfont lands, since the fallback mono
     // face can be wider than JetBrains Mono.
-    function countrySize(el) {
-      if (!el._w) {
-        const prev = el.style.display;
-        el.style.display = '';
+    function labelSize(el) {
+      if (!el._w) return [el.offsetWidth || 1, el.offsetHeight || 1];
+      return [el._w, el._h];
+    }
+
+    // One layout for the whole label layer: unhide the ones currently parked,
+    // read every box, then restore. Called when the pins are rebuilt and when
+    // the font arrives.
+    function measureLabels() {
+      const s = st.current;
+      if (!s) return;
+      const list = [];
+      for (let i = 0; i < s.overlay.children.length; i++) {
+        const el = s.overlay.children[i];
+        if (el._country || el._cityLabel) list.push(el);
+      }
+      const parked = [];
+      list.forEach(el => {
+        if (el.style.display === 'none') {
+          el.style.display = '';
+          parked.push(el);
+        }
+      });
+      list.forEach(el => {
         el._w = el.offsetWidth || 1;
         el._h = el.offsetHeight || 1;
-        el.style.display = prev;
-      }
-      return [el._w, el._h];
+      });
+      parked.forEach(el => {
+        el.style.display = 'none';
+      });
     }
     function updateOverlay() {
       const s = st.current;
@@ -528,8 +551,8 @@
       // n·ĉ = 1/d, not 0. Anything below it is behind the planet's body.
       const horizon = 1 / s.camera.position.length();
       const kids = s.overlay.children;
-      // Country labels that survive the on-disc test, for the declutter pass
-      // below. Filled in DOM order, resolved after every position is known.
+      // Labels that survive the on-disc test, for the declutter pass below.
+      // Filled in DOM order, resolved after every position is known.
       const cand = [];
       for (let i = 0; i < kids.length; i++) {
         const el = kids[i];
@@ -553,34 +576,41 @@
         const sp = wp.clone().project(s.camera);
         const x = (sp.x * 0.5 + 0.5) * s.w;
         const y = (-sp.y * 0.5 + 0.5) * s.h;
+        // A city name hangs under its dot; countries and pins sit on the point.
+        const ly = el._cityLabel ? y + CITY_LABEL_DY : y;
         el.style.display = null;
-        el.style.transform = el._country ? `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)` : `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
-        if (el._country) {
-          // A country label belongs to the map only while the whole word sits
-          // on the planet. Anchored at a surface point, its centre is inside
-          // the limb while half the text hangs off into space — that reads as
-          // a floating HUD callout, not a place name. Fade the label over the
-          // last 14px of travel instead of toggling a class at the edge: a
-          // binary threshold flaps when a slow drag jitters by a pixel at the
-          // rim, which is the flicker you saw. Opacity is continuous, so the
-          // same jitter is invisible.
-          const [lw, lh] = countrySize(el);
+        el.style.transform = el._country ? `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)` : el._cityLabel ? `translate3d(${x.toFixed(1)}px,${ly.toFixed(1)}px,0) translate(-50%,0)` : `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
+        if (el._country || el._cityLabel) {
+          // A label belongs to the map only while the whole word sits on the
+          // planet. Anchored at a surface point, its centre is inside the limb
+          // while half the text hangs off into space — that reads as a floating
+          // HUD callout, not a place name. Fade over the last 14px of travel
+          // instead of toggling a class at the edge: a binary threshold flaps
+          // when a slow drag jitters by a pixel at the rim. Opacity is
+          // continuous, so the same jitter is invisible.
+          const [lw, lh] = labelSize(el);
+          const lyc = el._cityLabel ? ly + lh / 2 : y;
           const ox = Math.abs(x - disc.cx) + lw / 2;
-          const oy = Math.abs(y - disc.cy) + lh / 2;
-          const inside = disc.r - Math.sqrt(ox * ox + oy * oy);
+          const oy = Math.abs(lyc - disc.cy) + lh / 2;
+          // Inside the planet *and* inside the frame. On a phone the globe is
+          // wider than the screen, so a label can sit well inside the limb and
+          // still run off the viewport edge — it used to be cut mid-word by
+          // .eq-pins' overflow. Fade at whichever edge comes first.
+          const inside = Math.min(disc.r - Math.sqrt(ox * ox + oy * oy), x - lw / 2, s.w - (x + lw / 2), lyc - lh / 2, s.h - (lyc + lh / 2));
           const fade = Math.max(0, Math.min(1, inside / 14));
           el.style.opacity = fade === 1 ? '' : fade.toFixed(3);
           if (fade < 0.6) {
             el._shown = false;
           } else {
             const dx = x - disc.cx,
-              dy = y - disc.cy;
+              dy = lyc - disc.cy;
             cand.push({
               el,
               x,
-              y,
+              y: lyc,
               w: lw,
               h: lh,
+              pri: el._pri || 0,
               dist: Math.sqrt(dx * dx + dy * dy)
             });
           }
@@ -595,10 +625,12 @@
       // that collide, which is what a map does as you zoom out. Zooming in
       // spreads the anchors and they come back.
       //
-      // Labels already on screen get an 8px head start, so two labels sitting
-      // at the same distance cannot trade places frame after frame; a hidden
-      // one has to be clearly closer to win.
-      cand.sort((a, b) => a.dist - (a.el._shown ? 8 : 0) - (b.dist - (b.el._shown ? 8 : 0)));
+      // Priority decides *which* label gives way when two collide: today's
+      // cities first, then the rest of the itinerary, then country names. They
+      // are scored in pixels so a bonus reads as "up to N px closer to the
+      // centre". Labels already on screen get an 8px head start, so two labels
+      // sitting at the same distance cannot trade places frame after frame.
+      cand.sort((a, b) => a.dist - a.pri - (a.el._shown ? 8 : 0) - (b.dist - b.pri - (b.el._shown ? 8 : 0)));
       const kept = [];
       for (let i = 0; i < cand.length; i++) {
         const c = cand[i];
@@ -661,6 +693,33 @@
       el.appendChild(span);
       return el;
     }
+
+    // The dot's hover pill carries the numbered stop ("3. Hongcun"), which is
+    // the right label once a chapter is open. On the home view the same cities
+    // need a name at rest, so the itinerary gets its own always-on label layer:
+    // plain name, no number, and only the places the plan actually visits.
+    const CITY_LABEL_DY = 8;
+
+    // "Takayama + Shirakawa-go", "Cebu / Moalboal", "Sanur (arrival night)",
+    // "Cappadocia — Göreme": a globe annotation is one town, so take the first
+    // name in the list and drop the qualifier. The dot's pill keeps the full
+    // string, which is what the chapter's spread is keyed to.
+    function cityName(raw) {
+      return String(raw || '').split(/\s+[+—–/]\s+|\s*\(/)[0].trim();
+    }
+    function cityLabelEl(c, p, i, pri) {
+      const el = document.createElement('div');
+      el.className = 'eq-city-label';
+      el._anchor = p.coords;
+      el._chId = c.id;
+      el._idx = i;
+      el._pri = pri;
+      el._cityLabel = true;
+      const span = document.createElement('span');
+      span.textContent = cityName(p.name);
+      el.appendChild(span);
+      return el;
+    }
     function rebuildAll() {
       const s = st.current;
       if (!s) return;
@@ -670,6 +729,18 @@
       s.overlay.innerHTML = '';
       COUNTRIES.forEach(([name, lng, lat]) => s.overlay.appendChild(countryEl(name, lng, lat)));
       const list = propsRef.current.chapters.filter(c => c.kind !== 'transit' && c.anchor);
+      // Which names win a collision is decided once, here: today's city beats
+      // its neighbours (Huangshan and Hongcun are 15km apart), then today's
+      // chapter, then the rest of the itinerary, then country names. Scored in
+      // pixels, so a bonus reads as "up to N px closer to the centre".
+      const now = window.TRIP_NOW ? window.TRIP_NOW.homeStop(list) : null;
+      const cityPri = (c, i) => !now ? 60 : c.id !== now.chapter.id ? 60 : i === now.idx ? 400 : 220;
+      // The labels first, so the dots and pins paint over them.
+      list.forEach(c => {
+        (c.places || []).forEach((p, i) => {
+          if (p.coords) s.overlay.appendChild(cityLabelEl(c, p, i, cityPri(c, i)));
+        });
+      });
       // City dots in itinerary order; anchor fallback pins for chapters
       // without place coords.
       list.forEach(c => {
@@ -708,6 +779,7 @@
         if (arc.userData.arcMat) s.arcMats.push(arc.userData.arcMat);
       }
       void onSelectChapter;
+      measureLabels();
       refreshSelection();
     }
     function refreshSelection() {
@@ -724,8 +796,10 @@
         const pin = el.querySelector('.map-pin');
         if (pin) pin.classList.toggle('is-active', el._id === selectedId);
       });
-      // Hide whole-route city dots of the selected chapter (re-rendered
-      // below as their own markers) to avoid duplicates; updateOverlay honors _hidden.
+      // Hide the whole-route city dots of the selected chapter (re-rendered
+      // below as their own numbered markers); updateOverlay honors _hidden. The
+      // names stay: the numbered pill is hover-only, so dropping the label too
+      // would leave the chapter you just opened as the only unlabelled one.
       [...s.overlay.children].forEach(el => {
         if (el.classList && el.classList.contains('eq-city-wrap')) {
           el._hidden = el._chId === selectedId;

@@ -27,9 +27,10 @@ photography given room to breathe.
 - **A full-bleed atlas.** The 3D globe (or a 2D satellite map) fills the stage.
   It opens centred on the town you are in, drifts in 13% over fifteen seconds —
   a slow push, not a cut, stopping while the planet's sides are still in frame.
-  Today's chapter is set at 8vw in the corner, with the town you are in, the
-  weather, and the next move underneath. The chapter's pins and route arcs are
-  painted in its own tint.
+  Every city the plan visits is named on the globe, ranked so today's town keeps
+  its label when the map is crowded. Today's chapter is set at 8vw in the
+  corner, with the town you are in, the weather, and the next move underneath.
+  The chapter's pins and route arcs are painted in its own tint.
 - **The chapter reel.** A horizontal film strip of all twenty-one chapters
   rides the bottom edge. It opens where you are, dims the past, and opens any
   chapter into a full editorial spread.

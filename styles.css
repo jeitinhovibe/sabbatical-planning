@@ -991,6 +991,23 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
    span so a transition here cannot lag or flap the continuous value. */
 .eq-country > span { transition: opacity .18s linear; }
 .eq-country > span.is-off { opacity: 0; }
+/* Itinerary city names — the one annotation layer that is on at rest. Smaller
+   and quieter than a country (no tracking, title case, no uppercase), and hung
+   under its dot so the marker still marks. */
+.eq-city-label {
+  position: absolute;
+  left: 0; top: 0;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .01em;
+  color: rgba(243,236,221,.78);
+  text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 10px rgba(0,0,0,.7);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.eq-city-label > span { transition: opacity .18s linear; }
+.eq-city-label > span.is-off { opacity: 0; }
 /* Pins */
 .map-pin-wrap { background: transparent !important; border: none !important; pointer-events: none; }
 .map-pin {

@@ -1088,3 +1088,32 @@ way up the screen.
 Amends the 2026-11-05 line "**2D fit of its places, globe camera on its
 anchor**": the seat of the view is the town. The rest of that decision — the
 atlas opens on the present rather than the world, and the panel framing — stands.
+
+## 2026-11-18 — The globe names the itinerary's cities
+
+The 3D globe had two annotation layers: country names at rest, and city names
+only as a hover pill on a dot (`3. Hongcun`, numbered by stop). The home view
+therefore showed a route with no place names — the dots were there, the towns
+were not.
+
+- **A third layer, on at rest, itinerary-only.** Every place with coords in
+  `itinerary-data.js` gets a plain name hung under its dot. Nothing outside the
+  plan is named: no world-city gazetteer, no capitals, no peaks. The dots keep
+  their hover pill, which is where the chapter's numbering belongs.
+- **One town per label.** `cityName()` takes the first name out of
+  "Takayama + Shirakawa-go", "Cebu / Moalboal", "Sanur (arrival night)" — a
+  globe annotation is one place, and the full string stays on the dot's pill and
+  in the spread.
+- **Collisions are ranked, not random.** Today's city beats its neighbours
+  (Huangshan and Hongcun are 15km apart and were fighting over one label), then
+  today's chapter, then the rest of the itinerary, then country names. The
+  existing greedy pass does the dropping, so nothing flickers, and the same
+  declutter now fades labels at the *frame* edge as well as the limb — on a
+  phone the globe is wider than the screen and names were cut mid-word.
+- **The selected chapter keeps its names.** Its dots are replaced by numbered
+  markers, but the pill is hover-only, so hiding the label too would have left
+  the chapter you just opened as the only unlabelled one on screen.
+- **Measured in one batch.** `offsetWidth` forces layout; reading 160 labels one
+  at a time was a first-paint hitch, so the whole layer is measured once per
+  rebuild (and again when the webfont lands). 61fps at the home view with ~35
+  city and ~24 country labels visible.
