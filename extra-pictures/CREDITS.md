@@ -121,6 +121,18 @@ the rest). GIBS serves the same public-domain Visible Earth composite with
 bathymetry, which is what the old hotlinked `unpkg.com/three-globe` texture was —
 at five times the linear resolution.
 
+The `earth/blue-marble-{16k,8k,4k}.ktx2` derivatives are the same pixels,
+encoded by `scripts/build-earth-ktx2.sh` with KTX-Software `toktx` (Basis ETC1S,
+qlevel 160, sRGB, full mip chain). Two things differ from the WebP masters: the
+texture is stored vertically flipped (three.js does not flip compressed uploads,
+and SphereGeometry puts the north pole at v=1), and the 16k tier is resized to
+16384×8192 because ETC1S blocks are 4×4. The WebP files stay as the fallback for
+`file://` and failed transcodes.
+
+`earth/blue-marble-poster.webp` (2048×1024, ≈170KB) is the globe's first paint:
+a 2k downscale of the 4k master, preloaded with the document and replaced by the
+tier's KTX2 once the transcoder is done.
+
 ## Added Nov 2026 — China E2 (Shenzhen)
 
 | File | Author | License |

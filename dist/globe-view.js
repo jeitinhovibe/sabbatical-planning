@@ -34,13 +34,18 @@
   // from unpkg — NASA GIBS tiles stitched at 20480×10240, so the same winter
   // composite the CDN file used, at up to 16k. Three tiers, picked by what
   // the screen can actually resolve: 4k is already sharp at 1x, the 16k only
-  // pays off on a retina desktop, and it costs 537MB of VRAM.
-  // 16382, not 16384: libwebp refuses any dimension above 16383.
+  // pays off on a retina desktop. Each tier ships as KTX2 (GPU-compressed, the
+  // path the globe uses) and WebP (the master, kept as the fallback). The
+  // 16k WebP is 16382 texels wide — libwebp refuses anything above 16383 —
+  // which is why the KTX2 build resizes that tier to 16384×8192.
   const EARTH_TEX = {
-    big: 'extra-pictures/earth/blue-marble-16k.webp',
-    mid: 'extra-pictures/earth/blue-marble-8k.webp',
-    small: 'extra-pictures/earth/blue-marble-4k.webp'
+    big: 'extra-pictures/earth/blue-marble-16k',
+    mid: 'extra-pictures/earth/blue-marble-8k',
+    small: 'extra-pictures/earth/blue-marble-4k'
   };
+  // First paint: a 2k WebP small enough to preload with the document and be
+  // ready before the globe mounts, then replaced by the tier's KTX2.
+  const EARTH_POSTER = 'extra-pictures/earth/blue-marble-poster.webp';
   // 16k is 2607 texels per radian of longitude. At camera distance d the
   // surface under the camera sits (d-1) radii away, so it renders at
   // f/(d-1) px per radian — with a 1740px-tall retina canvas that is 1:1 at
@@ -57,6 +62,14 @@
 
   // [name, lng, lat] — major countries + trip-relevant places
   const COUNTRIES = [['United States', -100, 40], ['Canada', -105, 56], ['Mexico', -102, 23], ['Cuba', -79, 22], ['Colombia', -73, 4], ['Brazil', -52, -10], ['Peru', -76, -10], ['Argentina', -64, -35], ['Chile', -71, -33], ['Greenland', -42, 72], ['Iceland', -18, 65], ['United Kingdom', -2, 54], ['Ireland', -8, 53], ['France', 2, 47], ['Spain', -4, 40], ['Portugal', -8, 39.5], ['Italy', 12.5, 42.5], ['Germany', 10, 51], ['Poland', 20, 52], ['Norway', 8, 62], ['Sweden', 15, 62], ['Finland', 26, 64], ['Ukraine', 32, 49], ['Russia', 95, 62], ['Greece', 24, 39], ['Turkey', 35, 39], ['Georgia', 44, 42], ['Syria', 39, 35], ['Iraq', 44, 33], ['Saudi Arabia', 45, 24], ['Yemen', 48, 16], ['Oman', 58, 21], ['Iran', 54, 32], ['Afghanistan', 66, 34], ['Pakistan', 70, 30], ['Azerbaijan', 47.7, 40.3], ['Kazakhstan', 68, 48], ['Uzbekistan', 64, 41], ['India', 79, 22], ['Nepal', 84, 28], ['Sri Lanka', 81, 8], ['Bangladesh', 90, 24], ['Myanmar', 96, 21], ['Thailand', 101, 16], ['Laos', 104, 18], ['Vietnam', 108, 14], ['Cambodia', 105, 13], ['Malaysia', 102, 4], ['Singapore', 104, 1.35], ['Indonesia', 115, -2], ['Philippines', 122, 13], ['Taiwan', 121, 24], ['Hong Kong', 114, 22.3], ['China', 104, 35], ['Mongolia', 105, 46], ['Japan', 139, 37], ['South Korea', 128, 36], ['Egypt', 30, 27], ['Libya', 18, 28], ['Morocco', -6, 32], ['Algeria', 3, 28], ['Tunisia', 10, 34], ['Sudan', 30, 13], ['Chad', 19, 15], ['Niger', 12, 17], ['Mali', -2, 17], ['Nigeria', 8, 10], ['Ethiopia', 40, 9], ['Kenya', 38, 1], ['Somalia', 46, 6], ['DR Congo', 23, -3], ['Tanzania', 35, -6], ['Angola', 18, -12], ['Namibia', 17, -22], ['South Africa', 25, -29], ['Mozambique', 36, -18], ['Madagascar', 47, -20], ['Australia', 134, -25], ['New Zealand', 172, -42], ['Papua New Guinea', 141, -6]];
+
+  // Switching to the 2D map unmounts the globe, and its cleanup disposes the
+  // renderer, the transcoder and every texture. Re-deriving a 16k Basis texture
+  // on the way back costs seconds (worker boot + transcode), so the decoded
+  // texture is kept for the page's lifetime and re-uploaded into the next
+  // context. Keyed by tier: the screen can change between mounts.
+  let earthCache = null; // { tier, texture }
+
   function GlobeView({
     selectedId,
     selectedPlaceIdx,
@@ -148,23 +161,84 @@
       const dpr = window.devicePixelRatio || 1;
       const wide = window.innerWidth >= 1200;
       const tier = dpr >= 1.5 && wide && maxTex >= 16384 ? 'big' : dpr >= 1.5 && maxTex >= 8192 ? 'mid' : 'small';
-      const texUrl = EARTH_TEX[tier];
+      const texBase = EARTH_TEX[tier];
       const minDist = MIN_DIST[tier] || DEFAULT_MIN_DIST;
-      // Same-origin vendored asset: clear three.js's default CORS mode, or
-      // the globe goes black when index.html is opened straight from disk
-      // (undefined leaves the attribute off; an empty string still means
-      // "anonymous").
-      const loader = new THREE.TextureLoader();
-      loader.crossOrigin = undefined;
-      const tex = loader.load(texUrl, () => {});
-      tex.encoding = THREE.sRGBEncoding;
-      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      const globe = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 96), new THREE.MeshPhongMaterial({
-        map: tex,
+      // Already decoded this session and the screen still wants the same tier:
+      // skip the poster and the transcode entirely.
+      const cachedEarth = earthCache && earthCache.tier === tier ? earthCache.texture : null;
+      // The material starts on a 1x1 black texture so the shader compiles with
+      // a map on the first frame; the real one replaces it when the fetch (and,
+      // for KTX2, the worker transcode) lands. Same black planet the old
+      // pending-WebP texture drew, without recompiling the material mid-flight.
+      const placeholder = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1, THREE.RGBAFormat);
+      placeholder.needsUpdate = true;
+      const earthMat = new THREE.MeshPhongMaterial({
+        map: placeholder,
         shininess: 12,
         specular: new THREE.Color(0x222222)
-      }));
+      });
+      const globe = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 96), earthMat);
       earth.add(globe);
+      const maxAniso = renderer.capabilities.getMaxAnisotropy();
+      let textured = false;
+      let alive = true;
+      const applyTexture = texture => {
+        if (!alive) return;
+        texture.encoding = THREE.sRGBEncoding;
+        texture.anisotropy = maxAniso;
+        texture.needsUpdate = true;
+        const old = earthMat.map;
+        earthMat.map = texture;
+        textured = true;
+        if (old && old !== texture) old.dispose();
+      };
+      const loadWebp = (url, done) => {
+        // Same-origin vendored asset: clear three.js's default CORS mode, or
+        // the globe goes black when index.html is opened straight from disk
+        // (undefined leaves the attribute off; an empty string still means
+        // "anonymous").
+        const loader = new THREE.TextureLoader();
+        loader.crossOrigin = undefined;
+        // On error hand over anyway: the caller's next step is the better
+        // texture, and a failed poster must not strand the globe on black.
+        loader.load(url, tex => {
+          applyTexture(tex);
+          if (done) done();
+        }, undefined, () => {
+          if (done) done();
+        });
+      };
+      let ktx2 = null;
+      if (!cachedEarth && THREE.KTX2Loader && window.location.protocol !== 'file:') {
+        ktx2 = new THREE.KTX2Loader();
+        ktx2.setTranscoderPath('vendor/basis/').detectSupport(renderer);
+      }
+      // KTX2 reaches the GPU already compressed, so the 16k tier is no longer
+      // 134M pixels decoded into 537MB of RGBA, mip-mapped and uploaded — it
+      // lands as 89–179MB of VRAM (BC1 or ASTC) against ≈716MB. It costs ~12MB
+      // of download against the WebP's 6MB; the win is memory and upload time,
+      // not bytes.
+      //
+      // The tier's KTX2 is the second texture, not the first. Booting the Basis
+      // transcoder plus a 16k transcode is ~3s before anything can be drawn, so
+      // the 2k WebP poster (preloaded by index.html, native decode) paints as
+      // soon as the globe mounts and the tier's KTX2 replaces it when it lands.
+      // WebP is also the outright fallback: file:// cannot fetch the .ktx2, and
+      // a failed transcode should degrade, not go black.
+      const loadKtx2 = () => {
+        ktx2.load(texBase + '.ktx2', tex => {
+          if (!alive) return;
+          applyTexture(tex);
+          earthCache = {
+            tier,
+            texture: tex
+          };
+        }, undefined, err => {
+          console.warn('KTX2 globe texture failed, falling back to WebP', err);
+          if (!textured) loadWebp(texBase + '.webp');
+        });
+      };
+      if (cachedEarth) applyTexture(cachedEarth);else if (ktx2) loadWebp(EARTH_POSTER, loadKtx2);else loadWebp(texBase + '.webp');
 
       // Atmosphere rim glow
       const atmo = new THREE.Mesh(new THREE.SphereGeometry(1.03, 96, 96), new THREE.ShaderMaterial({
@@ -245,6 +319,7 @@
         arcs,
         stars,
         minDist,
+        ktx2,
         overlay,
         w: 0,
         h: 0,
@@ -348,16 +423,22 @@
       }
       return () => {
         ro.disconnect();
+        alive = false;
         if (st.current) {
           cancelAnimationFrame(st.current.raf);
+          if (st.current.ktx2) st.current.ktx2.dispose();
           st.current.controls.removeEventListener('change', reportCenter);
           st.current.controls.dispose();
+          // The cached earth texture outlives this mount — it is the whole
+          // point of the cache, and disposing it would send the next switch
+          // back to the transcoder.
+          const keep = earthCache ? earthCache.texture : null;
           st.current.scene.traverse(o => {
             if (o.geometry) o.geometry.dispose();
             if (o.material) {
               const ms = Array.isArray(o.material) ? o.material : [o.material];
               ms.forEach(m => {
-                if (m.map) m.map.dispose();
+                if (m.map && m.map !== keep) m.map.dispose();
                 m.dispose();
               });
             }
