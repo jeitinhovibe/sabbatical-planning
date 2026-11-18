@@ -12,6 +12,14 @@
   // shrinks to a marble on a field of black and the pins stop being readable,
   // so the zoom-out floor sits just beyond home instead of at the far plane.
   const MAX_DIST = HOME.r * 1.25;
+  // The opening move: the camera starts exactly on the framing the atlas used to
+  // land on — the current chapter at 2.7, the world view at HOME.r — and pushes
+  // in 13% over 15s. Slow on purpose: it is a drift while you read the title,
+  // not a flight you wait for. 13% is also the ceiling: it lands on the chapter
+  // framing (2.35), the closest distance at which the planet's sides are still
+  // inside the frame. Any deeper and the globe reads as a flat map.
+  const INTRO_ZOOM = 0.87;
+  const INTRO_MS = 15000;
   // Base tube radius (world units, at the home distance) — the tick loop
   // thins tubes as you zoom in so the on-screen line weight stays ~constant.
   const ARC_R = 0.0014;
@@ -67,7 +75,7 @@
     ['Australia', 134, -25], ['New Zealand', 172, -42], ['Papua New Guinea', 141, -6],
   ];
 
-  function GlobeView({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, focusKey, onBackgroundClick }) {
+  function GlobeView({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, focusKey, onBackgroundClick, intro }) {
     const store = window.useStore();
     const chapters = store.getChapters();
 
@@ -188,11 +196,13 @@
       controls.maxDistance = MAX_DIST;
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.55;
-      // First manual grab (drag or wheel) stops the spin for good —
-      // it only resumes on an explicit "back to whole route".
+      // First manual grab (drag or wheel) stops the spin for good — it only
+      // resumes on an explicit "back to whole route" — and takes over from the
+      // opening move.
       controls.addEventListener('start', () => {
         const s = st.current; if (!s) return;
         s.spinOff = true;
+        s.intro = null;
         s.controls.autoRotate = false;
       });
 
@@ -204,7 +214,7 @@
       st.current = {
         renderer, scene, camera, controls, earth, arcs, stars, minDist,
         overlay, w: 0, h: 0, raf: 0, tween: null, world: true,
-        spinOff: false, arcMats: [],
+        spinOff: false, arcMats: [], intro: null, introDone: false,
         noMotion: window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
       };
 
@@ -244,6 +254,7 @@
         const s = st.current;
         if (!s) return;
         s.raf = requestAnimationFrame(tick);
+        stepIntro();
         stepTween();
         syncDragSpeed();
         s.controls.update();
@@ -328,6 +339,20 @@
       s.renderer.setSize(w, h);
     }
 
+    // The opening move, driven every frame from the tick so it composes with
+    // the spin and with damping instead of fighting them: only the distance to
+    // the centre changes, and the direction is whatever the frame already has.
+    // A grab, a wheel or a fly-to cancels it (s.intro = null).
+    function stepIntro() {
+      const s = st.current;
+      const it = s && s.intro;
+      if (!it) return;
+      const t = Math.min(1, (performance.now() - it.start) / it.dur);
+      const e = t * t * (3 - 2 * t); // smoothstep: soft at both ends
+      s.camera.position.setLength(it.from * (1 + (INTRO_ZOOM - 1) * e));
+      if (t >= 1) s.intro = null;
+    }
+
     function stepTween() {
       const s = st.current;
       const tw = s && s.tween;
@@ -353,6 +378,7 @@
 
     function flyTo(targetPos, camPos, dur) {
       const s = st.current; if (!s) return;
+      s.intro = null;
       if (s.noMotion) {
         s.tween = null;
         s.controls.target.copy(targetPos);
@@ -749,6 +775,20 @@
       s.controls.autoRotate = true;
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [focusKey]);
+
+    // ── opening move ──────────────────────────────────────────────────────
+    // Waits for the cover to lift: a move behind a dark curtain is spent before
+    // anyone sees it. A chapter that arrives already selected (deep link) keeps
+    // its own closer framing, and reduced-motion lands directly on the end
+    // distance instead of travelling there.
+    React.useEffect(() => {
+      const s = st.current; if (!s || !intro || s.introDone) return;
+      s.introDone = true;
+      if (propsRef.current.selectedId) return;
+      if (s.noMotion) { s.camera.position.setLength(s.camera.position.length() * INTRO_ZOOM); return; }
+      s.intro = { start: performance.now(), from: s.camera.position.length(), dur: INTRO_MS };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [intro]);
 
     // CDN guard — render a message instead of a blank globe when the
     // Three.js scripts failed to load. (Placed after all hooks.)

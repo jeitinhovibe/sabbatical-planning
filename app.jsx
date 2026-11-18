@@ -695,6 +695,7 @@
                       onSelectPlace={onSelectPlace}
                       onBackgroundClick={onBackgroundClick}
                       focusKey={focusKey}
+                      intro={!cover}
                     />
                   ) : (
                     <window.MapView

@@ -901,7 +901,8 @@
       },
       onSelectPlace: onSelectPlace,
       onBackgroundClick: onBackgroundClick,
-      focusKey: focusKey
+      focusKey: focusKey,
+      intro: !cover
     }) : /*#__PURE__*/React.createElement(window.MapView, {
       selectedId: selectedId,
       selectedPlaceIdx: selectedPlaceIdx,

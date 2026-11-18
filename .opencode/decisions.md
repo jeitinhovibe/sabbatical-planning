@@ -1028,3 +1028,31 @@ worth keeping for the rest of the trip:
 - **Kept as-is:** gear rental + English lessons stay due Dec 1. Early booking
   there secures sizes and slots rather than a price, and the reservation can
   wait until the bases are certain.
+
+
+## 2026-11-18 — The atlas opens with a slow push-in, not a jump cut
+
+Arriving on the home screen now pushes the camera 13% closer over fifteen
+seconds, starting from exactly the framing main already used: today's chapter at
+2.7, the world view at HOME.r. Nothing about the landing frame changes, so the
+2026-11-05 "opens on the current chapter" call stands — the move is added in
+front of it, not instead of it.
+
+- **Why 13% and no more.** It stops at 2.35, the chapter framing a selection
+  already flies to, and the last distance where the planet's left and right
+  limbs are comfortably inside the frame (a 1280-wide stage leaves ~130px of
+  space either side). Deeper and the globe reads as a flat map; shallower and
+  the drift is invisible.
+- **Why fifteen seconds.** At 4.6s the same move read as a zoom; the point is a
+  drift you notice only after reading a line of the title. It is cancellable at
+  any moment — a drag, a wheel or any fly-to clears it (`s.intro = null`) — so
+  the length costs nothing to someone who starts interacting immediately.
+- **Rejected: starting from the far end of the wheel and approaching a whole
+  Earth.** First cut, and it made the atlas land on a small planet before
+  filling the frame — a screensaver, and it moved the landing frame away from
+  the chapter framing the globe was tuned for. The default stays the default.
+- **Kept:** the cover still owns the first ~3s; the intro waits for it to lift
+  rather than spending itself behind an opaque curtain. Reduced-motion lands on
+  the end distance in one frame, a deep-linked chapter skips the move entirely,
+  and returning to the atlas from Budget/Tasks replays it — that is the same
+  "opening the home screen".
