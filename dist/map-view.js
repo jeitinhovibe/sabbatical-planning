@@ -64,6 +64,7 @@
     placeZoom,
     onBackgroundClick,
     initialCenter,
+    initialZoom,
     onCenterChange
   }) {
     const store = window.useStore();
@@ -115,14 +116,17 @@
     // Framing for the home view: the town today sits in the centre at chapter
     // zoom — the map opens on where you are, not on the chapter's whole spread.
     // Arriving from the 3D globe, "where you are" is wherever that globe was
-    // looking: same ground, its own zoom. With no stop at all, every city stop
+    // looking, at the zoom that shows the same ground at the same size (see
+    // mapZoomForGlobe; the globe's range is roughly z2.9–z4.9, so this lands
+    // wider than the chapter framing). With no stop at all, every city stop
     // edge-to-edge (the world view).
     const homeFrame = () => {
-      if (initialCenter && initialCenter.length === 2) {
+      const carried = initialZoom != null ? Math.max(2, Math.min(19, initialZoom)) : null;
+      if (initialCenter && initialCenter.length >= 2) {
         return {
           pts: [initialCenter],
           padding: [40, 40],
-          maxZoom: CHAPTER_ZOOM,
+          zoom: carried == null ? CHAPTER_ZOOM : carried,
           single: initialCenter
         };
       }
@@ -132,14 +136,14 @@
         return {
           pts: pt ? [pt] : [],
           padding: [40, 40],
-          maxZoom: CHAPTER_ZOOM,
+          zoom: carried == null ? CHAPTER_ZOOM : carried,
           single: pt
         };
       }
       return {
         pts: getStops().map(stopCoords).filter(Boolean),
         padding: [24, 24],
-        maxZoom: undefined,
+        zoom: null,
         single: null
       };
     };
@@ -151,6 +155,7 @@
         pts,
         padding,
         maxZoom,
+        zoom,
         single
       } = homeFrame();
       if (pts.length > 1) {
@@ -160,11 +165,11 @@
           animate: false
         });
       } else if (pts.length === 1) {
-        map.setView(pts[0], CHAPTER_ZOOM, {
+        map.setView(pts[0], zoom == null ? CHAPTER_ZOOM : zoom, {
           animate: false
         });
       } else if (single) {
-        map.setView(single, CHAPTER_ZOOM, {
+        map.setView(single, zoom == null ? CHAPTER_ZOOM : zoom, {
           animate: false
         });
       }
@@ -205,7 +210,7 @@
       const firstPt = home0.pts && home0.pts.length === 1 ? home0.pts[0] : null;
       const map = L.map(ref.current, {
         center: firstPt || [25, 105],
-        zoom: firstPt ? 4 : 3,
+        zoom: firstPt ? home0.zoom == null ? 4 : home0.zoom : 3,
         minZoom: 2,
         maxZoom: 19,
         zoomControl: false,
@@ -216,11 +221,12 @@
       });
       mapRef.current = map;
       window._map = map;
-      // Report the centre so a switch to the 3D globe opens on the same ground.
+      // Report the centre and the zoom so a switch to the 3D globe opens on the
+      // same ground at the same size.
       const reportCenter = () => {
         if (!onCenterChange) return;
         const c = map.getCenter();
-        onCenterChange([c.lat, c.lng]);
+        onCenterChange([c.lat, c.lng, map.getZoom()]);
       };
       map.on('moveend', reportCenter);
       reportCenter();

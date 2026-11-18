@@ -913,13 +913,15 @@
       onClick: () => setMapModeAndSave(mapMode === 'map' ? 'globe' : 'map')
     }, "Switch to ", mapMode === 'map' ? '3D globe' : '2D map'))));
     const showDetail = detailOpen && !!selectedId && !!store.getChapter(selectedId);
-    // Where the atlas is looking, in [lat, lng]. A ref, not state: the globe
-    // reports on every frame of a drag, and the only consumer is the next map
-    // mount — so the switch reads it at render time and nothing re-renders.
+    // Where the atlas is looking and how close: [lat, lng, leafletZoom]. A ref,
+    // not state — the globe reports on every frame of a drag, and the only
+    // consumer is the next map mount, so the switch reads it at render time and
+    // nothing re-renders.
     const viewCenter = React.useRef(null);
     const onCenterChange = c => {
       viewCenter.current = c;
     };
+    const carried = viewCenter.current;
     return /*#__PURE__*/React.createElement("div", {
       className: `app view-${view} ${isMobile ? 'is-mobile' : ''} ${showDetail ? 'has-detail' : ''}`
     }, /*#__PURE__*/React.createElement(Header, {
@@ -957,7 +959,8 @@
       onBackgroundClick: onBackgroundClick,
       focusKey: focusKey,
       intro: !cover,
-      initialCenter: viewCenter.current,
+      initialCenter: carried,
+      initialZoom: carried ? carried[2] : null,
       onCenterChange: onCenterChange
     }) : /*#__PURE__*/React.createElement(window.MapView, {
       selectedId: selectedId,
@@ -972,7 +975,8 @@
       onSelectPlace: onSelectPlace,
       onBackgroundClick: onBackgroundClick,
       focusKey: focusKey,
-      initialCenter: viewCenter.current,
+      initialCenter: carried,
+      initialZoom: carried ? carried[2] : null,
       onCenterChange: onCenterChange
     }))), /*#__PURE__*/React.createElement("div", {
       className: "atlas-vignette",

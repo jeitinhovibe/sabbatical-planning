@@ -1148,10 +1148,20 @@ it as its opening centre.
   would re-render the app sixty times a second for a value only the *next* mount
   reads. It is reported into a ref and read once, at the render that swaps the
   component.
-- **The centre carries, the zoom does not.** There is no honest conversion: z6
-  on the 2D map shows a ~7° cap, while the globe's closest distance still shows
-  ~46°. Carrying zoom would clamp the globe to `minDist` and snap the 2D map to a
-  scale it never uses. Each view keeps its own framing rules for scale.
+- **The zoom carries too, on a scale that both can agree on:** pixels per degree
+  of longitude at the centre of the frame. The map is 256·2^z px across 360°; the
+  globe renders the surface under the crosshair at f/(d−1) px per radian, with
+  cos(lat) turning surface arc into longitude. Solving one for the other gives
+  the zoom that shows the same ground at the same size (z5 ↔ d≈1.6 at 35°N,
+  verified both ways to a pixel).
+- **Each direction stops where its own view stops.** Leaflet snaps to whole
+  levels, and the globe's range is only ≈z2.9–z4.9 because it must keep a sphere
+  in frame: the map's z6 home arrives at d≈1.33, which clamps to `minDist`, and
+  going back lands near z5–6 rather than z7+. The clamp is the honest answer;
+  faking the rest would mean zooming the globe inside its own surface.
+- **A carried zoom is a resume, not an opening.** The 15-second push-in is for
+  arriving at the atlas; when the view is being restored from the other map the
+  camera opens where that view left off and holds still.
 - **A selection still wins.** Switching with a chapter or stop open frames that
   stop in both modes, as before; the carried centre only decides the opening
   position it flies from.

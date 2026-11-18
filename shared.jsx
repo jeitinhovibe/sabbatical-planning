@@ -299,8 +299,35 @@ function dataDigest(value) {
   return (h >>> 0).toString(16) + ':' + s.length.toString(36);
 }
 
+// ── Zoom equivalence between the 2D map and the 3D globe ────────────────
+// Both views are compared on the one thing they share: pixels per degree of
+// longitude at the centre of the frame.
+//   map:    256·2^z px across 360° → 128·2^z/π px per radian
+//   globe:  the surface under the crosshair sits (d−1) radii away and renders
+//           at f/(d−1) px per radian of surface, f = (H/2)/tan(fov/2); cos(lat)
+//           turns surface arc into longitude
+// Solving one for the other gives "the same ground at the same size". The fov
+// mirrors the globe's camera (36°), and both views share the stage height, so
+// either can compute the other's number without knowing its state.
+function globeFocalPx(viewportH) {
+  return (viewportH / 2) / Math.tan((36 * Math.PI) / 360);
+}
+
+function mapZoomForGlobe(dist, lat, viewportH) {
+  const cos = Math.max(0.15, Math.cos((lat * Math.PI) / 180));
+  const f = globeFocalPx(viewportH);
+  return Math.log2((Math.PI * f * cos) / (128 * Math.max(0.01, dist - 1)));
+}
+
+function globeDistForMap(zoom, lat, viewportH) {
+  const cos = Math.max(0.15, Math.cos((lat * Math.PI) / 180));
+  const f = globeFocalPx(viewportH);
+  return 1 + (Math.PI * f * cos) / (128 * Math.pow(2, zoom));
+}
+
 Object.assign(window, {
   Photo, openMaps, Icon, useStore, ErrorBoundary, dataDigest,
   chapterTint, SPECTRUM, dayIndex, monthsBetween, tripStats,
+  mapZoomForGlobe, globeDistForMap,
 });
 window.TRIP_NOW = { todayISO, currentChapter, chapterStatus, daysUntil, placeWindows, currentCity, nextCity, homeStop };

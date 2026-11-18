@@ -75,7 +75,7 @@
     ['Australia', 134, -25], ['New Zealand', 172, -42], ['Papua New Guinea', 141, -6],
   ];
 
-  function GlobeView({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, focusKey, onBackgroundClick, intro, initialCenter, onCenterChange }) {
+  function GlobeView({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, focusKey, onBackgroundClick, intro, initialCenter, initialZoom, onCenterChange }) {
     const store = window.useStore();
     const chapters = store.getChapters();
 
@@ -218,14 +218,16 @@
         s.intro = null;
         s.controls.autoRotate = false;
       });
-      // Where the camera is looking, reported to the shell so switching to the
-      // 2D map opens on the same ground. A ref in App, not state: this fires on
-      // every frame of a drag and must not re-render anything.
+      // Where the camera is looking and how close it is, reported to the shell
+      // so switching to the 2D map opens on the same ground at the same size.
+      // A ref in App, not state: this fires on every frame of a drag and must
+      // not re-render anything.
       const reportCenter = () => {
         const s = st.current; if (!s) return;
         const c = centerOf(s.camera.position);
+        const z = window.mapZoomForGlobe(s.camera.position.length(), c[0], s.h || h0);
         const cb = propsRef.current.onCenterChange;
-        if (cb) cb(c);
+        if (cb) cb([c[0], c[1], z]);
       };
       controls.addEventListener('change', reportCenter);
 
@@ -242,18 +244,28 @@
       };
 
       const home = llv(HOME.lat, HOME.lng, HOME.r);
+      // Stage height for the zoom conversion; the resize observer has not run
+      // yet at this point, so read it straight off the element.
+      const h0 = el.clientHeight || window.innerHeight;
       // Open facing the town, not the chapter: today's city, and outside the
       // trip the first or last stop (the same chapters the title falls back
       // to). Opening holds still — a spin would drift off the place you are.
       // Coming back from the 2D map, the point to open on is the one that map
       // was showing: switching modes should not move the ground under you.
       const nowStop = window.TRIP_NOW ? window.TRIP_NOW.homeStop(chapters) : null;
-      const here = initialCenter && initialCenter.length === 2
+      const here = initialCenter && initialCenter.length >= 2
         ? initialCenter
         : nowStop
           ? (nowStop.place && nowStop.place.coords) || (nowStop.chapter && nowStop.chapter.anchor) || null
           : null;
-      const openPos = here ? llv(here[0], here[1], 2.7) : home;
+      // The 2D map's zoom converts to a camera distance (same ground at the same
+      // size, see globeDistForMap), clamped to what this view can actually do:
+      // its own range is roughly z2.9–z4.9, so a close 2D view lands at the
+      // closest the sphere can be without losing its shape.
+      const carriedR = here && initialZoom != null
+        ? Math.max(minDist, Math.min(MAX_DIST, globeDistForMap(initialZoom, here[0], h0)))
+        : null;
+      const openPos = here ? llv(here[0], here[1], carriedR || 2.7) : home;
       camera.position.copy(openPos);
       controls.target.set(0, 0, 0);
       controls.update();
@@ -904,11 +916,13 @@
     // Waits for the cover to lift: a move behind a dark curtain is spent before
     // anyone sees it. A chapter that arrives already selected (deep link) keeps
     // its own closer framing, and reduced-motion lands directly on the end
-    // distance instead of travelling there.
+    // distance instead of travelling there. Arriving with a zoom from the other
+    // map is a resume, not an opening — it opens where that view left off and
+    // stays there.
     React.useEffect(() => {
       const s = st.current; if (!s || !intro || s.introDone) return;
       s.introDone = true;
-      if (propsRef.current.selectedId) return;
+      if (propsRef.current.selectedId || initialZoom != null) return;
       if (s.noMotion) { s.camera.position.setLength(s.camera.position.length() * INTRO_ZOOM); return; }
       s.intro = { start: performance.now(), from: s.camera.position.length(), dur: INTRO_MS };
       // eslint-disable-next-line react-hooks/exhaustive-deps
