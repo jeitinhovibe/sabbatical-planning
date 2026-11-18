@@ -129,6 +129,10 @@ and SphereGeometry puts the north pole at v=1), and the 16k tier is resized to
 16384×8192 because ETC1S blocks are 4×4. The WebP files stay as the fallback for
 `file://` and failed transcodes.
 
+`earth/blue-marble-poster.webp` (2048×1024, ≈170KB) is the globe's first paint:
+a 2k downscale of the 4k master, preloaded with the document and replaced by the
+tier's KTX2 once the transcoder is done.
+
 ## Added Nov 2026 — China E2 (Shenzhen)
 
 | File | Author | License |

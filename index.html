@@ -8,6 +8,9 @@
 <meta name="theme-color" content="#070a0f" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%23070a0f%22/><path d=%22M50 14 L57 43 L86 50 L57 57 L50 86 L43 57 L14 50 L43 43 Z%22 fill=%22%23ff7a45%22/><circle cx=%2250%22 cy=%2250%22 r=%226%22 fill=%22%23f4ecdc%22/></svg>" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<!-- First paint for the globe: 2k earth, preloaded so it is ready before React
+     and Three have mounted, then swapped for the tier's KTX2. -->
+<link rel="preload" as="image" href="extra-pictures/earth/blue-marble-poster.webp" />
 <script>
 // Lock page-level browser zoom (ctrl/cmd + wheel, pinch, +/-) while leaving
 // plain wheel events alone so Leaflet + OrbitControls map zoom keeps working.

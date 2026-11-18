@@ -43,6 +43,9 @@
     mid: 'extra-pictures/earth/blue-marble-8k',
     small: 'extra-pictures/earth/blue-marble-4k'
   };
+  // First paint: a 2k WebP small enough to preload with the document and be
+  // ready before the globe mounts, then replaced by the tier's KTX2.
+  const EARTH_POSTER = 'extra-pictures/earth/blue-marble-poster.webp';
   // 16k is 2607 texels per radian of longitude. At camera distance d the
   // surface under the camera sits (d-1) radii away, so it renders at
   // f/(d-1) px per radian — with a 1740px-tall retina canvas that is 1:1 at
@@ -176,7 +179,7 @@
         textured = true;
         if (old && old !== texture) old.dispose();
       };
-      const loadWebp = (base, done) => {
+      const loadWebp = (url, done) => {
         // Same-origin vendored asset: clear three.js's default CORS mode, or
         // the globe goes black when index.html is opened straight from disk
         // (undefined leaves the attribute off; an empty string still means
@@ -185,7 +188,7 @@
         loader.crossOrigin = undefined;
         // On error hand over anyway: the caller's next step is the better
         // texture, and a failed poster must not strand the globe on black.
-        loader.load(base + '.webp', tex => {
+        loader.load(url, tex => {
           applyTexture(tex);
           if (done) done();
         }, undefined, () => {
@@ -205,17 +208,17 @@
       //
       // The tier's KTX2 is the second texture, not the first. Booting the Basis
       // transcoder plus a 16k transcode is ~3s before anything can be drawn, so
-      // the 4k WebP paints first (native decode, no worker) and the tier's
-      // KTX2 replaces it when it lands. WebP is also the outright fallback:
-      // file:// cannot fetch the .ktx2, and a failed transcode should degrade,
-      // not go black.
+      // the 2k WebP poster (preloaded by index.html, native decode) paints as
+      // soon as the globe mounts and the tier's KTX2 replaces it when it lands.
+      // WebP is also the outright fallback: file:// cannot fetch the .ktx2, and
+      // a failed transcode should degrade, not go black.
       const loadKtx2 = () => {
         ktx2.load(texBase + '.ktx2', applyTexture, undefined, err => {
           console.warn('KTX2 globe texture failed, falling back to WebP', err);
-          if (!textured) loadWebp(texBase);
+          if (!textured) loadWebp(texBase + '.webp');
         });
       };
-      if (ktx2) loadWebp(EARTH_TEX.small, loadKtx2);else loadWebp(texBase);
+      if (ktx2) loadWebp(EARTH_POSTER, loadKtx2);else loadWebp(texBase + '.webp');
 
       // Atmosphere rim glow
       const atmo = new THREE.Mesh(new THREE.SphereGeometry(1.03, 96, 96), new THREE.ShaderMaterial({

@@ -25,6 +25,10 @@ if ! command -v "$TOKTX" >/dev/null 2>&1; then
   echo "toktx not found. Set TOKTX=/path/to/toktx (KTX-Software release)." >&2
   exit 1
 fi
+if ! command -v cwebp >/dev/null 2>&1; then
+  echo "cwebp not found. Install the WebP tools (brew install webp)." >&2
+  exit 1
+fi
 
 SRC=extra-pictures/earth
 TMP="$(mktemp -d)"
@@ -46,4 +50,10 @@ blue-marble-8k:8192:4096
 blue-marble-4k:4096:2048
 EOF
 
-ls -lh "$SRC"/*.ktx2
+# The preloaded first-paint poster: 2k is enough to read as Earth at a glance,
+# small enough (≈170KB) that the preload beats the app's own mount.
+echo "→ poster"
+sips -z 1024 2048 "$SRC/blue-marble-4k.webp" --out "$TMP/poster.png" >/dev/null
+cwebp -quiet -q 80 "$TMP/poster.png" -o "$SRC/blue-marble-poster.webp"
+
+ls -lh "$SRC"/*.ktx2 "$SRC"/*poster.webp
