@@ -410,6 +410,24 @@
     onOpen
   }) {
     const trackRef = React.useRef(null);
+    // Collapsing the strip is a "let me see the map" move: it stays collapsed
+    // across reloads (like the 2D/3D switch), and starts expanded for anyone
+    // who has never touched it.
+    const [collapsed, setCollapsed] = React.useState(() => {
+      try {
+        return localStorage.getItem('reel-collapsed') === '1';
+      } catch {
+        return false;
+      }
+    });
+    const toggle = () => {
+      setCollapsed(was => {
+        try {
+          localStorage.setItem('reel-collapsed', was ? '0' : '1');
+        } catch {}
+        return !was;
+      });
+    };
     const focusId = selectedId || current && current.id;
     React.useEffect(() => {
       const track = trackRef.current;
@@ -489,7 +507,7 @@
       drag.current.moved = 0;
     };
     return /*#__PURE__*/React.createElement("div", {
-      className: "reel"
+      className: `reel ${collapsed ? 'is-collapsed' : ''}`
     }, /*#__PURE__*/React.createElement("div", {
       className: "reel-head"
     }, /*#__PURE__*/React.createElement("div", {
@@ -498,7 +516,27 @@
       className: "reel-kicker"
     }, "The arc"), /*#__PURE__*/React.createElement("span", {
       className: "reel-count"
-    }, chapters.length, " chapters \xB7 ", totalDays, " days"))), /*#__PURE__*/React.createElement("div", {
+    }, chapters.length, " chapters \xB7 ", totalDays, " days")), /*#__PURE__*/React.createElement("button", {
+      className: "reel-toggle",
+      onClick: toggle,
+      "aria-expanded": !collapsed,
+      "aria-controls": "reel-track",
+      "aria-label": collapsed ? 'Show the chapter strip' : 'Hide the chapter strip',
+      title: collapsed ? 'Show the chapter strip' : 'Hide the chapter strip'
+    }, /*#__PURE__*/React.createElement("svg", {
+      viewBox: "0 0 14 14",
+      width: "12",
+      height: "12",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "1.7",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      "aria-hidden": "true"
+    }, /*#__PURE__*/React.createElement("path", {
+      d: "M3 5.4 7 9.4 11 5.4"
+    })))), /*#__PURE__*/React.createElement("div", {
+      id: "reel-track",
       className: "reel-track",
       ref: trackRef,
       onPointerDown: onDragStart,

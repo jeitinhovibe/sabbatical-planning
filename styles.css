@@ -739,7 +739,8 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
    tap the map switch or scroll the reel behind the spread. Put them back down. */
 .app.has-detail .atlas-tools .tool-seg,
 .app.has-detail .atlas-tools .tool-btn,
-.app.has-detail .reel-track { pointer-events: none; }
+.app.has-detail .reel-track,
+.app.has-detail .reel-toggle { pointer-events: none; }
 
 /* ── Chapter reel ────────────────────────────────────────────────────── */
 .reel {
@@ -762,6 +763,29 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   margin-bottom: 10px;
 }
 .reel-head-left { display: flex; align-items: baseline; gap: 12px; }
+/* The collapse handle: one 12px chevron at the end of the head row, no plate
+   until you hover it. It is the only live thing in the head — the rest is
+   scenery, so the button has to re-enable its own pointer events. */
+.reel-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 26px; height: 22px;
+  margin-bottom: 1px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-4);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color .18s ease, border-color .18s ease, background .18s ease;
+}
+.reel-toggle:hover { color: var(--ink); border-color: var(--line); background: rgba(243,236,221,.05); }
+.reel-toggle svg { transition: transform .3s ease; }
+.reel.is-collapsed .reel-toggle svg { transform: rotate(180deg); }
+.reel.is-collapsed .reel-head { margin-bottom: 0; }
 .reel-kicker {
   font-family: var(--f-mono);
   font-size: 11px;
@@ -794,6 +818,21 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   scrollbar-width: none;
   /* The one live part of the reel; see .reel. */
   pointer-events: auto;
+  /* A cap to animate the collapse from. Comfortably above the real row height
+     (~180 desktop, ~140 phone), so nothing is ever clipped while expanded and
+     the fold still starts moving on the first frame. */
+  max-height: 240px;
+  transition: max-height .34s ease, opacity .22s ease;
+}
+/* Collapsed leaves the head — and the chevron that brings the strip back —
+   sitting over a thinner scrim, so the planet gets the bottom of the stage. */
+.reel.is-collapsed .reel-track {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 .reel-track::-webkit-scrollbar { display: none; }
 .reel-card {
