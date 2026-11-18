@@ -1115,13 +1115,11 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
 }
 .map-place:hover .map-place-label,
 .map-place.is-active .map-place-label { opacity: 1; }
-/* Globe: a selected stop keeps its dot highlight, not its name. The camera is
-   already on that town, the always-on name sits under the dot and the spread
-   says which stop it is — a permanent pill read as a tooltip left open. No
-   hover exception either: the fly-to parks the marker under the cursor, so
-   hovering it would put the pill straight back. The 2D map keeps its pill —
-   there the active marker is the only thing marking the stop you clicked. */
-.map-container.is-globe .map-place.is-active .map-place-label { opacity: 0; }
+/* Globe: the dots carry no pill at all — not on hover, not on selection. The
+   always-on city name is the label; the pill only repeated it with a stop
+   number, and after a fly-to it sat under the cursor like a tooltip left open.
+   The 2D map keeps it: there the marker has no name of its own. */
+.map-container.is-globe .map-place-label { display: none; }
 
 /* Map failure fallback */
 .map-fallback {
