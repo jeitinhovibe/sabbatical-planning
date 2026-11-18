@@ -166,40 +166,56 @@
       const globe = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 96), earthMat);
       earth.add(globe);
       const maxAniso = renderer.capabilities.getMaxAnisotropy();
+      let textured = false;
       const applyTexture = texture => {
         texture.encoding = THREE.sRGBEncoding;
         texture.anisotropy = maxAniso;
         texture.needsUpdate = true;
         const old = earthMat.map;
         earthMat.map = texture;
+        textured = true;
         if (old && old !== texture) old.dispose();
       };
-      const loadWebp = () => {
+      const loadWebp = (base, done) => {
         // Same-origin vendored asset: clear three.js's default CORS mode, or
         // the globe goes black when index.html is opened straight from disk
         // (undefined leaves the attribute off; an empty string still means
         // "anonymous").
         const loader = new THREE.TextureLoader();
         loader.crossOrigin = undefined;
-        loader.load(texBase + '.webp', applyTexture);
+        // On error hand over anyway: the caller's next step is the better
+        // texture, and a failed poster must not strand the globe on black.
+        loader.load(base + '.webp', tex => {
+          applyTexture(tex);
+          if (done) done();
+        }, undefined, () => {
+          if (done) done();
+        });
       };
-      // KTX2 first: the bytes reach the GPU already compressed, so the 16k tier
-      // is no longer 134M pixels decoded into 537MB of RGBA, mip-mapped and
-      // uploaded — it lands as 89–179MB of VRAM (BC1 or ASTC) against ≈716MB.
-      // It costs ~12MB of download against the WebP's 6MB; the win is memory
-      // and upload time, not bytes. WebP is the fallback — file:// cannot fetch
-      // the .ktx2, and a failed transcode should degrade, not go black.
       let ktx2 = null;
       if (THREE.KTX2Loader && window.location.protocol !== 'file:') {
         ktx2 = new THREE.KTX2Loader();
         ktx2.setTranscoderPath('vendor/basis/').detectSupport(renderer);
+      }
+      // KTX2 reaches the GPU already compressed, so the 16k tier is no longer
+      // 134M pixels decoded into 537MB of RGBA, mip-mapped and uploaded — it
+      // lands as 89–179MB of VRAM (BC1 or ASTC) against ≈716MB. It costs ~12MB
+      // of download against the WebP's 6MB; the win is memory and upload time,
+      // not bytes.
+      //
+      // The tier's KTX2 is the second texture, not the first. Booting the Basis
+      // transcoder plus a 16k transcode is ~3s before anything can be drawn, so
+      // the 4k WebP paints first (native decode, no worker) and the tier's
+      // KTX2 replaces it when it lands. WebP is also the outright fallback:
+      // file:// cannot fetch the .ktx2, and a failed transcode should degrade,
+      // not go black.
+      const loadKtx2 = () => {
         ktx2.load(texBase + '.ktx2', applyTexture, undefined, err => {
           console.warn('KTX2 globe texture failed, falling back to WebP', err);
-          loadWebp();
+          if (!textured) loadWebp(texBase);
         });
-      } else {
-        loadWebp();
-      }
+      };
+      if (ktx2) loadWebp(EARTH_TEX.small, loadKtx2);else loadWebp(texBase);
 
       // Atmosphere rim glow
       const atmo = new THREE.Mesh(new THREE.SphereGeometry(1.03, 96, 96), new THREE.ShaderMaterial({

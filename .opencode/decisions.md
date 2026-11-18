@@ -1186,6 +1186,11 @@ stutter the whole page.
 - **WebP stays.** It is both the master and the fallback: `file://` cannot fetch
   the `.ktx2` (XHR), and a missing transcoder or failed transcode has to degrade
   to a soft globe, not the black one the old code would show.
+- **The 4k WebP paints first.** Booting the Basis transcoder and transcoding a
+  16k mip chain is ~3s before the first textured frame — longer than the WebP
+  decode it replaced. So the 4k WebP is the poster (native decode, no worker)
+  and the tier's KTX2 swaps in when it lands: the globe is legible at ~0.5s and
+  sharp a couple of seconds later, instead of black for three.
 - **The texture is stored flipped.** Compressed uploads ignore
   `UNPACK_FLIP_Y_WEBGL`, and SphereGeometry puts the north pole at `v=1`, so
   `scripts/build-earth-ktx2.sh` flips the master before encoding. Regenerate it
