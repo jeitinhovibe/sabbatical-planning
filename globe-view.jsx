@@ -80,6 +80,13 @@
     ['Australia', 134, -25], ['New Zealand', 172, -42], ['Papua New Guinea', 141, -6],
   ];
 
+  // Switching to the 2D map unmounts the globe, and its cleanup disposes the
+  // renderer, the transcoder and every texture. Re-deriving a 16k Basis texture
+  // on the way back costs seconds (worker boot + transcode), so the decoded
+  // texture is kept for the page's lifetime and re-uploaded into the next
+  // context. Keyed by tier: the screen can change between mounts.
+  let earthCache = null; // { tier, texture }
+
   function GlobeView({ selectedId, selectedPlaceIdx, onSelectChapter, onSelectPlace, focusKey, onBackgroundClick, intro, initialCenter, initialZoom, onCenterChange }) {
     const store = window.useStore();
     const chapters = store.getChapters();
@@ -156,6 +163,9 @@
         : 'small';
       const texBase = EARTH_TEX[tier];
       const minDist = MIN_DIST[tier] || DEFAULT_MIN_DIST;
+      // Already decoded this session and the screen still wants the same tier:
+      // skip the poster and the transcode entirely.
+      const cachedEarth = earthCache && earthCache.tier === tier ? earthCache.texture : null;
       // The material starts on a 1x1 black texture so the shader compiles with
       // a map on the first frame; the real one replaces it when the fetch (and,
       // for KTX2, the worker transcode) lands. Same black planet the old
@@ -168,7 +178,9 @@
 
       const maxAniso = renderer.capabilities.getMaxAnisotropy();
       let textured = false;
+      let alive = true;
       const applyTexture = (texture) => {
+        if (!alive) return;
         texture.encoding = THREE.sRGBEncoding;
         texture.anisotropy = maxAniso;
         texture.needsUpdate = true;
@@ -189,7 +201,7 @@
         loader.load(url, (tex) => { applyTexture(tex); if (done) done(); }, undefined, () => { if (done) done(); });
       };
       let ktx2 = null;
-      if (THREE.KTX2Loader && window.location.protocol !== 'file:') {
+      if (!cachedEarth && THREE.KTX2Loader && window.location.protocol !== 'file:') {
         ktx2 = new THREE.KTX2Loader();
         ktx2.setTranscoderPath('vendor/basis/').detectSupport(renderer);
       }
@@ -206,12 +218,17 @@
       // WebP is also the outright fallback: file:// cannot fetch the .ktx2, and
       // a failed transcode should degrade, not go black.
       const loadKtx2 = () => {
-        ktx2.load(texBase + '.ktx2', applyTexture, undefined, (err) => {
+        ktx2.load(texBase + '.ktx2', (tex) => {
+          if (!alive) return;
+          applyTexture(tex);
+          earthCache = { tier, texture: tex };
+        }, undefined, (err) => {
           console.warn('KTX2 globe texture failed, falling back to WebP', err);
           if (!textured) loadWebp(texBase + '.webp');
         });
       };
-      if (ktx2) loadWebp(EARTH_POSTER, loadKtx2);
+      if (cachedEarth) applyTexture(cachedEarth);
+      else if (ktx2) loadWebp(EARTH_POSTER, loadKtx2);
       else loadWebp(texBase + '.webp');
 
       // Atmosphere rim glow
@@ -384,16 +401,21 @@
 
       return () => {
         ro.disconnect();
+        alive = false;
         if (st.current) {
           cancelAnimationFrame(st.current.raf);
           if (st.current.ktx2) st.current.ktx2.dispose();
           st.current.controls.removeEventListener('change', reportCenter);
           st.current.controls.dispose();
+          // The cached earth texture outlives this mount — it is the whole
+          // point of the cache, and disposing it would send the next switch
+          // back to the transcoder.
+          const keep = earthCache ? earthCache.texture : null;
           st.current.scene.traverse((o) => {
             if (o.geometry) o.geometry.dispose();
             if (o.material) {
               const ms = Array.isArray(o.material) ? o.material : [o.material];
-              ms.forEach((m) => { if (m.map) m.map.dispose(); m.dispose(); });
+              ms.forEach((m) => { if (m.map && m.map !== keep) m.map.dispose(); m.dispose(); });
             }
           });
           st.current.renderer.domElement.removeEventListener('pointerdown', onDown);

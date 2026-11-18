@@ -1206,3 +1206,24 @@ stutter the whole page.
   8k and 4k are 2.7MB → 3.5MB and 0.82MB → 1.0MB. The win is memory and upload
   time, not bytes — a 12k tier would cut the 16k file to ~7MB if that ever
   matters more than the closest-zoom sharpness.
+
+## 2026-11-18 — The earth texture survives a 2D switch
+
+`GlobeView` and `MapView` are mutually exclusive mounts, and the globe's cleanup
+disposes the renderer, the transcoder and every texture. Coming back from the 2D
+map therefore re-ran the whole cold start — worker boot plus a 16k Basis
+transcode, seconds for a texture that had just been decoded.
+
+- **The decoded texture is kept for the page's lifetime**, keyed by tier, and
+  re-uploaded into the next WebGL context. A remount now costs the context
+  (~50ms) and the upload, not the transcode; it paints textured on the first
+  frame. The scene, materials and workers are still disposed as before.
+- **Why not keep the globe mounted and hidden?** That would make the switch
+  instant and hold the 179MB of VRAM while you are reading the 2D map. The cache
+  holds the compressed blocks in RAM instead and lets the GPU copy go with the
+  context — same speed to the eye, less pressure on the Air.
+- **Why not gate the cover on the texture?** The cover is a title card, not a
+  loading screen, and it only shows once per session — the switch is the case
+  that had no cover to hide behind. It is already 3s (2300ms + a 750ms fade),
+  and the preloaded poster has painted long before it lifts; waiting for the 12MB
+  KTX2 would put a slow connection behind a curtain for ten seconds.
