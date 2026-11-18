@@ -24,14 +24,18 @@ two places to read the same number.
 - **Why the bar stayed in the table rather than beside it:** a separate track
   column is the old bar list wearing a table header. Inside the cell the row
   keeps its sort and the bar keeps its 1:1 scale whatever the sort.
-- **The breakdown is opt-in:** the table opens on #, chapter, nights, $/night,
-  total and share, and a *Breakdown →* toggle adds lodging, food, transport,
-  activities and fees. Six columns was the question everyone asks; eleven was a
-  spreadsheet. Collapsing while sorted on a hidden column falls back to chapter
-  order, so rows never reorder for an invisible reason.
+- **Every column is always on the table** — #, chapter, nights, $/night,
+  lodging, food, transport, activities, fees, total, share. Hiding the
+  breakdowns behind a toggle was tried and dropped: opening a closed panel to
+  compare two rows is a tax on the only comparison the table exists for. On a
+  phone the table scrolls sideways instead; hiding a column there would make
+  the screen read differently from the screen being discussed.
 - **Share sits right of the total**, reading as a rider on the number it
   qualifies rather than a column of its own: 16% of the chapter spend, next to
   $12,450.
+- **Sorting opens on the big end.** A first click on a money or count column
+  puts the largest first, because "what is expensive" is the question a ledger
+  gets; only chapter and # keep their natural A–Z / 1–N order.
 - **Phones:** the row number goes too (the name is the identifier), so the five
   default columns fit one screen width instead of scrolling sideways — and the
   toggle is what earns the scroll when the breakdown is asked for.

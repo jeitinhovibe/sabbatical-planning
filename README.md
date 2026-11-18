@@ -40,9 +40,8 @@ photography given room to breathe.
   beat Naxos.
 - **The ledger.** The budget is now a visual one: a donut of where the money
   goes, one sortable table where a bar in the total and another in the nightly
-  rate carry the comparison — with the lodging/food/transport breakdown behind
-  a *Breakdown →* toggle — and a receipt that runs from chapters to grand total.
-  Nothing is hardcoded; the numbers still compute from the line items.
+  rate carry the comparison, and a receipt that runs from chapters to grand
+  total. Nothing is hardcoded; the numbers still compute from the line items.
 - **The field kit.** The advance-booking checklist gets a readiness ring, open
   and overdue counts, per-chapter progress, and the same browser ticks and
   export-to-file workflow.

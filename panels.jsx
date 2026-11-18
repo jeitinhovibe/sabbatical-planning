@@ -6,13 +6,12 @@
   const { fmt, dayRange, dayCounter, contrastText } = helpers;
   const { placeWindows } = window.TRIP_NOW;
 
-  function SectionHead({ num, title, note, action }) {
+  function SectionHead({ num, title, note }) {
     return (
       <div className="section-head">
         <span className="section-head-num">{num}</span>
         <h2 className="section-head-title">{title}</h2>
         {note && <span className="section-head-note">{note}</span>}
-        {action}
       </div>
     );
   }
@@ -298,9 +297,12 @@
       const cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
       return cmp * sortDir;
     });
+    // The question a ledger is asked is "what is biggest", so a money or count
+    // column opens on the largest value; chapter and # keep their natural order.
+    const NATURAL_ASC = ['idx', 'title'];
     const toggleSort = (k) => {
       if (k === sortKey) setSortDir((d) => -d);
-      else { setSortKey(k); setSortDir(1); }
+      else { setSortKey(k); setSortDir(NATURAL_ASC.includes(k) ? 1 : -1); }
     };
     const chapterNights = budget.chapters.reduce((s, r) => s + r.days, 0);
     // The whole table is read against one number: what an average chapter night
@@ -321,15 +323,6 @@
     ];
     const CAT_KEYS = CATS.map(([k]) => k);
     const maxNight = Math.max(...rows.map((r) => r.perDay));
-    // The breakdown is opt-in: five columns of categories is a different
-    // question from "which chapter is eating the year".
-    const [showCats, setShowCats] = React.useState(false);
-    const toggleCats = () => {
-      // A sort on a column that just disappeared would reorder rows with no
-      // visible reason, so fall back to chapter order.
-      if (showCats && CAT_KEYS.includes(sortKey)) { setSortKey('idx'); setSortDir(1); }
-      setShowCats(!showCats);
-    };
 
     return (
       <div className="page-inner ledger-page">
@@ -368,23 +361,9 @@
           </div>
         </div>
 
-        <SectionHead
-          num="01"
-          title="Where the nights go"
-          note="per night · click to sort"
-          action={
-            <button
-              className="ledger-toggle"
-              onClick={toggleCats}
-              aria-expanded={showCats}
-              title={showCats ? 'Hide the category breakdown' : 'Show the category breakdown'}
-            >
-              {showCats ? 'Hide the breakdown ←' : 'Breakdown →'}
-            </button>
-          }
-        />
+        <SectionHead num="01" title="Where the nights go" note="per night, except share & total · click to sort" />
         <div className="ledger-table-wrap">
-          <table className={'ledger-table' + (showCats ? ' is-wide' : '')}>
+          <table className="ledger-table">
             <thead>
               <tr>
                 {COLS.map(([k, label]) => (

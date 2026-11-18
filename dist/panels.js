@@ -21,8 +21,7 @@
   function SectionHead({
     num,
     title,
-    note,
-    action
+    note
   }) {
     return /*#__PURE__*/React.createElement("div", {
       className: "section-head"
@@ -32,7 +31,7 @@
       className: "section-head-title"
     }, title), note && /*#__PURE__*/React.createElement("span", {
       className: "section-head-note"
-    }, note), action);
+    }, note));
   }
 
   // ══════════════════════════════════════════════════════════════════════
@@ -396,10 +395,13 @@
       const cmp = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
       return cmp * sortDir;
     });
+    // The question a ledger is asked is "what is biggest", so a money or count
+    // column opens on the largest value; chapter and # keep their natural order.
+    const NATURAL_ASC = ['idx', 'title'];
     const toggleSort = k => {
       if (k === sortKey) setSortDir(d => -d);else {
         setSortKey(k);
-        setSortDir(1);
+        setSortDir(NATURAL_ASC.includes(k) ? 1 : -1);
       }
     };
     const chapterNights = budget.chapters.reduce((s, r) => s + r.days, 0);
@@ -420,18 +422,6 @@
     const COLS = [['idx', '#'], ['title', 'Chapter'], ['days', 'Nights'], ['perDay', '$/night'], ['lodging', 'Lodging'], ['food', 'Food'], ['transport', 'Transport'], ['activities', 'Activities'], ['fees', 'Fees'], ['total', 'Total'], ['share', 'Share']];
     const CAT_KEYS = CATS.map(([k]) => k);
     const maxNight = Math.max(...rows.map(r => r.perDay));
-    // The breakdown is opt-in: five columns of categories is a different
-    // question from "which chapter is eating the year".
-    const [showCats, setShowCats] = React.useState(false);
-    const toggleCats = () => {
-      // A sort on a column that just disappeared would reorder rows with no
-      // visible reason, so fall back to chapter order.
-      if (showCats && CAT_KEYS.includes(sortKey)) {
-        setSortKey('idx');
-        setSortDir(1);
-      }
-      setShowCats(!showCats);
-    };
     return /*#__PURE__*/React.createElement("div", {
       className: "page-inner ledger-page"
     }, /*#__PURE__*/React.createElement("header", {
@@ -476,17 +466,11 @@
     }, "(", Math.round(s.value / grand * 100), "%)"))))))), /*#__PURE__*/React.createElement(SectionHead, {
       num: "01",
       title: "Where the nights go",
-      note: "per night \xB7 click to sort",
-      action: /*#__PURE__*/React.createElement("button", {
-        className: "ledger-toggle",
-        onClick: toggleCats,
-        "aria-expanded": showCats,
-        title: showCats ? 'Hide the category breakdown' : 'Show the category breakdown'
-      }, showCats ? 'Hide the breakdown ←' : 'Breakdown →')
+      note: "per night, except share & total \xB7 click to sort"
     }), /*#__PURE__*/React.createElement("div", {
       className: "ledger-table-wrap"
     }, /*#__PURE__*/React.createElement("table", {
-      className: 'ledger-table' + (showCats ? ' is-wide' : '')
+      className: "ledger-table"
     }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, COLS.map(([k, label]) => /*#__PURE__*/React.createElement("th", {
       key: k,
       className: [k === 'total' || k === 'perDay' ? 'is-num' : '', k === 'share' ? 'is-share' : '', k === 'idx' ? 'is-idx' : '', k === 'days' ? 'is-days' : '', CAT_KEYS.includes(k) ? 'is-cat' : ''].join(' ').trim(),
