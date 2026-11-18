@@ -352,10 +352,15 @@
     return (
       <div className={`reel ${collapsed ? 'is-collapsed' : ''}`}>
         <div className="reel-head">
-          <div className="reel-head-left">
+          <button
+            className="reel-head-left"
+            onClick={toggle}
+            aria-expanded={!collapsed}
+            aria-controls="reel-track"
+            title={collapsed ? 'Show the chapter strip' : 'Hide the chapter strip'}>
             <span className="reel-kicker">The arc</span>
             <span className="reel-count">{chapters.length} chapters · {totalDays} days</span>
-          </div>
+          </button>
           <button
             className="reel-toggle"
             onClick={toggle}

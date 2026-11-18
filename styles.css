@@ -740,7 +740,8 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
 .app.has-detail .atlas-tools .tool-seg,
 .app.has-detail .atlas-tools .tool-btn,
 .app.has-detail .reel-track,
-.app.has-detail .reel-toggle { pointer-events: none; }
+.app.has-detail .reel-toggle,
+.app.has-detail .reel-head-left { pointer-events: none; }
 
 /* ── Chapter reel ────────────────────────────────────────────────────── */
 .reel {
@@ -762,7 +763,26 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   gap: 14px;
   margin-bottom: 10px;
 }
-.reel-head-left { display: flex; align-items: baseline; gap: 12px; }
+.reel-head-left {
+  /* The label is the handle too: same type, no plate. A button so it is
+     focusable and announced, with the visible "The arc · N chapters" as its
+     name; the empty middle of the head stays scenery so a drag there still
+     reaches the map. */
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.reel-head-left:hover .reel-kicker { color: var(--ink); }
+.reel-head-left:hover .reel-count { color: var(--ink-3); }
 /* The collapse handle: one 12px chevron at the end of the head row, no plate
    until you hover it. It is the only live thing in the head — the rest is
    scenery, so the button has to re-enable its own pointer events. */
@@ -1021,11 +1041,7 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   font-weight: 500;
   letter-spacing: .18em;
   text-transform: uppercase;
-  /* Solid, not 50% ink: the old rgba() was a different colour on every backdrop
-     it crossed (dimmer over space, washed out over a snowfield). The grey is the
-     old average over dark terrain, so the map reads the same without the
-     backdrop leaking through the letters. */
-  color: #8b877e;
+  color: rgba(243,236,221,.5);
   text-shadow: 0 1px 4px rgba(0,0,0,.9);
   white-space: nowrap;
   pointer-events: none;

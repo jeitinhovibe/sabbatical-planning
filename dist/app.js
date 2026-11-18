@@ -510,8 +510,12 @@
       className: `reel ${collapsed ? 'is-collapsed' : ''}`
     }, /*#__PURE__*/React.createElement("div", {
       className: "reel-head"
-    }, /*#__PURE__*/React.createElement("div", {
-      className: "reel-head-left"
+    }, /*#__PURE__*/React.createElement("button", {
+      className: "reel-head-left",
+      onClick: toggle,
+      "aria-expanded": !collapsed,
+      "aria-controls": "reel-track",
+      title: collapsed ? 'Show the chapter strip' : 'Hide the chapter strip'
     }, /*#__PURE__*/React.createElement("span", {
       className: "reel-kicker"
     }, "The arc"), /*#__PURE__*/React.createElement("span", {
