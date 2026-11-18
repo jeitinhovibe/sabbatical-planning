@@ -488,6 +488,12 @@
     function updateOverlay() {
       const s = st.current;
       if (!s) return;
+      // project() reads camera.matrixWorldInverse, which only the renderer
+      // refreshes inside render(). OrbitControls has already moved the camera
+      // by this point, so without this line every label is placed with last
+      // frame's matrix while the planet is drawn with the current one — the
+      // pins and country names skate a frame behind the globe as it turns.
+      s.camera.updateMatrixWorld();
       const disc = globeDisc();
       // Tangency latitude for a sphere of radius 1 seen from d: the horizon is
       // n·ĉ = 1/d, not 0. Anything below it is behind the planet's body.
