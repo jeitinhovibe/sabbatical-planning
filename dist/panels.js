@@ -531,14 +531,6 @@
       className: "ledger-notes"
     }, /*#__PURE__*/React.createElement("div", {
       className: "ledger-note"
-    }, /*#__PURE__*/React.createElement("h3", null, "Locked & paid"), /*#__PURE__*/React.createElement("ul", null, budget.locked.map((l, i) => /*#__PURE__*/React.createElement("li", {
-      key: i
-    }, /*#__PURE__*/React.createElement("b", null, l.item, " \u2014 ", fmt$(l.cost), "."), " ", l.note)))), /*#__PURE__*/React.createElement("div", {
-      className: "ledger-note"
-    }, /*#__PURE__*/React.createElement("h3", null, "Key flights"), /*#__PURE__*/React.createElement("ul", null, budget.flights.map((f, i) => /*#__PURE__*/React.createElement("li", {
-      key: i
-    }, /*#__PURE__*/React.createElement("b", null, f.route, " \u2014 ", fmt$(f.cost), "."), " ", f.note)))), /*#__PURE__*/React.createElement("div", {
-      className: "ledger-note"
     }, /*#__PURE__*/React.createElement("h3", null, "Assumptions & levers"), /*#__PURE__*/React.createElement("ul", null, budget.assumptions.map((a, i) => /*#__PURE__*/React.createElement("li", {
       key: i
     }, a)), budget.levers.map((l, i) => /*#__PURE__*/React.createElement("li", {

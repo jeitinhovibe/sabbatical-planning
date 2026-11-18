@@ -8,6 +8,35 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-18 — The itinerary carries the plan; the task list carries procurement
+
+The itinerary panel and the booking ledger had quietly become two copies of the
+same facts: "Bought ✅ $183", "all 16 nights booked", a *Locked & paid* list of
+twenty-two fares beside a *Key flights* list of twenty-three legs — every one of
+them already a row in `todo-data.js` with its own price and date.
+
+- **Decision:** booking state lives only in `todo-data.js`. `itinerary-data.js`
+  and the panels that render it never say booked, bought, paid, refunded or still
+  open; a note may call a figure an *estimate* or an *actual*, because that
+  describes the number, not the paperwork.
+- **Removed:** `budget.locked` (renamed once to `firm`, then deleted) and both
+  ledger panels — *Firm figures* and *Key flights*. The budget keeps what the
+  task list cannot hold: totals, the receipt, per-chapter lines and assumptions.
+  `budget.flights` survives as data because its costs sum into the total and the
+  calendar sync reads its dates; it is no longer rendered as a list.
+- **Rewritten:** ~40 notes and eight chapter lines, e.g. `Beijing 8n Nov 7–15
+  (booked $472)` → `Beijing 8n Nov 7–15 $472`. Numbers stayed; the verbs went.
+  History that had leaked into the plan (a refunded G2396, a released ninth
+  night, a rebooking from $431) went with them — it lives here instead.
+- **Rejected:** keeping *Firm figures* as a "which numbers are real" memo. Every
+  figure in it was already in a chapter line or a todo row, so it was a third
+  copy, not a view.
+- **Enforced:** `validate-todo.mjs` fails a ✅ in a task note (the checkbox draws
+  it), and `AGENTS.md` states the rule so a future session does not re-add a
+  "Booked ✅" to the leg it just updated.
+
+---
+
 ## 2026-11-17 — The row's title is the thing booked; the sub-header is everything else
 
 Second pass on the field kit, after the first one left dates in titles. The

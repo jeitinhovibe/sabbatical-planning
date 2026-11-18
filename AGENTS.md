@@ -152,6 +152,12 @@ precompiled `dist/*.js` bundles.
 - **`decisions` are route reasoning only** — why this stop, this order, this base,
   this month. Never how the nights were reallocated or what the plan used to be:
   that is history, and history lives in `.opencode/decisions.md`.
+- **The itinerary never reports procurement, and never re-lists a ledger.** No
+  *booked / bought / paid / refunded / still open* in `itinerary-data.js` or the
+  panels — `todo-data.js` owns every booking, and a second copy drifts silently.
+  Same for the budget panel: totals, receipt and assumptions, not another copy of
+  the stays and flights. A price is a number; *estimate* or *actual* describes the
+  figure, never whether the paperwork exists.
 - **Every data edit must pass** `node scripts/validate-photo-urls.mjs`, plus day
   sums, date continuity, geo coverage, budget arithmetic, and todo chapter ids.
   `scripts/validate-todo.mjs` is the bookings ledger's own gate — and **no `✅` in

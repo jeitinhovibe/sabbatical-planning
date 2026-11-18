@@ -429,18 +429,6 @@
 
           <div className="ledger-notes">
             <div className="ledger-note">
-              <h3>Locked &amp; paid</h3>
-              <ul>
-                {budget.locked.map((l, i) => <li key={i}><b>{l.item} — {fmt$(l.cost)}.</b> {l.note}</li>)}
-              </ul>
-            </div>
-            <div className="ledger-note">
-              <h3>Key flights</h3>
-              <ul>
-                {budget.flights.map((f, i) => <li key={i}><b>{f.route} — {fmt$(f.cost)}.</b> {f.note}</li>)}
-              </ul>
-            </div>
-            <div className="ledger-note">
               <h3>Assumptions &amp; levers</h3>
               <ul>
                 {budget.assumptions.map((a, i) => <li key={i}>{a}</li>)}
