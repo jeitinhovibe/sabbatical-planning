@@ -1767,16 +1767,6 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
 }
 .ledger-table .cell-val { position: relative; }
 
-.ledger-legend {
-  margin: 10px 0 0;
-  max-width: 760px;
-  font-family: var(--f-mono);
-  font-size: 10.5px;
-  line-height: 1.65;
-  letter-spacing: .02em;
-  color: var(--ink-4);
-}
-
 .ledger-below {
   display: grid;
   grid-template-columns: 340px 1fr;

@@ -543,9 +543,7 @@
       className: "is-num is-total"
     }, fmt$(chTotal)), /*#__PURE__*/React.createElement("td", {
       className: "is-share"
-    }, "100%"))))), /*#__PURE__*/React.createElement("p", {
-      className: "ledger-legend"
-    }, "A bar runs to the top of its column: the biggest chapter total, the priciest night (", fmt$(maxNight), "). The $/night bar is coloured against the trip's weighted average of ", fmt$(avgNight), " \u2014 cool below it, ember above."), /*#__PURE__*/React.createElement("div", {
+    }, "100%"))))), /*#__PURE__*/React.createElement("div", {
       className: "ledger-below"
     }, /*#__PURE__*/React.createElement("div", {
       className: "receipt"

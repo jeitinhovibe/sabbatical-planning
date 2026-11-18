@@ -447,12 +447,6 @@
             </tbody>
           </table>
         </div>
-        <p className="ledger-legend">
-          A bar runs to the top of its column: the biggest chapter total, the priciest
-          night ({fmt$(maxNight)}). The $/night bar is coloured against the trip's
-          weighted average of {fmt$(avgNight)} — cool below it, ember above.
-        </p>
-
         <div className="ledger-below">
           <div className="receipt">
             <div className="receipt-head"><span>The whole bill</span><span>USD · two</span></div>
