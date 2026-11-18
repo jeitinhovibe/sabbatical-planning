@@ -569,8 +569,9 @@
     const [selectedId, setSelectedId] = React.useState(urlParams.chapterId);
     const [selectedPlaceIdx, setSelectedPlaceIdx] = React.useState(urlParams.placeIdx);
     const [focusDay, setFocusDay] = React.useState(null);
-    // How tight the 2D map frames a selected stop. A day on the spine is about
-    // locating the city in its country (wide); a pin click is about the city.
+    // What the 2D map should do about zoom when a stop is selected. A day on
+    // the spine is about locating the city in its country, so it frames at the
+    // chapter's zoom; a dot click passes 'keep' and only moves the centre.
     const [placeZoom, setPlaceZoom] = React.useState(null);
     const [detailOpen, setDetailOpen] = React.useState(!!urlParams.chapterId && urlParams.detail !== false);
     const [focusKey, setFocusKey] = React.useState(0);
@@ -821,11 +822,12 @@
     };
 
     // A city click is a request to read about it: open the spread and let it
-    // scroll itself to that stop. The map popup that used to appear here was
-    // a smaller answer to the same question.
+    // scroll itself to that stop. The 2D map moves the centre there but keeps
+    // the zoom you are already at ('keep'), so clicking a dot is a pan, not a
+    // re-scale.
     const onSelectPlace = idx => {
       setSelectedPlaceIdx(idx);
-      setPlaceZoom(12);
+      setPlaceZoom('keep');
       setDetailOpen(true);
       if (view !== 'atlas') setView('atlas');
     };

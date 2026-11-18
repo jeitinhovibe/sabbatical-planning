@@ -539,10 +539,11 @@
         // in which case widen just enough (never tighter than z6).
         const chapterZoom = bounds && placeCoords.length > 1 ? Math.min(CHAPTER_ZOOM, map.getBoundsZoom(bounds, false, L.point(80, 80))) : CHAPTER_ZOOM;
         if (focused && focused.coords) {
-          // A day on the spine locates the city at the chapter's zoom; a pin
-          // click is its own request for the city itself and passes a tight
-          // zoom, which is the one place a deliberate zoom-in is wanted.
-          moveTo(focused.coords, placeZoom == null ? chapterZoom : placeZoom);
+          // A day on the spine locates the city at the chapter's zoom; a dot
+          // click keeps whatever zoom you are already at and only moves the
+          // centre — you picked a place, not a scale, and snapping to a preset
+          // level mid-read yanked the map out from under you.
+          moveTo(focused.coords, placeZoom === 'keep' ? map.getZoom() : placeZoom == null ? chapterZoom : placeZoom);
         } else if (bounds) {
           // fitBounds cannot animate a pan (it computes a zoom and jumps), so
           // the same framing is derived twice: bounds → zoom, then flown to.
