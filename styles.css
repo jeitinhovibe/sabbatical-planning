@@ -1008,6 +1008,15 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
 }
 .eq-city-label > span { transition: opacity .18s linear; }
 .eq-city-label > span.is-off { opacity: 0; }
+/* Stacking: dots mark, names annotate. A name drawn under a neighbouring dot
+   reads as if the dot had been punched out of the word — Shanghai's label sat
+   behind the Huangshan dot at the home zoom. So the two label layers sit above
+   every marker, and the marker under the cursor lifts back above them so its
+   own pill is never buried. */
+.eq-pins > .eq-pin-wrap { z-index: 1; }
+.eq-pins > .eq-country,
+.eq-pins > .eq-city-label { z-index: 2; }
+.eq-pins > .eq-pin-wrap:hover { z-index: 3; }
 /* Pins */
 .map-pin-wrap { background: transparent !important; border: none !important; pointer-events: none; }
 .map-pin {
