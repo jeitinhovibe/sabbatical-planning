@@ -1028,3 +1028,45 @@ worth keeping for the rest of the trip:
 - **Kept as-is:** gear rental + English lessons stay due Dec 1. Early booking
   there secures sizes and slots rather than a price, and the reservation can
   wait until the bases are certain.
+
+## 2026-11-18 — Japan snow order flip: Myoko before CNY, not after
+
+Preference-driven research (skill split, budget, crowd tolerance, English
+lessons) picked Myoko Kogen as the primary base over Nozawa, with Jan 25–31
+as the lowest-crowd window in the whole chapter — before CNY (Feb 5–13) and
+National Foundation Day (Feb 11), not squeezed after them. That only works
+by reordering the chapter, not just rebooking the same slots:
+
+- **The route makes the reorder free.** The Hida limited express from
+  Takayama continues to Toyama, which sits on the Hokuriku Shinkansen —
+  the same line that reaches Joetsu-Myoko, Nagano, and Tokyo. Since the
+  Hokuriku Shinkansen now also runs from Tsuruga (one transfer from
+  Osaka/Kyoto via the Shirasagi limited express), Myoko is reachable
+  directly from Osaka without detouring through Nagoya at all. New order:
+  Osaka → Myoko Kogen + Madarao (9n, Jan 25–Feb 3) → Takayama + Shirakawa-go
+  (3n, Feb 3–6) → Tokyo (9n, Feb 6–15, absorbing CNY + Foundation Day) →
+  Nozawa Onsen (3n, Feb 15–18) → Hakone/Fuji (3n, Feb 18–21) → Tokyo (3n,
+  Feb 21–24, absorbing the Emperor's Birthday weekend on Feb 23).
+- **Nozawa downgraded from a second 5-night ski base to a 3-night onsen
+  taste.** The original two-base design no longer earns its place once
+  Myoko is the clear preference and primary terrain. Nozawa's role becomes
+  village atmosphere + the Jigokudani snow monkeys (via a direct winter bus,
+  ~50min) rather than serious riding days — scheduled in the one truly quiet
+  week left (Feb 15–18), which also resolves the old "Nozawa Feb 9–14 is the
+  worst five nights of the month" problem outright instead of just booking
+  around it.
+- **Hakone/Fuji's "late January, clearest Pacific skies" slot is the real
+  trade-off.** It moves to mid-February to make room for the swap. Still
+  solid dry-season visibility, just not the single best week — accepted in
+  exchange for the ski trip no longer touching CNY at all.
+- **Takayama absorbs a small CNY-tail crowd bump instead.** Landing Feb 3–6
+  puts it at the very start of the CNY holiday — a tourist-site crowd
+  increase, not a lift-queue one, and far cheaper to accept than leaving
+  either snow base inside the holiday window.
+- **Okinawa and Sapporo both considered, both cut.** Okinawa: no rail link,
+  weak winter season for its main draw (beach/reef), and the sabbatical's
+  very next chapters (Indonesia, Philippines, Borneo) already deliver
+  warmer, swimmable versions of the same thing. Sapporo: the Snow Festival —
+  its main winter draw — runs Feb 4–11 historically, landing squarely in the
+  CNY/Foundation Day window this whole reorder exists to avoid, and it has
+  no direct Shinkansen link either.
