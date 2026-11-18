@@ -38,6 +38,11 @@
 <!-- Three.js (3D globe view) -->
 <script src="https://unpkg.com/three@0.147.0/build/three.min.js" integrity="sha384-vV17nr/rMaJqmeZkFUzXLpHdQ+ME5QHKdydaqqN+3Ga39RJlNrTatJxHwGV4ml2C" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/three@0.147.0/examples/js/controls/OrbitControls.js" integrity="sha384-I0DMsfimAPIqWT8lF+oA997gRgdUi3jhidoTq3fN0zmn35smXZukD01FLnsPRU9i" crossorigin="anonymous"></script>
+<!-- KTX2Loader (GPU-compressed globe texture). Three ships it as an ES module
+     only, so it is bundled against the global THREE above; see
+     scripts/build-ktx2-loader.mjs. The Basis transcoder it fetches at runtime
+     lives in vendor/basis/. -->
+<script src="vendor/ktx2-loader.js"></script>
 
 <link rel="stylesheet" href="styles.css" />
 </head>

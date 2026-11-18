@@ -27,12 +27,14 @@
   // from unpkg — NASA GIBS tiles stitched at 20480×10240, so the same winter
   // composite the CDN file used, at up to 16k. Three tiers, picked by what
   // the screen can actually resolve: 4k is already sharp at 1x, the 16k only
-  // pays off on a retina desktop, and it costs 537MB of VRAM.
-  // 16382, not 16384: libwebp refuses any dimension above 16383.
+  // pays off on a retina desktop. Each tier ships as KTX2 (GPU-compressed, the
+  // path the globe uses) and WebP (the master, kept as the fallback). The
+  // 16k WebP is 16382 texels wide — libwebp refuses anything above 16383 —
+  // which is why the KTX2 build resizes that tier to 16384×8192.
   const EARTH_TEX = {
-    big: 'extra-pictures/earth/blue-marble-16k.webp',
-    mid: 'extra-pictures/earth/blue-marble-8k.webp',
-    small: 'extra-pictures/earth/blue-marble-4k.webp',
+    big: 'extra-pictures/earth/blue-marble-16k',
+    mid: 'extra-pictures/earth/blue-marble-8k',
+    small: 'extra-pictures/earth/blue-marble-4k',
   };
   // 16k is 2607 texels per radian of longitude. At camera distance d the
   // surface under the camera sits (d-1) radii away, so it renders at
@@ -149,22 +151,53 @@
       const tier = (dpr >= 1.5 && wide && maxTex >= 16384) ? 'big'
         : (dpr >= 1.5 && maxTex >= 8192) ? 'mid'
         : 'small';
-      const texUrl = EARTH_TEX[tier];
+      const texBase = EARTH_TEX[tier];
       const minDist = MIN_DIST[tier] || DEFAULT_MIN_DIST;
-      // Same-origin vendored asset: clear three.js's default CORS mode, or
-      // the globe goes black when index.html is opened straight from disk
-      // (undefined leaves the attribute off; an empty string still means
-      // "anonymous").
-      const loader = new THREE.TextureLoader();
-      loader.crossOrigin = undefined;
-      const tex = loader.load(texUrl, () => {});
-      tex.encoding = THREE.sRGBEncoding;
-      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
-      const globe = new THREE.Mesh(
-        new THREE.SphereGeometry(1, 96, 96),
-        new THREE.MeshPhongMaterial({ map: tex, shininess: 12, specular: new THREE.Color(0x222222) })
-      );
+      // The material starts on a 1x1 black texture so the shader compiles with
+      // a map on the first frame; the real one replaces it when the fetch (and,
+      // for KTX2, the worker transcode) lands. Same black planet the old
+      // pending-WebP texture drew, without recompiling the material mid-flight.
+      const placeholder = new THREE.DataTexture(new Uint8Array([0, 0, 0, 255]), 1, 1, THREE.RGBAFormat);
+      placeholder.needsUpdate = true;
+      const earthMat = new THREE.MeshPhongMaterial({ map: placeholder, shininess: 12, specular: new THREE.Color(0x222222) });
+      const globe = new THREE.Mesh(new THREE.SphereGeometry(1, 96, 96), earthMat);
       earth.add(globe);
+
+      const maxAniso = renderer.capabilities.getMaxAnisotropy();
+      const applyTexture = (texture) => {
+        texture.encoding = THREE.sRGBEncoding;
+        texture.anisotropy = maxAniso;
+        texture.needsUpdate = true;
+        const old = earthMat.map;
+        earthMat.map = texture;
+        if (old && old !== texture) old.dispose();
+      };
+      const loadWebp = () => {
+        // Same-origin vendored asset: clear three.js's default CORS mode, or
+        // the globe goes black when index.html is opened straight from disk
+        // (undefined leaves the attribute off; an empty string still means
+        // "anonymous").
+        const loader = new THREE.TextureLoader();
+        loader.crossOrigin = undefined;
+        loader.load(texBase + '.webp', applyTexture);
+      };
+      // KTX2 first: the bytes reach the GPU already compressed, so the 16k tier
+      // is no longer 134M pixels decoded into 537MB of RGBA, mip-mapped and
+      // uploaded — it lands as 89–179MB of VRAM (BC1 or ASTC) against ≈716MB.
+      // It costs ~12MB of download against the WebP's 6MB; the win is memory
+      // and upload time, not bytes. WebP is the fallback — file:// cannot fetch
+      // the .ktx2, and a failed transcode should degrade, not go black.
+      let ktx2 = null;
+      if (THREE.KTX2Loader && window.location.protocol !== 'file:') {
+        ktx2 = new THREE.KTX2Loader();
+        ktx2.setTranscoderPath('vendor/basis/').detectSupport(renderer);
+        ktx2.load(texBase + '.ktx2', applyTexture, undefined, (err) => {
+          console.warn('KTX2 globe texture failed, falling back to WebP', err);
+          loadWebp();
+        });
+      } else {
+        loadWebp();
+      }
 
       // Atmosphere rim glow
       const atmo = new THREE.Mesh(
@@ -237,7 +270,7 @@
       el.appendChild(overlay);
 
       st.current = {
-        renderer, scene, camera, controls, earth, arcs, stars, minDist,
+        renderer, scene, camera, controls, earth, arcs, stars, minDist, ktx2,
         overlay, w: 0, h: 0, raf: 0, tween: null, world: true,
         spinOff: false, arcMats: [], intro: null, introDone: false,
         noMotion: window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -338,6 +371,7 @@
         ro.disconnect();
         if (st.current) {
           cancelAnimationFrame(st.current.raf);
+          if (st.current.ktx2) st.current.ktx2.dispose();
           st.current.controls.removeEventListener('change', reportCenter);
           st.current.controls.dispose();
           st.current.scene.traverse((o) => {

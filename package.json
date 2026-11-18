@@ -3,12 +3,16 @@
   "private": true,
   "scripts": {
     "build": "./build.sh",
+    "vendor:ktx2": "node scripts/build-ktx2-loader.mjs",
+    "tex:earth": "./scripts/build-earth-ktx2.sh",
     "validate:photos": "node scripts/validate-photo-urls.mjs",
     "validate:todo": "node scripts/validate-todo.mjs"
   },
   "devDependencies": {
     "@babel/core": "^7.28.4",
     "@babel/preset-env": "^7.28.3",
-    "@babel/preset-react": "^7.27.1"
+    "@babel/preset-react": "^7.27.1",
+    "esbuild": "^0.25.12",
+    "three": "^0.147.0"
   }
 }

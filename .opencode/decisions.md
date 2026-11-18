@@ -1165,3 +1165,37 @@ it as its opening centre.
 - **A selection still wins.** Switching with a chapter or stop open frames that
   stop in both modes, as before; the carried centre only decides the opening
   position it flies from.
+
+## 2026-11-18 — The globe's earth is KTX2
+
+The 16k Blue Marble was 537MB of RGBA before its mip chain: decoded on the CPU
+from a 6.2MB WebP, mip-mapped, and uploaded on every visit. That is the largest
+allocation the site makes, and on a MacBook Air it is the one thing that can
+stutter the whole page.
+
+- **ETC1S, not UASTC.** UASTC keeps more detail but stays ~4 bpp on the wire — a
+  60MB+ 16k file, over Cloudflare's 25MiB per-asset limit and ten times the
+  download. ETC1S lands at 12MB for 16k and transcodes to BC1/ASTC: 89–179MB of
+  VRAM instead of 716MB, with no main-thread decode.
+- **qlevel 160, not the default 128.** At 1:1 the default visibly blocks up the
+  ocean gradients and softens coastlines; 160 recovers almost all of the gap for
+  ~13% more bytes at 4k and ~20% at 16k. The tier plan and the camera distances
+  are unchanged.
+- **Mips are baked into the file** (`toktx --genmipmap`). Three uploads the
+  chain instead of asking the GPU to build one from 134M texels.
+- **WebP stays.** It is both the master and the fallback: `file://` cannot fetch
+  the `.ktx2` (XHR), and a missing transcoder or failed transcode has to degrade
+  to a soft globe, not the black one the old code would show.
+- **The texture is stored flipped.** Compressed uploads ignore
+  `UNPACK_FLIP_Y_WEBGL`, and SphereGeometry puts the north pole at `v=1`, so
+  `scripts/build-earth-ktx2.sh` flips the master before encoding. Regenerate it
+  without that step and the planet turns south-up.
+- **Three's loader is bundled, not hotlinked.** r147 is the last UMD three, but
+  KTX2Loader only ships as an ES module; `scripts/build-ktx2-loader.mjs` bundles
+  it (with WorkerPool, ktx-parse and zstddec) against the page's global `THREE`
+  and commits `vendor/ktx2-loader.js`. The Basis transcoder is vendored beside
+  it, so the globe does not add a fourth CDN dependency.
+- **Download goes up, not down.** 6.2MB → 12MB on the retina-desktop tier;
+  8k and 4k are 2.7MB → 3.5MB and 0.82MB → 1.0MB. The win is memory and upload
+  time, not bytes — a 12k tier would cut the 16k file to ~7MB if that ever
+  matters more than the closest-zoom sharpness.
