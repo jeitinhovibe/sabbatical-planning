@@ -666,7 +666,7 @@ window.TRIP = (function () {
       { route: 'Varanasi → Kathmandu (direct)', cost: 343, date: '2026-10-21', note: 'Bought ✅ ($343 for two), 08:30 direct' },
       { route: 'Kathmandu → Beijing', cost: 477, date: '2026-11-07', note: 'Late-night arrival; Entry 1 starts Nov 7' },
       { route: 'Hangzhou (HGH) → Hong Kong', cost: 183, date: '2026-11-23', note: 'Bought ✅ $183 — 08:00–10:40; HK visa reset next' },
-      { route: 'Hong Kong → Guangzhou (HSR)', cost: 70, date: '2026-11-28', note: 'Estimate — West Kowloon → Guangzhou South direct, ~1h; Entry 2 starts' },
+      { route: 'Hong Kong → Guangzhou (HSR)', cost: 65, date: '2026-11-28', note: 'Booked ✅ $65 — G6510, West Kowloon → Guangzhou South direct, ~1h; Entry 2 starts' },
       { route: 'Shenzhen → Kuala Lumpur (direct)', cost: 288, date: '2026-12-06', note: 'Bought ✅ R$1,500 (~$288 at R$5.20) — direct SZX–KUL; Malaysia begins' },
       { route: 'Langkawi → Koh Lipe (ferry)', cost: 110, date: '2026-12-14', note: 'Estimate — 90-min cross-border ferry from Telaga Harbour; Thailand Andaman begins' },
       { route: 'Krabi → Bangkok', cost: 148, date: '2026-12-26', note: 'Bought ✅ R$768 (~$148 at R$5.20) — afternoon flight after the Lanta transfer. The $90 estimate was a normal-season fare; Dec 26 is the peak' },
