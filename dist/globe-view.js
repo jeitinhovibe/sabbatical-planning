@@ -19,6 +19,14 @@
   // shrinks to a marble on a field of black and the pins stop being readable,
   // so the zoom-out floor sits just beyond home instead of at the far plane.
   const MAX_DIST = HOME.r * 1.25;
+  // The opening move: the camera starts exactly on the framing the atlas used to
+  // land on — the town you are in at 2.7, the world view at HOME.r — and pushes
+  // in 13% over 15s. Slow on purpose: it is a drift while you read the title,
+  // not a flight you wait for. 13% is also the ceiling: it lands on the chapter
+  // framing (2.35), the closest distance at which the planet's sides are still
+  // inside the frame. Any deeper and the globe reads as a flat map.
+  const INTRO_ZOOM = 0.87;
+  const INTRO_MS = 15000;
   // Base tube radius (world units, at the home distance) — the tick loop
   // thins tubes as you zoom in so the on-screen line weight stays ~constant.
   const ARC_R = 0.0014;
@@ -55,7 +63,11 @@
     onSelectChapter,
     onSelectPlace,
     focusKey,
-    onBackgroundClick
+    onBackgroundClick,
+    intro,
+    initialCenter,
+    initialZoom,
+    onCenterChange
   }) {
     const store = window.useStore();
     const chapters = store.getChapters();
@@ -67,7 +79,8 @@
       onSelectChapter,
       onSelectPlace,
       chapters,
-      onBackgroundClick
+      onBackgroundClick,
+      onCenterChange
     });
     propsRef.current = {
       selectedId,
@@ -75,7 +88,8 @@
       onSelectChapter,
       onSelectPlace,
       chapters,
-      onBackgroundClick
+      onBackgroundClick,
+      onCenterChange
     };
     function llv(lat, lng, r) {
       const phi = (90 - lat) * Math.PI / 180;
@@ -87,6 +101,19 @@
       const n = worldPos.clone().normalize();
       const c = s.camera.position.clone().normalize();
       return n.dot(c) > (margin == null ? 0.08 : margin);
+    }
+
+    // The inverse of llv(): the point on the surface the camera is looking at.
+    // OrbitControls always targets the origin, so the camera's own direction is
+    // the centre of the frame.
+    function centerOf(pos) {
+      const r = pos.length() || 1;
+      const y = Math.max(-1, Math.min(1, pos.y / r));
+      const lat = 90 - Math.acos(y) * 180 / Math.PI;
+      let lng = Math.atan2(pos.z, -pos.x) * 180 / Math.PI - 180;
+      if (lng < -180) lng += 360;
+      if (lng > 180) lng -= 360;
+      return [lat, lng];
     }
     function toScreen(worldPos) {
       const s = st.current;
@@ -181,14 +208,29 @@
       controls.maxDistance = MAX_DIST;
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.55;
-      // First manual grab (drag or wheel) stops the spin for good —
-      // it only resumes on an explicit "back to whole route".
+      // First manual grab (drag or wheel) stops the spin for good — it only
+      // resumes on an explicit "back to whole route" — and takes over from the
+      // opening move.
       controls.addEventListener('start', () => {
         const s = st.current;
         if (!s) return;
         s.spinOff = true;
+        s.intro = null;
         s.controls.autoRotate = false;
       });
+      // Where the camera is looking and how close it is, reported to the shell
+      // so switching to the 2D map opens on the same ground at the same size.
+      // A ref in App, not state: this fires on every frame of a drag and must
+      // not re-render anything.
+      const reportCenter = () => {
+        const s = st.current;
+        if (!s) return;
+        const c = centerOf(s.camera.position);
+        const z = window.mapZoomForGlobe(s.camera.position.length(), c[0], s.h || h0);
+        const cb = propsRef.current.onCenterChange;
+        if (cb) cb([c[0], c[1], z]);
+      };
+      controls.addEventListener('change', reportCenter);
 
       // HTML overlays
       const overlay = document.createElement('div');
@@ -211,19 +253,32 @@
         world: true,
         spinOff: false,
         arcMats: [],
+        intro: null,
+        introDone: false,
         noMotion: window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
       };
       const home = llv(HOME.lat, HOME.lng, HOME.r);
-      // Open facing today's chapter instead of the world. With no current
-      // chapter (before the trip starts / after it ends) it is the world
-      // view with the slow spin. Opening on a chapter holds still — the
-      // spin would drift off the place you actually are.
-      const cur = window.TRIP_NOW ? window.TRIP_NOW.currentChapter(chapters) : null;
-      const openPos = cur && cur.anchor ? llv(cur.anchor[0], cur.anchor[1], 2.7) : home;
+      // Stage height for the zoom conversion; the resize observer has not run
+      // yet at this point, so read it straight off the element.
+      const h0 = el.clientHeight || window.innerHeight;
+      // Open facing the town, not the chapter: today's city, and outside the
+      // trip the first or last stop (the same chapters the title falls back
+      // to). Opening holds still — a spin would drift off the place you are.
+      // Coming back from the 2D map, the point to open on is the one that map
+      // was showing: switching modes should not move the ground under you.
+      const nowStop = window.TRIP_NOW ? window.TRIP_NOW.homeStop(chapters) : null;
+      const here = initialCenter && initialCenter.length >= 2 ? initialCenter : nowStop ? nowStop.place && nowStop.place.coords || nowStop.chapter && nowStop.chapter.anchor || null : null;
+      // The 2D map's zoom converts to a camera distance (same ground at the same
+      // size, see globeDistForMap), clamped to what this view can actually do:
+      // its own range is roughly z2.9–z4.9, so a close 2D view lands at the
+      // closest the sphere can be without losing its shape.
+      const carriedR = here && initialZoom != null ? Math.max(minDist, Math.min(MAX_DIST, globeDistForMap(initialZoom, here[0], h0))) : null;
+      const openPos = here ? llv(here[0], here[1], carriedR || 2.7) : home;
       camera.position.copy(openPos);
       controls.target.set(0, 0, 0);
       controls.update();
-      if (cur) {
+      reportCenter();
+      if (here) {
         controls.autoRotate = false;
         st.current.spinOff = true;
       }
@@ -251,6 +306,7 @@
         const s = st.current;
         if (!s) return;
         s.raf = requestAnimationFrame(tick);
+        stepIntro();
         stepTween();
         syncDragSpeed();
         s.controls.update();
@@ -273,26 +329,28 @@
       tick();
       rebuildAll();
 
-      // Country labels are measured once for the on-disc test; the webfont can
-      // arrive after the first frame and change how wide a word is, so drop the
-      // cached sizes and let the next tick re-measure.
+      // Country and city labels are measured once for the on-disc test; the
+      // webfont can arrive after the first frame and change how wide a word is,
+      // so drop the cached sizes and re-measure in one batch.
       if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
           const s = st.current;
           if (!s) return;
           for (let i = 0; i < s.overlay.children.length; i++) {
             const el = s.overlay.children[i];
-            if (el._country) {
+            if (el._country || el._cityLabel) {
               el._w = 0;
               el._h = 0;
             }
           }
+          measureLabels();
         });
       }
       return () => {
         ro.disconnect();
         if (st.current) {
           cancelAnimationFrame(st.current.raf);
+          st.current.controls.removeEventListener('change', reportCenter);
           st.current.controls.dispose();
           st.current.scene.traverse(o => {
             if (o.geometry) o.geometry.dispose();
@@ -343,6 +401,20 @@
       s.camera.updateProjectionMatrix();
       s.renderer.setSize(w, h);
     }
+
+    // The opening move, driven every frame from the tick so it composes with
+    // the spin and with damping instead of fighting them: only the distance to
+    // the centre changes, and the direction is whatever the frame already has.
+    // A grab, a wheel or a fly-to cancels it (s.intro = null).
+    function stepIntro() {
+      const s = st.current;
+      const it = s && s.intro;
+      if (!it) return;
+      const t = Math.min(1, (performance.now() - it.start) / it.dur);
+      const e = t * t * (3 - 2 * t); // smoothstep: soft at both ends
+      s.camera.position.setLength(it.from * (1 + (INTRO_ZOOM - 1) * e));
+      if (t >= 1) s.intro = null;
+    }
     function stepTween() {
       const s = st.current;
       const tw = s && s.tween;
@@ -367,6 +439,7 @@
     function flyTo(targetPos, camPos, dur) {
       const s = st.current;
       if (!s) return;
+      s.intro = null;
       if (s.noMotion) {
         s.tween = null;
         s.controls.target.copy(targetPos);
@@ -471,19 +544,41 @@
       };
     }
 
-    // Label widths for the on-disc test, measured lazily: offsetWidth forces
-    // layout, so measuring ~80 labels every frame would be wasteful. Invalidated
-    // once the webfont lands (see the mount effect), since the fallback mono
+    // Label widths for the on-disc test and the declutter pass. offsetWidth
+    // forces layout, so it is measured in one batch (measureLabels) instead of
+    // per element per frame — a hundred separate reads on first paint is a
+    // visible hitch. Invalidated once the webfont lands, since the fallback mono
     // face can be wider than JetBrains Mono.
-    function countrySize(el) {
-      if (!el._w) {
-        const prev = el.style.display;
-        el.style.display = '';
+    function labelSize(el) {
+      if (!el._w) return [el.offsetWidth || 1, el.offsetHeight || 1];
+      return [el._w, el._h];
+    }
+
+    // One layout for the whole label layer: unhide the ones currently parked,
+    // read every box, then restore. Called when the pins are rebuilt and when
+    // the font arrives.
+    function measureLabels() {
+      const s = st.current;
+      if (!s) return;
+      const list = [];
+      for (let i = 0; i < s.overlay.children.length; i++) {
+        const el = s.overlay.children[i];
+        if (el._country || el._cityLabel) list.push(el);
+      }
+      const parked = [];
+      list.forEach(el => {
+        if (el.style.display === 'none') {
+          el.style.display = '';
+          parked.push(el);
+        }
+      });
+      list.forEach(el => {
         el._w = el.offsetWidth || 1;
         el._h = el.offsetHeight || 1;
-        el.style.display = prev;
-      }
-      return [el._w, el._h];
+      });
+      parked.forEach(el => {
+        el.style.display = 'none';
+      });
     }
     function updateOverlay() {
       const s = st.current;
@@ -499,8 +594,8 @@
       // n·ĉ = 1/d, not 0. Anything below it is behind the planet's body.
       const horizon = 1 / s.camera.position.length();
       const kids = s.overlay.children;
-      // Country labels that survive the on-disc test, for the declutter pass
-      // below. Filled in DOM order, resolved after every position is known.
+      // Labels that survive the on-disc test, for the declutter pass below.
+      // Filled in DOM order, resolved after every position is known.
       const cand = [];
       for (let i = 0; i < kids.length; i++) {
         const el = kids[i];
@@ -524,34 +619,41 @@
         const sp = wp.clone().project(s.camera);
         const x = (sp.x * 0.5 + 0.5) * s.w;
         const y = (-sp.y * 0.5 + 0.5) * s.h;
+        // A city name hangs under its dot; countries and pins sit on the point.
+        const ly = el._cityLabel ? y + CITY_LABEL_DY : y;
         el.style.display = null;
-        el.style.transform = el._country ? `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)` : `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
-        if (el._country) {
-          // A country label belongs to the map only while the whole word sits
-          // on the planet. Anchored at a surface point, its centre is inside
-          // the limb while half the text hangs off into space — that reads as
-          // a floating HUD callout, not a place name. Fade the label over the
-          // last 14px of travel instead of toggling a class at the edge: a
-          // binary threshold flaps when a slow drag jitters by a pixel at the
-          // rim, which is the flicker you saw. Opacity is continuous, so the
-          // same jitter is invisible.
-          const [lw, lh] = countrySize(el);
+        el.style.transform = el._country ? `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%)` : el._cityLabel ? `translate3d(${x.toFixed(1)}px,${ly.toFixed(1)}px,0) translate(-50%,0)` : `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
+        if (el._country || el._cityLabel) {
+          // A label belongs to the map only while the whole word sits on the
+          // planet. Anchored at a surface point, its centre is inside the limb
+          // while half the text hangs off into space — that reads as a floating
+          // HUD callout, not a place name. Fade over the last 14px of travel
+          // instead of toggling a class at the edge: a binary threshold flaps
+          // when a slow drag jitters by a pixel at the rim. Opacity is
+          // continuous, so the same jitter is invisible.
+          const [lw, lh] = labelSize(el);
+          const lyc = el._cityLabel ? ly + lh / 2 : y;
           const ox = Math.abs(x - disc.cx) + lw / 2;
-          const oy = Math.abs(y - disc.cy) + lh / 2;
-          const inside = disc.r - Math.sqrt(ox * ox + oy * oy);
+          const oy = Math.abs(lyc - disc.cy) + lh / 2;
+          // Inside the planet *and* inside the frame. On a phone the globe is
+          // wider than the screen, so a label can sit well inside the limb and
+          // still run off the viewport edge — it used to be cut mid-word by
+          // .eq-pins' overflow. Fade at whichever edge comes first.
+          const inside = Math.min(disc.r - Math.sqrt(ox * ox + oy * oy), x - lw / 2, s.w - (x + lw / 2), lyc - lh / 2, s.h - (lyc + lh / 2));
           const fade = Math.max(0, Math.min(1, inside / 14));
           el.style.opacity = fade === 1 ? '' : fade.toFixed(3);
           if (fade < 0.6) {
             el._shown = false;
           } else {
             const dx = x - disc.cx,
-              dy = y - disc.cy;
+              dy = lyc - disc.cy;
             cand.push({
               el,
               x,
-              y,
+              y: lyc,
               w: lw,
               h: lh,
+              pri: el._pri || 0,
               dist: Math.sqrt(dx * dx + dy * dy)
             });
           }
@@ -566,10 +668,12 @@
       // that collide, which is what a map does as you zoom out. Zooming in
       // spreads the anchors and they come back.
       //
-      // Labels already on screen get an 8px head start, so two labels sitting
-      // at the same distance cannot trade places frame after frame; a hidden
-      // one has to be clearly closer to win.
-      cand.sort((a, b) => a.dist - (a.el._shown ? 8 : 0) - (b.dist - (b.el._shown ? 8 : 0)));
+      // Priority decides *which* label gives way when two collide: today's
+      // cities first, then the rest of the itinerary, then country names. They
+      // are scored in pixels so a bonus reads as "up to N px closer to the
+      // centre". Labels already on screen get an 8px head start, so two labels
+      // sitting at the same distance cannot trade places frame after frame.
+      cand.sort((a, b) => a.dist - a.pri - (a.el._shown ? 8 : 0) - (b.dist - b.pri - (b.el._shown ? 8 : 0)));
       const kept = [];
       for (let i = 0; i < cand.length; i++) {
         const c = cand[i];
@@ -632,6 +736,34 @@
       el.appendChild(span);
       return el;
     }
+
+    // The dot's hover pill carries the numbered stop ("3. Hongcun"), which is
+    // the right label once a chapter is open. On the home view the same cities
+    // need a name at rest, so the itinerary gets its own always-on label layer:
+    // plain name, no number, and only the places the plan actually visits.
+    const CITY_LABEL_DY = 8;
+
+    // "Takayama + Shirakawa-go", "Cebu / Moalboal", "Sanur (arrival night)",
+    // "Cappadocia — Göreme": a globe annotation is one town, so take the first
+    // name in the list and drop the qualifier. The dot's pill keeps the full
+    // string, which is what the chapter's spread is keyed to.
+    function cityName(raw) {
+      return String(raw || '').split(/\s+[+—–/]\s+|\s*\(/)[0].trim();
+    }
+    function cityLabelEl(c, p, i, pri) {
+      const el = document.createElement('div');
+      el.className = 'eq-city-label';
+      el._anchor = p.coords;
+      el._chId = c.id;
+      el._idx = i;
+      el._pri = pri;
+      el._pri0 = pri; // base rank; the picked stop lifts above it
+      el._cityLabel = true;
+      const span = document.createElement('span');
+      span.textContent = cityName(p.name);
+      el.appendChild(span);
+      return el;
+    }
     function rebuildAll() {
       const s = st.current;
       if (!s) return;
@@ -641,6 +773,18 @@
       s.overlay.innerHTML = '';
       COUNTRIES.forEach(([name, lng, lat]) => s.overlay.appendChild(countryEl(name, lng, lat)));
       const list = propsRef.current.chapters.filter(c => c.kind !== 'transit' && c.anchor);
+      // Which names win a collision is decided once, here: today's city beats
+      // its neighbours (Huangshan and Hongcun are 15km apart), then today's
+      // chapter, then the rest of the itinerary, then country names. Scored in
+      // pixels, so a bonus reads as "up to N px closer to the centre".
+      const now = window.TRIP_NOW ? window.TRIP_NOW.homeStop(list) : null;
+      const cityPri = (c, i) => !now ? 60 : c.id !== now.chapter.id ? 60 : i === now.idx ? 400 : 220;
+      // The labels first, so the dots and pins paint over them.
+      list.forEach(c => {
+        (c.places || []).forEach((p, i) => {
+          if (p.coords) s.overlay.appendChild(cityLabelEl(c, p, i, cityPri(c, i)));
+        });
+      });
       // City dots in itinerary order; anchor fallback pins for chapters
       // without place coords.
       list.forEach(c => {
@@ -679,6 +823,7 @@
         if (arc.userData.arcMat) s.arcMats.push(arc.userData.arcMat);
       }
       void onSelectChapter;
+      measureLabels();
       refreshSelection();
     }
     function refreshSelection() {
@@ -695,14 +840,25 @@
         const pin = el.querySelector('.map-pin');
         if (pin) pin.classList.toggle('is-active', el._id === selectedId);
       });
-      // Hide whole-route city dots of the selected chapter (re-rendered
-      // below as their own markers) to avoid duplicates; updateOverlay honors _hidden.
+      // Hide the whole-route city dots of the selected chapter (re-rendered
+      // below as their own numbered markers); updateOverlay honors _hidden. The
+      // names stay: the numbered pill is hover-only, so dropping the label too
+      // would leave the chapter you just opened as the only unlabelled one.
       [...s.overlay.children].forEach(el => {
         if (el.classList && el.classList.contains('eq-city-wrap')) {
           el._hidden = el._chId === selectedId;
         }
       });
       [...s.overlay.querySelectorAll('.eq-place-wrap')].forEach(el => el.remove());
+      // The stop you picked keeps its name. Its neighbour can be 15km away and
+      // outrank it on proximity alone, which leaves the highlighted dot wearing
+      // the wrong word (Huangshan highlighted, "Hongcun" beside it).
+      for (let i = 0; i < s.overlay.children.length; i++) {
+        const el = s.overlay.children[i];
+        if (!el._cityLabel) continue;
+        const picked = el._chId === selectedId && el._idx != null && el._idx === selectedPlaceIdx;
+        el._pri = el._pri0 + (picked ? 300 : 0);
+      }
       s.controls.autoRotate = !selectedId && !s.spinOff;
       if (!selectedId) {
         // Panel just closed: make sure the orbit target is back at the
@@ -744,7 +900,15 @@
         const camPos = llv(focused.coords[0], focused.coords[1], md + 0.14);
         flyTo(new window.THREE.Vector3(0, 0, 0), camPos);
       } else if (ch.anchor) {
-        const camPos = llv(ch.anchor[0], ch.anchor[1], 2.35);
+        // "Back to where I am" frames the town, matching the landing view; any
+        // other chapter frames its anchor, which is what its spread describes.
+        let at = ch.anchor;
+        const hereCh = window.TRIP_NOW && window.TRIP_NOW.currentChapter(chapters);
+        if (hereCh && hereCh.id === ch.id) {
+          const w = window.TRIP_NOW.currentCity(chapters);
+          if (w && w.place && w.place.coords) at = w.place.coords;
+        }
+        const camPos = llv(at[0], at[1], 2.35);
         flyTo(new window.THREE.Vector3(0, 0, 0), camPos);
       }
     }
@@ -778,6 +942,30 @@
       s.controls.autoRotate = true;
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [focusKey]);
+
+    // ── opening move ──────────────────────────────────────────────────────
+    // Waits for the cover to lift: a move behind a dark curtain is spent before
+    // anyone sees it. A chapter that arrives already selected (deep link) keeps
+    // its own closer framing, and reduced-motion lands directly on the end
+    // distance instead of travelling there. Arriving with a zoom from the other
+    // map is a resume, not an opening — it opens where that view left off and
+    // stays there.
+    React.useEffect(() => {
+      const s = st.current;
+      if (!s || !intro || s.introDone) return;
+      s.introDone = true;
+      if (propsRef.current.selectedId || initialZoom != null) return;
+      if (s.noMotion) {
+        s.camera.position.setLength(s.camera.position.length() * INTRO_ZOOM);
+        return;
+      }
+      s.intro = {
+        start: performance.now(),
+        from: s.camera.position.length(),
+        dur: INTRO_MS
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [intro]);
 
     // CDN guard — render a message instead of a blank globe when the
     // Three.js scripts failed to load. (Placed after all hooks.)

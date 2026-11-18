@@ -283,6 +283,18 @@
   // ── Chapter reel ──────────────────────────────────────────────────────
   function ChapterReel({ chapters, current, selectedId, onOpen }) {
     const trackRef = React.useRef(null);
+    // Collapsing the strip is a "let me see the map" move: it stays collapsed
+    // across reloads (like the 2D/3D switch), and starts expanded for anyone
+    // who has never touched it.
+    const [collapsed, setCollapsed] = React.useState(() => {
+      try { return localStorage.getItem('reel-collapsed') === '1'; } catch { return false; }
+    });
+    const toggle = () => {
+      setCollapsed((was) => {
+        try { localStorage.setItem('reel-collapsed', was ? '0' : '1'); } catch {}
+        return !was;
+      });
+    };
     const focusId = selectedId || (current && current.id);
     React.useEffect(() => {
       const track = trackRef.current;
@@ -338,14 +350,26 @@
     };
 
     return (
-      <div className="reel">
+      <div className={`reel ${collapsed ? 'is-collapsed' : ''}`}>
         <div className="reel-head">
           <div className="reel-head-left">
             <span className="reel-kicker">The arc</span>
             <span className="reel-count">{chapters.length} chapters · {totalDays} days</span>
           </div>
+          <button
+            className="reel-toggle"
+            onClick={toggle}
+            aria-expanded={!collapsed}
+            aria-controls="reel-track"
+            aria-label={collapsed ? 'Show the chapter strip' : 'Hide the chapter strip'}
+            title={collapsed ? 'Show the chapter strip' : 'Hide the chapter strip'}>
+            <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 5.4 7 9.4 11 5.4" />
+            </svg>
+          </button>
         </div>
         <div
+          id="reel-track"
           className="reel-track"
           ref={trackRef}
           onPointerDown={onDragStart}
@@ -397,8 +421,9 @@
     const [selectedId, setSelectedId] = React.useState(urlParams.chapterId);
     const [selectedPlaceIdx, setSelectedPlaceIdx] = React.useState(urlParams.placeIdx);
     const [focusDay, setFocusDay] = React.useState(null);
-    // How tight the 2D map frames a selected stop. A day on the spine is about
-    // locating the city in its country (wide); a pin click is about the city.
+    // What the 2D map should do about zoom when a stop is selected. A day on
+    // the spine is about locating the city in its country, so it frames at the
+    // chapter's zoom; a dot click passes 'keep' and only moves the centre.
     const [placeZoom, setPlaceZoom] = React.useState(null);
     const [detailOpen, setDetailOpen] = React.useState(!!urlParams.chapterId && urlParams.detail !== false);
     const [focusKey, setFocusKey] = React.useState(0);
@@ -628,20 +653,28 @@
     };
 
     // A city click is a request to read about it: open the spread and let it
-    // scroll itself to that stop. The map popup that used to appear here was
-    // a smaller answer to the same question.
+    // scroll itself to that stop. The 2D map moves the centre there but keeps
+    // the zoom you are already at ('keep'), so clicking a dot is a pan, not a
+    // re-scale.
     const onSelectPlace = (idx) => {
       setSelectedPlaceIdx(idx);
-      setPlaceZoom(12);
+      setPlaceZoom('keep');
       setDetailOpen(true);
       if (view !== 'atlas') setView('atlas');
     };
 
-    // Tapping empty map closes the spread — except on the release that a title
-    // tap just used to open it, which is the same click from the map's side.
+    // Tapping empty map is "nothing selected": the spread closes *and* the
+    // stop loses its highlight, its own markers go and the URL drops ?chapter.
+    // The camera stays put — a click on the water is not a "back to route" —
+    // so this is a deselect, not a re-frame. Skipped on the release that a
+    // title tap just used to open the spread, which is the same click from the
+    // map's side.
     const onBackgroundClick = () => {
       if (Date.now() - swallowClick.current < 600) return;
       setDetailOpen(false);
+      setSelectedId(null);
+      setSelectedPlaceIdx(null);
+      setPlaceZoom(null);
     };
 
     // "Whole route" is really "put me back where I am": today's chapter, and
@@ -676,6 +709,13 @@
     );
 
     const showDetail = detailOpen && !!selectedId && !!store.getChapter(selectedId);
+    // Where the atlas is looking and how close: [lat, lng, leafletZoom]. A ref,
+    // not state — the globe reports on every frame of a drag, and the only
+    // consumer is the next map mount, so the switch reads it at render time and
+    // nothing re-renders.
+    const viewCenter = React.useRef(null);
+    const onCenterChange = (c) => { viewCenter.current = c; };
+    const carried = viewCenter.current;
 
     return (
       <div className={`app view-${view} ${isMobile ? 'is-mobile' : ''} ${showDetail ? 'has-detail' : ''}`}>
@@ -695,6 +735,10 @@
                       onSelectPlace={onSelectPlace}
                       onBackgroundClick={onBackgroundClick}
                       focusKey={focusKey}
+                      intro={!cover}
+                      initialCenter={carried}
+                      initialZoom={carried ? carried[2] : null}
+                      onCenterChange={onCenterChange}
                     />
                   ) : (
                     <window.MapView
@@ -705,6 +749,9 @@
                       onSelectPlace={onSelectPlace}
                       onBackgroundClick={onBackgroundClick}
                       focusKey={focusKey}
+                      initialCenter={carried}
+                      initialZoom={carried ? carried[2] : null}
+                      onCenterChange={onCenterChange}
                     />
                   )}
                 </window.ErrorBoundary>
