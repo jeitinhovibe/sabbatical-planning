@@ -1021,7 +1021,11 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   font-weight: 500;
   letter-spacing: .18em;
   text-transform: uppercase;
-  color: rgba(243,236,221,.5);
+  /* Solid, not 50% ink: the old rgba() was a different colour on every backdrop
+     it crossed (dimmer over space, washed out over a snowfield). The grey is the
+     old average over dark terrain, so the map reads the same without the
+     backdrop leaking through the letters. */
+  color: #8b877e;
   text-shadow: 0 1px 4px rgba(0,0,0,.9);
   white-space: nowrap;
   pointer-events: none;
