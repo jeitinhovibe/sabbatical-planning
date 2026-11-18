@@ -183,6 +183,34 @@ function nextCity(chapters, today) {
   return stops.find(s => s.start > t) || null;
 }
 
+// The town the home view opens on. Inside the trip that is today's city — the
+// map should face the town you wake up in, not the chapter's centroid. Outside
+// it, the first stop before the start and the last stop after the end: the same
+// chapters the atlas title falls back to, so "before" reads as home and
+// "after" as where it finished instead of a faceless world view.
+function homeStop(chapters, today) {
+  const t = today || todayISO();
+  const ch = currentChapter(chapters, t);
+  if (ch) {
+    const w = currentCity(chapters, t);
+    return {
+      chapter: ch,
+      place: w ? w.place : null,
+      idx: w ? w.idx : null
+    };
+  }
+  const route = (chapters || []).filter(c => c.kind !== 'transit' && c.start);
+  if (!route.length) return null;
+  const before = t < route[0].start;
+  const end = before ? route[0] : route[route.length - 1];
+  const places = (end.places || []).filter(p => p.coords);
+  return {
+    chapter: end,
+    place: places.length ? places[before ? 0 : places.length - 1] : null,
+    idx: null
+  };
+}
+
 // Subscribe to the store and re-render on mutation.
 function useStore() {
   const [, force] = React.useReducer(x => x + 1, 0);
@@ -606,5 +634,6 @@ window.TRIP_NOW = {
   daysUntil,
   placeWindows,
   currentCity,
-  nextCity
+  nextCity,
+  homeStop
 };

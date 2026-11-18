@@ -13,7 +13,7 @@
   // so the zoom-out floor sits just beyond home instead of at the far plane.
   const MAX_DIST = HOME.r * 1.25;
   // The opening move: the camera starts exactly on the framing the atlas used to
-  // land on — the current chapter at 2.7, the world view at HOME.r — and pushes
+  // land on — the town you are in at 2.7, the world view at HOME.r — and pushes
   // in 13% over 15s. Slow on purpose: it is a drift while you read the title,
   // not a flight you wait for. 13% is also the ceiling: it lands on the chapter
   // framing (2.35), the closest distance at which the planet's sides are still
@@ -219,16 +219,18 @@
       };
 
       const home = llv(HOME.lat, HOME.lng, HOME.r);
-      // Open facing today's chapter instead of the world. With no current
-      // chapter (before the trip starts / after it ends) it is the world
-      // view with the slow spin. Opening on a chapter holds still — the
-      // spin would drift off the place you actually are.
-      const cur = window.TRIP_NOW ? window.TRIP_NOW.currentChapter(chapters) : null;
-      const openPos = cur && cur.anchor ? llv(cur.anchor[0], cur.anchor[1], 2.7) : home;
+      // Open facing the town, not the chapter: today's city, and outside the
+      // trip the first or last stop (the same chapters the title falls back
+      // to). Opening holds still — a spin would drift off the place you are.
+      const nowStop = window.TRIP_NOW ? window.TRIP_NOW.homeStop(chapters) : null;
+      const here = nowStop
+        ? (nowStop.place && nowStop.place.coords) || (nowStop.chapter && nowStop.chapter.anchor) || null
+        : null;
+      const openPos = here ? llv(here[0], here[1], 2.7) : home;
       camera.position.copy(openPos);
       controls.target.set(0, 0, 0);
       controls.update();
-      if (cur) {
+      if (here) {
         controls.autoRotate = false;
         st.current.spinOff = true;
       }
@@ -745,7 +747,15 @@
         const camPos = llv(focused.coords[0], focused.coords[1], md + 0.14);
         flyTo(new window.THREE.Vector3(0, 0, 0), camPos);
       } else if (ch.anchor) {
-        const camPos = llv(ch.anchor[0], ch.anchor[1], 2.35);
+        // "Back to where I am" frames the town, matching the landing view; any
+        // other chapter frames its anchor, which is what its spread describes.
+        let at = ch.anchor;
+        const hereCh = window.TRIP_NOW && window.TRIP_NOW.currentChapter(chapters);
+        if (hereCh && hereCh.id === ch.id) {
+          const w = window.TRIP_NOW.currentCity(chapters);
+          if (w && w.place && w.place.coords) at = w.place.coords;
+        }
+        const camPos = llv(at[0], at[1], 2.35);
         flyTo(new window.THREE.Vector3(0, 0, 0), camPos);
       }
     }

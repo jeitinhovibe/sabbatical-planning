@@ -80,21 +80,20 @@
     };
     const stopCoords = (s) => (s.place ? s.place.coords : s.ch.anchor);
 
-    // The chapter today falls in — the map opens here. Null before the trip
-    // starts and after it ends, when the whole route (world view) is home.
-    const homeChapter = () => (window.TRIP_NOW ? window.TRIP_NOW.currentChapter(chapters) : null);
+    // The town the home view opens on — today's city, or outside the trip the
+    // first/last stop. Null only if there is no route at all, which is when the
+    // whole-route view is the right answer.
+    const homeStop = () => (window.TRIP_NOW ? window.TRIP_NOW.homeStop(chapters) : null);
+    const stopPoint = (stop) => (stop ? ((stop.place && stop.place.coords) || stop.chapter.anchor) || null : null);
 
-    // Points + framing for the home view: today's chapter when there is
-    // one, otherwise every city stop edge-to-edge.
+    // Framing for the home view: the town today sits in the centre at chapter
+    // zoom — the map opens on where you are, not on the chapter's whole spread.
+    // With no stop at all, every city stop edge-to-edge (the world view).
     const homeFrame = () => {
-      const cur = homeChapter();
-      if (cur) {
-        const pts = (cur.places || []).map((p) => p.coords).filter(Boolean);
-        // "Where I am" is framed exactly like a selected chapter: same zoom,
-        // same padding. It used to be capped at z4 ("South Asia, not
-        // Kathmandu"), which made the landing view wider than every chapter
-        // you could click to — and wider than what the Now button restored.
-        return { pts, padding: [40, 40], maxZoom: CHAPTER_ZOOM, single: cur.anchor };
+      const stop = homeStop();
+      if (stop) {
+        const pt = stopPoint(stop);
+        return { pts: pt ? [pt] : [], padding: [40, 40], maxZoom: CHAPTER_ZOOM, single: pt };
       }
       return { pts: getStops().map(stopCoords).filter(Boolean), padding: [24, 24], maxZoom: undefined, single: null };
     };
@@ -133,10 +132,9 @@
     React.useEffect(() => {
       if (mapRef.current || !window.L) return;
       const L = window.L;
-      // First paint already faces today's chapter instead of a generic
-      // Asia-wide center (frameHome below settles the exact framing).
-      const cur = homeChapter();
-      const firstPt = cur ? (cur.anchor || (cur.places || []).map((p) => p.coords).filter(Boolean)[0]) : null;
+      // First paint already faces the town instead of a generic Asia-wide
+      // center (frameHome below settles the exact framing).
+      const firstPt = stopPoint(homeStop());
       const map = L.map(ref.current, {
         center: firstPt || [25, 105],
         zoom: firstPt ? 4 : 3,

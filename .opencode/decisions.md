@@ -1056,3 +1056,35 @@ front of it, not instead of it.
   the end distance in one frame, a deep-linked chapter skips the move entirely,
   and returning to the atlas from Budget/Tasks replays it — that is the same
   "opening the home screen".
+
+## 2026-11-18 — The home map faces the town, not the chapter
+
+Both map modes now open on **today's city** instead of the chapter's anchor or
+its fit. On China this is the difference between Hongcun and Beijing — ten
+degrees of latitude, and the pin you actually want to see was a third of the
+way up the screen.
+
+- **The globe keeps its distance; only the bearing moves.** 2.7, still drifting
+  to 2.35 (see the entry above). The town is dead centre and the region around
+  it fills the frame, which is what "centred on the city" means at this zoom.
+  Zooming to city scale was *not* done: it would crop the planet completely and
+  contradict the "edges still visible" call from the same day.
+- **The 2D map centres at z6** (its chapter zoom) rather than fitting the
+  chapter's places edge to edge. Same zoom as before, new centre — so the map
+  and the globe now agree on where "here" is.
+- **Outside the trip, the first stop before it starts and the last stop after it
+  ends** — Rio, then Seoul. That is the same pair the atlas title already falls
+  back to (`next ? chapters[0] : chapters[last]`), so the copy and the map never
+  disagree; the world view is no longer the default for those dates.
+- **The spin is gone from those fallbacks too.** A slow orbit around a town the
+  view is supposed to be centred on just drifts off it; the pre/post-trip state
+  is now a still frame like the rest of the home view.
+- **"Now" matches the landing view.** Selecting today's chapter (the Now button,
+  or reset) frames the town, not the anchor; selecting any other chapter still
+  frames its anchor, which is what that chapter's spread describes.
+- One helper, `TRIP_NOW.homeStop()`, so the two maps and the Now button cannot
+  drift apart.
+
+Amends the 2026-11-05 line "**2D fit of its places, globe camera on its
+anchor**": the seat of the view is the town. The rest of that decision — the
+atlas opens on the present rather than the world, and the panel framing — stands.
