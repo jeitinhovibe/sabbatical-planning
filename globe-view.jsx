@@ -304,6 +304,11 @@
       st.current = {
         renderer, scene, camera, controls, earth, arcs, stars, minDist, ktx2,
         overlay, w: 0, h: 0, raf: 0, tween: null, world: true,
+        // Settled at mount, before anything reports a centre of its own: the
+        // opening move below decides later (when the cover lifts) whether this
+        // is a fresh opening or a resume, and a re-render in between makes
+        // `initialZoom` non-null with the *globe's own* framing.
+        resume: initialZoom != null,
         spinOff: false, arcMats: [], intro: null, introDone: false,
         noMotion: window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
       };
@@ -989,11 +994,14 @@
     // its own closer framing, and reduced-motion lands directly on the end
     // distance instead of travelling there. Arriving with a zoom from the other
     // map is a resume, not an opening — it opens where that view left off and
-    // stays there.
+    // stays there. That is `s.resume`, frozen at mount: by the time the cover
+    // lifts, the globe has reported its own centre and App is holding it as the
+    // carried view, so testing `initialZoom` here would read the globe's own
+    // framing as a 2D resume and never move.
     React.useEffect(() => {
       const s = st.current; if (!s || !intro || s.introDone) return;
       s.introDone = true;
-      if (propsRef.current.selectedId || initialZoom != null) return;
+      if (propsRef.current.selectedId || s.resume) return;
       if (s.noMotion) { s.camera.position.setLength(s.camera.position.length() * INTRO_ZOOM); return; }
       s.intro = { start: performance.now(), from: s.camera.position.length(), dur: INTRO_MS };
       // eslint-disable-next-line react-hooks/exhaustive-deps
