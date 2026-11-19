@@ -2323,6 +2323,13 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  /* A background is never painted outside the element's own box, and the
+     negative tracking makes the em's box narrower than the line: the italic
+     t overhangs it, so its crossbar was clipped into a black bar through the
+     letter. Padding widens the paint box; the equal negative margin puts the
+     text back where it was. */
+  padding-inline: .16em;
+  margin-inline: -.16em;
 }
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 .cover-route {
