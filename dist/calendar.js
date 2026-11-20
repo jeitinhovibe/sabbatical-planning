@@ -164,7 +164,18 @@
         offset += d;
       });
     });
+    // One event per leg, even though a leg can be authored twice: budget.flights
+    // is where the fare lives, transports is where the mode and the timetable
+    // live, and the same flight often appears in both — "Shenzhen → Kuala
+    // Lumpur (direct)" and "Shenzhen → Kuala Lumpur" on Dec 6 became two blocks
+    // in the calendar. The flight wins (it carries the money), the transport
+    // copy is dropped, and a repeated row in either list is dropped too.
+    const legs = new Set();
+    const legKey = (route, date) => String(route || '').toLowerCase().replace(/\([^)]*\)/g, ' ').replace(/[^a-z0-9]/g, '') + '@' + date;
     (trip.budget.flights || []).filter(f => f.date).forEach((f, i) => {
+      const key = legKey(f.route, f.date);
+      if (legs.has(key)) return;
+      legs.add(key);
       const slug = f.route.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 60) || 'leg' + i;
       events.push({
         id: eid('sabbaticalfl', slug, used),
@@ -183,8 +194,12 @@
         }
       });
     });
-    // Ground + sea legs (trains, buses, ferries) from trip.transports.
+    // Ground + sea legs (trains, buses, ferries) from trip.transports — minus
+    // any already pushed as a flight above.
     (trip.transports || []).filter(t => t && t.date).forEach((t, i) => {
+      const key = legKey(t.route, t.date);
+      if (legs.has(key)) return;
+      legs.add(key);
       const slug = String(t.route || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 60) || 'leg' + i;
       events.push({
         id: eid('sabbaticaltr', slug, used),
