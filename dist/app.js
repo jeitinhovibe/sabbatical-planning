@@ -602,6 +602,163 @@
     })));
   }
 
+  // ── Easter egg ────────────────────────────────────────────────────────
+  // The two of them in the rocket, lapping the planet: one slow revolution
+  // every minute or so, forty pixels wide, then gone again. It sits on a
+  // fixed layer above the atlas and below every piece of chrome, so it can
+  // never move the layout or cover something you are reading; it takes the
+  // pointer only while it is out. The ring is a fixed circle on the stage —
+  // deliberately not scaled to the globe's zoom, the lap is the same lap
+  // whatever the camera is doing.
+  const EGG = {
+    lap: 16000,
+    // one revolution — a drift round the planet, not a fly-by
+    fade: 400,
+    // the only moment it is not solid: the blink on and off
+    gap: [44000, 62000],
+    // quiet time between sightings (~1 min door to door)
+    first: 20000,
+    // let the intro settle before the first one
+    radius: 0.36,
+    // ring radius, as a share of the shorter stage side
+    tilt: -14,
+    // the ring's line of nodes, tipped up to the right
+    squash: 0.36,
+    // how flat the ring reads from here
+    nose: 8,
+    // the rocket's own nose sits ~8° above its horizon
+    open: 2.8,
+    // how far a click opens it up
+    openFor: 1300 // ms
+  };
+  function EasterEgg({
+    enabled
+  }) {
+    const shipRef = React.useRef(null);
+    const popRef = React.useRef(null);
+    const spinRef = React.useRef(null);
+    const pointer = React.useRef({
+      spin: 0,
+      open: false
+    });
+    const openTimer = React.useRef(0);
+
+    // The sprite's own transform: the roll the arrows ask for, plus the pop a
+    // click asks for. Both are transitions, so this is written on demand, not
+    // per frame — the lap below only moves the wrapper.
+    const paintShip = () => {
+      if (spinRef.current) spinRef.current.style.transform = `rotate(${pointer.current.spin}deg)`;
+      if (popRef.current) popRef.current.style.transform = `scale(${pointer.current.open ? EGG.open : 1})`;
+    };
+    const onShipClick = () => {
+      pointer.current.open = true;
+      paintShip();
+      clearTimeout(openTimer.current);
+      openTimer.current = setTimeout(() => {
+        pointer.current.open = false;
+        paintShip();
+      }, EGG.openFor);
+    };
+    React.useEffect(() => {
+      const el = shipRef.current;
+      if (!el || !enabled) return;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const tilt = EGG.tilt * Math.PI / 180;
+      const ct = Math.cos(tilt),
+        st = Math.sin(tilt);
+      let raf = 0,
+        timer = 0,
+        t0 = 0,
+        alive = true;
+
+      // The stage, not the planet: one circle, near enough to the globe at the
+      // default framing that it reads as an orbit, and unchanged when you zoom.
+      function anchor() {
+        const box = document.querySelector('.atlas-canvas');
+        const r = box ? box.getBoundingClientRect() : null;
+        const w = r ? r.width : window.innerWidth;
+        const h = r ? r.height : window.innerHeight;
+        return {
+          cx: (r ? r.left : 0) + w / 2,
+          cy: (r ? r.top : 0) + h / 2,
+          R: Math.max(70, Math.min(w, h) * EGG.radius)
+        };
+      }
+      function frame(now) {
+        const p = (now - t0) / EGG.lap;
+        if (p >= 1) {
+          el.classList.remove('is-live');
+          el.style.opacity = '0';
+          timer = setTimeout(lap, EGG.gap[0] + Math.random() * (EGG.gap[1] - EGG.gap[0]));
+          return;
+        }
+        const a = anchor();
+        // Round the ring clockwise, from the near side: up the left limb, over
+        // the top travelling right, down the right limb, back underneath.
+        const th = -Math.PI / 2 - p * Math.PI * 2;
+        const x0 = Math.cos(th) * a.R;
+        const y0 = -Math.sin(th) * a.R * EGG.squash;
+        const vx0 = Math.sin(th) * a.R;
+        const vy0 = Math.cos(th) * a.R * EGG.squash;
+        const x = a.cx + x0 * ct - y0 * st;
+        const y = a.cy + x0 * st + y0 * ct;
+        const vx = vx0 * ct - vy0 * st;
+        const vy = vx0 * st + vy0 * ct;
+        // Nose on the tangent: the rocket always flies forwards, never sideways
+        // or backwards. Only the far half shrinks a little — a depth hint with
+        // no dimming, so it stays a solid sticker the whole way round.
+        const near = (1 - Math.sin(th)) / 2;
+        const scale = 0.8 + 0.2 * near;
+        const edge = Math.min(1, p * EGG.lap / EGG.fade, (1 - p) * EGG.lap / EGG.fade);
+        el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%) ` + `rotate(${(Math.atan2(vy, vx) * 180 / Math.PI + EGG.nose).toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+        el.style.opacity = Math.max(0, edge).toFixed(3);
+        raf = requestAnimationFrame(frame);
+      }
+      function lap() {
+        if (!alive) return;
+        t0 = performance.now();
+        el.classList.add('is-live');
+        raf = requestAnimationFrame(frame);
+      }
+
+      // A roll per arrow press, and only while the ship is out — the arrows
+      // still mean nothing to the atlas, so this never steals a key.
+      const onKey = e => {
+        if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+        if (!el.classList.contains('is-live')) return;
+        const tag = (e.target && e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+        pointer.current.spin += e.key === 'ArrowUp' ? 360 : -360;
+        paintShip();
+      };
+      window.addEventListener('keydown', onKey);
+      timer = setTimeout(lap, EGG.first);
+      return () => {
+        alive = false;
+        clearTimeout(timer);
+        cancelAnimationFrame(raf);
+        window.removeEventListener('keydown', onKey);
+        el.classList.remove('is-live');
+        el.style.opacity = '0';
+        clearTimeout(openTimer.current);
+      };
+    }, [enabled]);
+    return /*#__PURE__*/React.createElement("div", {
+      ref: shipRef,
+      className: "egg-ship",
+      "aria-hidden": "true",
+      onClick: onShipClick
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "egg-pop",
+      ref: popRef
+    }, /*#__PURE__*/React.createElement("img", {
+      ref: spinRef,
+      src: "extra-pictures/rocket-couple.png",
+      alt: "",
+      draggable: "false"
+    })));
+  }
+
   // ── App ───────────────────────────────────────────────────────────────
   function App() {
     const store = window.useStore();
@@ -1023,6 +1180,8 @@
       onSelectPlace: onSelectPlace,
       onClose: () => setDetailOpen(false),
       onOpenChapter: openChapter
+    }), /*#__PURE__*/React.createElement(EasterEgg, {
+      enabled: view === 'atlas' && !cover
     }), cover && /*#__PURE__*/React.createElement(Cover, {
       stats: stats,
       onDone: () => {
