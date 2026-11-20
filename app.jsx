@@ -419,37 +419,45 @@
 
   // ── Easter egg ────────────────────────────────────────────────────────
   // The two of them in the rocket, lapping the planet: one slow revolution
-  // every minute or so, forty pixels wide, then gone again. It sits on a
-  // fixed layer above the atlas and below every piece of chrome, so it can
-  // never move the layout or cover something you are reading; it takes the
-  // pointer only while it is out. The ring is a fixed circle on the stage —
-  // deliberately not scaled to the globe's zoom, the lap is the same lap
-  // whatever the camera is doing.
+  // every minute or so, then gone again. It sits on a fixed layer above the
+  // atlas and below every piece of chrome, so it can never move the layout or
+  // cover something you are reading, and it takes the pointer only while it is
+  // out. The ring is a fixed circle on the stage — deliberately not scaled to
+  // the globe's zoom, the lap is the same lap whatever the camera is doing.
+  //
+  // The arrows take the controls: left and right fly it back and forward along
+  // the ring, up and down push the ring out and pull it in, and the slow lap
+  // stands still for a few seconds after you let go. That is the whole game.
   const EGG = {
-    lap: 16000,            // one revolution — a drift round the planet, not a fly-by
-    fade: 400,             // the only moment it is not solid: the blink on and off
+    lap: 16000,            // one un-piloted revolution
+    fade: 400,             // the only moment it is not solid: on and off
     gap: [44000, 62000],   // quiet time between sightings (~1 min door to door)
     first: 20000,          // let the intro settle before the first one
     radius: 0.36,          // ring radius, as a share of the shorter stage side
     tilt: -14,             // the ring's line of nodes, tipped up to the right
     squash: 0.36,          // how flat the ring reads from here
     nose: 8,               // the rocket's own nose sits ~8° above its horizon
-    open: 2.8,             // how far a click opens it up
+    turn: 1.7,             // rad/s of orbit while an arrow is held
+    drift: 0.5,            // ring radius, in radii per second, for up/down
+    reach: [0.6, 1.5],     // how far in and out the ring may be pushed
+    hold: 1200,            // ms of hands-off before the slow lap resumes
+    open: 2.6,             // how far a click opens it up
     openFor: 1300,         // ms
   };
 
-  function EasterEgg({ enabled }) {
+  function EasterEgg({ enabled, blocked }) {
     const shipRef = React.useRef(null);
     const popRef = React.useRef(null);
-    const spinRef = React.useRef(null);
-    const pointer = React.useRef({ spin: 0, open: false });
+    const pointer = React.useRef({ open: false });
     const openTimer = React.useRef(0);
+    // Read inside the key handler, not as an effect dependency: opening a
+    // chapter should not restart the lap, it should only take the controls away.
+    const blockedRef = React.useRef(blocked);
+    blockedRef.current = blocked;
 
-    // The sprite's own transform: the roll the arrows ask for, plus the pop a
-    // click asks for. Both are transitions, so this is written on demand, not
-    // per frame — the lap below only moves the wrapper.
+    // The pop a click asks for. A transition, so it is written on demand — the
+    // lap below only moves the wrapper.
     const paintShip = () => {
-      if (spinRef.current) spinRef.current.style.transform = `rotate(${pointer.current.spin}deg)`;
       if (popRef.current) popRef.current.style.transform = `scale(${pointer.current.open ? EGG.open : 1})`;
     };
 
@@ -470,7 +478,16 @@
 
       const tilt = (EGG.tilt * Math.PI) / 180;
       const ct = Math.cos(tilt), st = Math.sin(tilt);
-      let raf = 0, timer = 0, t0 = 0, alive = true;
+      const spin = (2 * Math.PI) / (EGG.lap / 1000);  // rad/s of the un-piloted lap
+      const held = { left: false, right: false, up: false, down: false };
+      const anyHeld = () => held.left || held.right || held.up || held.down;
+      let raf = 0, timer = 0, last = 0, lapT = 0, live = false, alive = true;
+      let th = -Math.PI / 2;   // where on the ring; -90° is the near side
+      let reach = 1;           // how far out the ring is pushed
+      let facing = 1;          // 1 flying forwards, -1 when the pilot reverses
+      let flip = 0;            // degrees of that reversal, eased so it turns, not snaps
+      let handsUntil = 0;      // while the arrows are in use, the lap waits
+      let wasHands = false;
 
       // The stage, not the planet: one circle, near enough to the globe at the
       // default framing that it reads as an orbit, and unchanged when you zoom.
@@ -486,64 +503,110 @@
         };
       }
 
-      function frame(now) {
-        const p = (now - t0) / EGG.lap;
-        if (p >= 1) {
-          el.classList.remove('is-live');
-          el.style.opacity = '0';
-          timer = setTimeout(lap, EGG.gap[0] + Math.random() * (EGG.gap[1] - EGG.gap[0]));
-          return;
-        }
+      function draw(edge) {
         const a = anchor();
-        // Round the ring clockwise, from the near side: up the left limb, over
-        // the top travelling right, down the right limb, back underneath.
-        const th = -Math.PI / 2 - p * Math.PI * 2;
-        const x0 = Math.cos(th) * a.R;
-        const y0 = -Math.sin(th) * a.R * EGG.squash;
-        const vx0 = Math.sin(th) * a.R;
-        const vy0 = Math.cos(th) * a.R * EGG.squash;
+        const R = a.R * reach;
+        const x0 = Math.cos(th) * R;
+        const y0 = -Math.sin(th) * R * EGG.squash;
+        const vx0 = Math.sin(th) * R;
+        const vy0 = Math.cos(th) * R * EGG.squash;
         const x = a.cx + x0 * ct - y0 * st;
         const y = a.cy + x0 * st + y0 * ct;
         const vx = vx0 * ct - vy0 * st;
         const vy = vx0 * st + vy0 * ct;
         // Nose on the tangent: the rocket always flies forwards, never sideways
-        // or backwards. Only the far half shrinks a little — a depth hint with
-        // no dimming, so it stays a solid sticker the whole way round.
+        // or backwards. The far half shrinks a little — a depth hint with no
+        // dimming, so it stays a solid sticker the whole way round.
         const near = (1 - Math.sin(th)) / 2;
         const scale = 0.8 + 0.2 * near;
-        const edge = Math.min(1, (p * EGG.lap) / EGG.fade, ((1 - p) * EGG.lap) / EGG.fade);
+        const nose = Math.atan2(vy, vx) * 180 / Math.PI + EGG.nose + flip;
         el.style.transform =
           `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) translate(-50%, -50%) ` +
-          `rotate(${(Math.atan2(vy, vx) * 180 / Math.PI + EGG.nose).toFixed(1)}deg) scale(${scale.toFixed(3)})`;
-        el.style.opacity = Math.max(0, edge).toFixed(3);
+          `rotate(${nose.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+        el.style.opacity = edge.toFixed(3);
+      }
+
+      function frame(now) {
+        const dt = Math.min(0.05, Math.max(0.008, (now - last) / 1000));
+        last = now;
+        if (anyHeld()) handsUntil = now + EGG.hold;
+        const hands = now < handsUntil;
+        // The nose follows the direction actually travelled, so reversing is a
+        // turn over a few frames rather than a sticker spinning on the spot.
+        flip += ((facing < 0 ? 180 : 0) - flip) * Math.min(1, dt * 10);
+        if (hands) {
+          // Arrows override the lap: fly the ring, push it in and out, and let
+          // the automatic revolution wait. Resetting the lap clock means it
+          // always gets a full pass once you let go, never a two-second stub.
+          if (held.right) { th -= EGG.turn * dt; facing = 1; }
+          if (held.left) { th += EGG.turn * dt; facing = -1; }
+          reach = Math.max(EGG.reach[0], Math.min(EGG.reach[1],
+            reach + (held.up ? 1 : 0) * EGG.drift * dt - (held.down ? 1 : 0) * EGG.drift * dt));
+          lapT = 0;
+        } else {
+          const p = lapT / EGG.lap;
+          if (p >= 1) { finish(); return; }
+          // Handing back to the lap must not blink: the ship is already solid,
+          // so the new lap starts past its own fade-in.
+          if (wasHands) lapT = EGG.fade;
+          wasHands = false;
+          th -= spin * dt;
+          lapT += dt * 1000;
+          facing = 1;
+        }
+        if (hands) wasHands = true;
+        const edge = hands ? 1 : Math.min(1, lapT / EGG.fade, (EGG.lap - lapT) / EGG.fade);
+        draw(Math.max(0, Math.min(1, edge)));
         raf = requestAnimationFrame(frame);
       }
 
-      function lap() {
+      function start() {
         if (!alive) return;
-        t0 = performance.now();
+        th = -Math.PI / 2;
+        reach = 1;
+        facing = 1;
+        lapT = 0;
+        handsUntil = 0;
+        wasHands = false;
+        live = true;
         el.classList.add('is-live');
+        last = performance.now();
+        draw(0);
         raf = requestAnimationFrame(frame);
       }
 
-      // A roll per arrow press, and only while the ship is out — the arrows
-      // still mean nothing to the atlas, so this never steals a key.
+      function finish() {
+        live = false;
+        el.classList.remove('is-live');
+        el.style.opacity = '0';
+        timer = setTimeout(start, EGG.gap[0] + Math.random() * (EGG.gap[1] - EGG.gap[0]));
+      }
+
+      // The arrows are the controls, and only while the ship is out — the atlas
+      // has no use for up and down, and left and right never fight the lap for
+      // longer than the hand is on the key.
       const onKey = (e) => {
-        if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
-        if (!el.classList.contains('is-live')) return;
+        const dir = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' }[e.key];
+        if (!dir) return;
+        if (e.type === 'keyup') { held[dir] = false; return; }
+        if (!live || blockedRef.current) return;
         const tag = (e.target && e.target.tagName || '').toLowerCase();
         if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
-        pointer.current.spin += e.key === 'ArrowUp' ? 360 : -360;
-        paintShip();
+        held[dir] = true;
       };
+      const onBlur = () => { held.left = held.right = held.up = held.down = false; };
 
       window.addEventListener('keydown', onKey);
-      timer = setTimeout(lap, EGG.first);
+      window.addEventListener('keyup', onKey);
+      window.addEventListener('blur', onBlur);
+      timer = setTimeout(start, EGG.first);
       return () => {
         alive = false;
         clearTimeout(timer);
         cancelAnimationFrame(raf);
         window.removeEventListener('keydown', onKey);
+        window.removeEventListener('keyup', onKey);
+        window.removeEventListener('blur', onBlur);
         el.classList.remove('is-live');
         el.style.opacity = '0';
         clearTimeout(openTimer.current);
@@ -553,7 +616,7 @@
     return (
       <div ref={shipRef} className="egg-ship" aria-hidden="true" onClick={onShipClick}>
         <span className="egg-pop" ref={popRef}>
-          <img ref={spinRef} src="extra-pictures/rocket-couple.png" alt="" draggable="false" />
+          <img src="extra-pictures/rocket-couple.png" alt="" draggable="false" />
         </span>
       </div>
     );
@@ -962,7 +1025,7 @@
           />
         )}
 
-        <EasterEgg enabled={view === 'atlas' && !cover} />
+        <EasterEgg enabled={view === 'atlas' && !cover} blocked={showDetail} />
 
         {cover && <Cover stats={stats} onDone={() => {
           setCover(false);
