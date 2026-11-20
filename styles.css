@@ -530,41 +530,6 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
    ════════════════════════════════════════════════════════════════════════ */
 .atlas { position: absolute; inset: 0; overflow: hidden; }
 .atlas-canvas { position: absolute; inset: 0; z-index: 0; }
-
-/* Easter egg — the two of them in the rocket on one slow lap of the planet.
-   Fixed to the viewport, out of the layout, above the map and the vignette but
-   under the title (20), reel (25) and tools (30): it should pass behind the
-   chrome, never over it. Hidden — and untouchable — until a lap is running. */
-.egg-ship {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 60px;
-  height: 60px;
-  z-index: 15;
-  display: grid;
-  place-items: center;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-.egg-ship.is-live { visibility: visible; pointer-events: auto; cursor: pointer; }
-.egg-pop {
-  display: block;
-  transform-origin: 50% 50%;
-  transition: transform .3s cubic-bezier(.2, .9, .2, 1);
-}
-.egg-ship img {
-  display: block;
-  width: 100%;
-  height: auto;
-  transform-origin: 50% 50%;
-  transition: transform .85s cubic-bezier(.3, .7, .2, 1);
-  -webkit-user-drag: none;
-  user-select: none;
-}
-
 .atlas-title, .atlas-tools, .reel, .atlas-vignette { transition: opacity .35s ease; }
 .atlas-vignette {
   position: absolute;
