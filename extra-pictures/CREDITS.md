@@ -2,18 +2,6 @@
 
 Trip photos are vendored locally so the site has no hotlinked images.
 
-## Added Nov 2026 — the rocket sticker (not a photo)
-
-| File | Source | Licence |
-|---|---|---|
-| `rocket-couple.png` | Gemini-generated illustration, theirs | their own |
-
-The atlas easter egg: the two of them in a rocket, 240px wide (8× the size it is
-drawn at). The generated JPEG had a chequerboard baked in where the alpha should
-have been, so the background was flood-filled outwards from the border — the
-suits' whites survive because the black outlines enclose them — then trimmed to
-the silhouette, given a white sticker edge, and resampled.
-
 ## Added Nov 2026 — Manila (stop photo)
 
 | File | Author | License |
