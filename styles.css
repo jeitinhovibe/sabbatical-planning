@@ -539,8 +539,8 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
   position: fixed;
   left: 0;
   top: 0;
-  width: 46px;
-  height: 46px;
+  width: 60px;
+  height: 60px;
   z-index: 15;
   display: grid;
   place-items: center;
