@@ -8,6 +8,26 @@ Format: **Decision** · date · options considered · why.
 
 ---
 
+## 2026-11-20 — The phone tool row rides on the strip, so it folds with it
+
+On a phone `.atlas-tools` is centred above the chapter strip at a hand-tuned
+`bottom: 200px` — the height of the expanded strip. Collapsing the strip dropped
+the cards but left the 2D/3D/Now row where they used to be, floating mid-map over
+a gap that belonged to nothing, which is the opposite of what the fold is for.
+
+- **Decision:** the row keeps its 6px overlap with the strip's top edge in both
+  states — `200px` expanded, `61px` collapsed — and the two move on the same
+  .34s curve as the track's `max-height`, so the buttons never lead or trail the
+  fold. `.atlas:has(.reel.is-collapsed)` reaches the sibling state without
+  lifting `collapsed` out of `ChapterReel`.
+- **The cost:** `61px` is the collapsed head plus its padding, measured at
+  390×844 (head 23px + 34/10 padding, less the 6px overlap). Change the phone
+  `.reel` padding or the head type and both numbers move. Coupled on purpose —
+  one strip, two states — but they are the pair to re-measure, not the row.
+- **Not done:** no viewport measurement in JS. A `ResizeObserver` on the reel
+  would keep this exact for free, but it would also fight the fold for 340ms to
+  land on two numbers that only type scale changes.
+
 ## 2026-11-18 — Labels on photographs get a surface, not a shadow
 
 The reel's "n nights" count was white mono at 85% with a text-shadow. On a

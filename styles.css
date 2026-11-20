@@ -2432,6 +2432,14 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
       linear-gradient(to bottom, transparent 64%, rgba(6,9,13,.82) 100%);
   }
 
+  /* On a phone the tool row is not corner chrome any more: it rides on the top
+     edge of the reel, 6px into the strip's gradient, so the two read as one
+     plate. That means it has to follow the strip when the strip folds — the
+     expanded 200px is the room the card row takes, and leaving it there with
+     the row gone parked the buttons in the middle of the map over a gap that
+     belonged to nothing. Collapsed 61px is the head plus its padding, less the
+     same 6px overlap; the two move on one curve so the row never leads or
+     trails the fold. */
   .atlas-tools {
     top: auto;
     bottom: 200px;
@@ -2440,7 +2448,9 @@ html { scrollbar-width: none; -ms-overflow-style: none; }
     padding: 0 12px;
     justify-content: center;
     gap: 6px;
+    transition: opacity .35s ease, bottom .34s cubic-bezier(.2,.7,.2,1);
   }
+  .atlas:has(.reel.is-collapsed) .atlas-tools { bottom: 61px; }
   .tool-seg { padding: 2px; }
   .tool-seg button, .tool-btn {
     width: 34px; height: 34px;
