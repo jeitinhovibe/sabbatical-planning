@@ -170,12 +170,22 @@
     // Lumpur (direct)" and "Shenzhen → Kuala Lumpur" on Dec 6 became two blocks
     // in the calendar. The flight wins (it carries the money), the transport
     // copy is dropped, and a repeated row in either list is dropped too.
+    // The data keeps that split — a leg is authored once, in the list that
+    // owns it (see the note above `transports` in itinerary-data.js) — so this
+    // is a guard, and it says so out loud rather than swallowing the mistake.
     const legs = new Set();
     const legKey = (route, date) => String(route || '').toLowerCase().replace(/\([^)]*\)/g, ' ').replace(/[^a-z0-9]/g, '') + '@' + date;
-    (trip.budget.flights || []).filter(f => f.date).forEach((f, i) => {
-      const key = legKey(f.route, f.date);
-      if (legs.has(key)) return;
+    const claimLeg = (route, date) => {
+      const key = legKey(route, date);
+      if (legs.has(key)) {
+        console.warn('[calendar] leg authored twice, dropping the copy:', route, date);
+        return false;
+      }
       legs.add(key);
+      return true;
+    };
+    (trip.budget.flights || []).filter(f => f.date).forEach((f, i) => {
+      if (!claimLeg(f.route, f.date)) return;
       const slug = f.route.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 60) || 'leg' + i;
       events.push({
         id: eid('sabbaticalfl', slug, used),
@@ -197,9 +207,7 @@
     // Ground + sea legs (trains, buses, ferries) from trip.transports — minus
     // any already pushed as a flight above.
     (trip.transports || []).filter(t => t && t.date).forEach((t, i) => {
-      const key = legKey(t.route, t.date);
-      if (legs.has(key)) return;
-      legs.add(key);
+      if (!claimLeg(t.route, t.date)) return;
       const slug = String(t.route || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 60) || 'leg' + i;
       events.push({
         id: eid('sabbaticaltr', slug, used),

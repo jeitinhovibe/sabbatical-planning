@@ -631,7 +631,7 @@ window.TRIP = (function () {
       { route: 'Kathmandu → Beijing', cost: 477, date: '2026-11-07', note: 'Late-night arrival; Entry 1 starts Nov 7' },
       { route: 'Hangzhou (HGH) → Hong Kong', cost: 183, date: '2026-11-23', note: '$183 for two — 08:00–10:40; HK visa reset next' },
       { route: 'Hong Kong → Guangzhou (HSR)', cost: 65, date: '2026-11-28', note: '$65 for two — G6510 09:08–10:08, direct; Entry 2 starts' },
-      { route: 'Shenzhen → Kuala Lumpur (direct)', cost: 288, date: '2026-12-06', note: 'R$1,500 (~$288 at R$5.20) — direct SZX–KUL; Malaysia begins' },
+      { route: 'Shenzhen → Kuala Lumpur (direct)', cost: 288, date: '2026-12-06', note: 'R$1,500 (~$288 at R$5.20) — direct SZX–KUL ~4h10, daily (AirAsia/CZ/ZH/MH); Malaysia begins' },
       { route: 'Langkawi → Koh Lipe (ferry)', cost: 110, date: '2026-12-14', note: 'Estimate — 90-min cross-border ferry from Telaga Harbour; Thailand Andaman begins' },
       { route: 'Krabi → Bangkok', cost: 148, date: '2026-12-26', note: 'R$768 (~$148 at R$5.20) — afternoon flight after the Lanta transfer. The $90 estimate was a normal-season fare; Dec 26 is the peak' },
       { route: 'Bangkok → Kaohsiung (direct)', cost: 195, date: '2026-12-29', note: 'R$1,012 (~$195 at R$5.20) — direct BKK–KHH; Taiwan begins' },
@@ -687,6 +687,11 @@ window.TRIP = (function () {
   // all-day events (end is exclusive, computed by calendar.jsx). Inter-chapter
   // flights stay in budget.flights; this list covers trains, buses, ferries and
   // in-chapter flights so every travel day reaches the calendar.
+  //
+  // ONE OWNER PER LEG. A leg priced in budget.flights does not belong here as
+  // well: the sync would push it twice ("Shenzhen → Kuala Lumpur" twice on the
+  // same day). If a ride needs a mode or a timetable the fare row lacks, put it
+  // in that row's note — not in a second row.
   const transports = [
     // Brasil — internal hops (travelled)
     { mode: 'flight', route: 'Rio de Janeiro → Fortaleza', date: '2026-07-20', note: 'In-chapter hop — Cumbuco next' },
@@ -713,7 +718,6 @@ window.TRIP = (function () {
     { mode: 'train', route: 'Shanghai → Hangzhou', date: '2026-11-22', note: 'G7307 16:20, $22 for two. The night-before leg, and it ends on Line 19: the airport express runs from both Hangzhou East (~20min) and Hangzhou West (~55min) to the airport station, so whichever station the ticket names, the hotel is a metro ride away — no taxi' },
     // China E2
     { mode: 'train', route: 'Guangzhou → Shenzhen', date: '2026-11-30', note: 'HSR ~30min' },
-    { mode: 'flight', route: 'Shenzhen → Kuala Lumpur', date: '2026-12-06', note: 'Direct ~4h10 — daily SZX–KUL (AirAsia/CZ/ZH/MH); Malaysia begins' },
     // Malaysia — short west-coast run
     { mode: 'flight', route: 'Kuala Lumpur → Langkawi', date: '2026-12-10', note: 'In-chapter hop ~1h' },
     // Thailand — Andaman south-to-north
@@ -725,7 +729,6 @@ window.TRIP = (function () {
     { mode: 'train', route: 'Chiayi → Taipei', date: '2027-01-08', note: 'Alishan bus down + HSR ~1h40' },
     // China spring finale
     { mode: 'train', route: 'Changsha → Shanghai', date: '2027-05-28', note: 'HSR ~5h' },
-    { mode: 'flight', route: 'Shanghai → Seoul', date: '2027-06-02', note: 'Direct ~2h — Korea begins' },
     // Japan
     { mode: 'train', route: 'Kyoto → Osaka', date: '2027-01-21', note: 'Local/rapid train ~30min' },
     { mode: 'train', route: 'Osaka → Takayama (via Shirakawa-go)', date: '2027-01-25', note: 'Hida Wide View limited express (~3.5h) + Nohi bus to Shirakawa-go' },
